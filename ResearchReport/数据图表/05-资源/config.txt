@@ -1,0 +1,7 @@
+*** Variables ***
+${线上正式地址}         http://www.aqlicai.cn/    # 线上测试地址
+${线上正式账户名}        qhguan@abcft.com    # 线上测试环境账户名
+${线上正式密码}         qwer1234
+${线上测试地址}         http://www-dev.aqlicai.cn/    # 线上测试地址
+${线上测试账户名}        test1@abcft.com    # 线上测试账户名
+${线上测试密码}         1234qwer    # 线上测试密码

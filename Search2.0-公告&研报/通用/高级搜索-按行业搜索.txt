@@ -1,0 +1,37 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Variables ***
+${kind}           ${EMPTY}
+
+*** Keywords ***
+获取行业类型
+    [Arguments]    ${公告研报类型}    # 公告研报类型只能输入：公告、证券研报、市场研报
+    ${kind}    Run Keyword If    '${公告研报类型}'=='公告'    Set Variable    ${4}
+    ...    ELSE IF    '${公告研报类型}'=='证券研报'    Set Variable    ${5}
+    ...    ELSE    log    类型不存在
+    [Return]    ${kind}
+
+点击行业下拉框
+    [Arguments]    ${公告研报类型}    # 公告研报类型必须是：公告、证券研报、市场研报
+    ${kind}    获取行业类型    ${公告研报类型}
+    Click Element    css=#JS-advanceSearch>div:nth-child(${kind})>i
+    sleep    1
+
+选择一级行业
+    [Arguments]    ${一级行业}
+    Click Element    css=td[filter-txt=${一级行业}]>a
+    sleep    1
+
+选择二级行业
+    [Arguments]    ${一级行业}    ${二级行业}
+    Click Element    css=td[filter-txt='${一级行业}']>a
+    sleep    1
+    Click Element    css=a[filter-txt='${二级行业}']
+    sleep    1
+
+关闭行业下拉框
+    [Arguments]    ${公告研报类型}
+    ${kind}    获取行业类型    ${公告研报类型}
+    Click Element    css=#JS-advanceSearch>div:nth-child(${kind})>.multi-contain>i
+    sleep    1

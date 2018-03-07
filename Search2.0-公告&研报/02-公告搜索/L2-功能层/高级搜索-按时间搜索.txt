@@ -1,0 +1,15 @@
+*** Settings ***
+Library           Selenium2Library
+Library           Collections
+
+*** Keywords ***
+点击时间下拉框
+    Click Element    css=#JS-advanceSearch>div:nth-child(6)
+    sleep    1
+
+选择时间
+    [Arguments]    ${时间}
+    ${n}    Get Index From List    ${下拉时间}    ${时间}
+    ${m}    Evaluate    ${n}+${2}
+    Click Element    css=#JSselect-dateRange>div>ul>li:nth-child(${m})
+    sleep    1

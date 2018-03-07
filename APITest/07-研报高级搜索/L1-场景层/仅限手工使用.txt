@@ -1,0 +1,45 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    ReportAdvancedSearch    ReportAS_A01
+Suite Teardown
+Test Teardown
+Force Tags
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报全部+筛选框校验.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+Resource          ../../通用/L2-接口层/前置条件更新指标.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+单个调试使用
+    [Tags]    ygu
+    Comment    ${emaildata_path}    Set Variable    ${EMPTY}
+    Comment    Set Global Variable    ${emaildata_path}
+    Comment    #如果测试正式环境设置登录头信息
+    Comment    Run Keyword Unless    "dev" in "${url}"    设置登录头信息
+    Comment    创建Session
+    Comment    ${pre_resultfile}    Set Variable    ReportM_s1_
+    Comment    set suite variable    ${pre_resultfile}
+    Comment    ${check_field_list}    Create List    title_include
+    Comment    Comment    #校验指标
+    Comment    研报ALL筛选框校验query    互联网女皇    ${check_field_list}
+    Comment    ALL公告校验query    一季报    category
+    Comment    ALL公告校验query    三季报    category
+    Comment    ALL公告校验query    交通运输    industry
+    Comment    ALL公告校验query    明天    time
+    Comment    ALL公告校验query    产业 股份变动 最新财报    ${check_field_list}
+    Comment    ${UsedName}    Set Variable    ${EMPTY}
+    Comment    ${UsedNameList}    Split String    ${UsedName}    ->
+    Comment    ${LEN}    Get Length    ${UsedNameList}
+    Comment    log    ${LEN}
+    Comment    ${UsedNameList}    Evaluate    '${UsedName}'.split('->')
+    Comment    ${LEN}    Get Length    ${UsedNameList}
+    Comment    log    ${LEN}
+    Comment    统计结果发送邮件    公告01验证单一搜索词    ${results_path}
+    [Teardown]

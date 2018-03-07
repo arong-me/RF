@@ -1,0 +1,17 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+获取公告研报类型
+    [Arguments]    ${公告研报类型}    # 公告研报类型只能输入：公告、证券研报、市场研报
+    ${kind}    Run Keyword If    '${公告研报类型}'=='公告'    Set Variable    ${6}
+    ...    ELSE IF    '${公告研报类型}'=='证券研报'    Set Variable    ${7}
+    ...    ELSE IF    '${公告研报类型}'=='市场研报'    Set Variable    ${8}
+    ...    ELSE    log    类型不存在
+    [Return]    ${kind}
+
+进入频道
+    [Arguments]    ${公告研报分类}    # 公告研报类型只能输入：公告、证券研报、市场研报
+    ${kind}    获取公告研报类型    ${公告研报分类}
+    Click Element    css=.tabpanel>a:nth-child(${kind})
+    sleep    1

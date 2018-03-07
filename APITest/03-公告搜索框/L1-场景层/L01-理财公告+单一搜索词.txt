@@ -1,0 +1,65 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    03-Notice    Notice_L01    理财公告
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/左选框+搜索词.txt
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01公告分类
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告分类词
+    [Tags]    ygu
+    [Setup]    Notice_Left_Test_Category_Setup
+    ${pre_resultfile}    Set Variable    NoticeL01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    公告2校验query    银行理财    ${check_field_list}
+    公告2校验query    阳光私募    ${check_field_list}
+    公告2校验query    基金专户理财    ${check_field_list}
+    公告2校验query    信托    ${check_field_list}
+    公告2校验query    保险    ${check_field_list}
+    公告2校验query    集合理财    ${check_field_list}
+    公告2校验query    私募基金    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+02关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个关键词
+    [Tags]    ygu
+    ${pre_resultfile}    Set Variable    NoticeL01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    公告2校验query    激励计划    ${check_field_list}
+    公告2校验query    并购重组    ${check_field_list}
+    公告2校验query    变动    ${check_field_list}
+    公告2校验query    修订    ${check_field_list}
+    公告2校验query    城镇化    ${check_field_list}
+    公告2校验query    担保    ${check_field_list}
+    公告2校验query    投资项目    ${check_field_list}
+    公告2校验query    所属行业    ${check_field_list}
+    公告2校验query    交易    ${check_field_list}
+    公告2校验query    关于使用自有资金收购内蒙古    ${check_field_list}
+    删除Sessions
+    [Teardown]

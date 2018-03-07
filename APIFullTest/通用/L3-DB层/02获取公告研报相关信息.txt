@@ -1,0 +1,157 @@
+*** Settings ***
+Resource          ../../资源配置/设置数据库.txt
+
+*** Keywords ***
+获取所有公告公司stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code FROM sec_basic_info WHERE STATUS<>'9' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取美股公司stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code FROM sec_basic_info WHERE sec_type=1004001004 AND STATUS<>'9' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取港股公司stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code FROM sec_basic_info WHERE sec_type=1004001003 AND STATUS<>'9' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取沪深股公司stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code FROM sec_basic_info WHERE sec_type=1004001 AND STATUS<>'9' AND sec_small_type IN('1004001001','1004001002') AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取基金公司stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code FROM sec_basic_info WHERE sec_type=1004003 AND STATUS<>'9' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取债券公司stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code FROM sec_basic_info WHERE sec_type='1004002' AND security_type IN('1003002','1003001','1003003') AND IFNULL(abc_code,'')!='' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取股转系统stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT a.abc_code FROM sec_basic_info a, com_basic_info b WHERE a.com_uni_code=b.com_uni_code AND a.sec_small_type IN (1004001005,1004001006) AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取沪深股公司名
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT sec_name FROM sec_basic_info WHERE sec_type=1004001 AND STATUS<>'9' AND sec_small_type IN('1004001001','1004001002')AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取一级类型下的二三级公告类型
+    [Arguments]    ${first_category}
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT category_name FROM notice_abc_category WHERE parent_id IN (SELECT category_id FROM notice_abc_category WHERE parent_id = (SELECT category_id FROM notice_abc_category WHERE category_name = '${first_category}')) UNION SELECT category_name FROM notice_abc_category WHERE parent_id = (SELECT category_id FROM notice_abc_category WHERE category_name = '${first_category}')
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取一级类型下的二三级公告类型id
+    [Arguments]    ${first_category}
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT category_id FROM notice_abc_category WHERE parent_id IN (SELECT category_id FROM notice_abc_category WHERE parent_id = (SELECT category_id FROM notice_abc_category WHERE category_name = '${first_category}')) UNION SELECT category_id FROM notice_abc_category WHERE parent_id = (SELECT category_id FROM notice_abc_category WHERE category_name = '${first_category}')
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取公告分类
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT category_name FROM notice_abc_category where category_name != '公告'
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取公告分类id
+    连接公告研报数据库
+    ${CategoryIdTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT category_id FROM notice_abc_category WHERE category_name != '公告'
+    断开数据库
+    [Return]    ${CategoryIdTuple}
+
+获取公告行业
+    连接正式数据库
+    ${IndustryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT indu_name FROM abc_industry WHERE indu_standard ='1001014' AND SUBSTRING(indu_code,-2,2)='00' AND indu_name!='保险'
+    断开数据库
+    [Return]    ${IndustryTuple}
+
+获取研报搜索框测试行业
+    连接正式数据库
+    ${IndustryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT indu_name FROM abc_industry WHERE indu_standard ='1001014' AND SUBSTRING(indu_code,-2,2)='00' AND indu_name NOT IN ('农林牧渔','食品饮料','纺织服装','半导体','文化传媒','综合')
+    断开数据库
+    [Return]    ${IndustryTuple}
+
+获取一级公告行业
+    连接正式数据库
+    ${IndustryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT first_indu_name FROM sec_industry_new WHERE indu_standard=1001014 AND first_indu_name!=' '
+    断开数据库
+    [Return]    ${IndustryTuple}
+
+获取二级公告行业
+    连接正式数据库
+    ${IndustryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT second_indu_name FROM sec_industry_new WHERE indu_standard=1001014 AND second_indu_name!=' '
+    断开数据库
+    [Return]    ${IndustryTuple}
+
+获取所有二级类型
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT category_name FROM notice_abc_category WHERE category_id LIKE 'S%'
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取一级类型
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT category_name FROM notice_abc_category WHERE category_id LIKE 'F%'
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取所有三级类型
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT category_name FROM notice_abc_category WHERE category_id LIKE 'T%'
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取研报评级
+    连接正式数据库
+    ${RatingTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT rating_category FROM report_rating WHERE rating_category!= '' UNION SELECT '不限'
+    断开数据库
+    [Return]    ${RatingTuple}
+
+获取研报机构
+    连接正式数据库
+    ${InstitutionTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT target FROM report_source
+    断开数据库
+    [Return]    ${InstitutionTuple}
+
+获取页面所有研报类型
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT type_name FROM report_type_choice WHERE parent_id!='0'
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取页面所有研报类型id
+    连接公告研报数据库
+    ${CategoryIdTuple}    Run Keyword And Continue on Failure    Query    SELECT type_id FROM report_type_choice WHERE parent_id!='0'
+    断开数据库
+    [Return]    ${CategoryIdTuple}
+
+获取一级类型下的二三级研报类型
+    [Arguments]    ${first_category}
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT type_name FROM report_type_choice WHERE parent_id IN (SELECT type_id FROM report_type_choice WHERE parent_id = (SELECT type_id FROM report_type_choice WHERE type_name = '${first_category}')) UNION SELECT type_name FROM report_type_choice WHERE parent_id = (SELECT type_id FROM report_type_choice WHERE type_name = '${first_category}')
+    断开数据库
+    [Return]    ${CategoryTuple}
+
+获取一级类型下的二三级研报类型id
+    [Arguments]    ${first_category}
+    连接公告研报数据库
+    ${CategoryTuple}    Run Keyword And Continue on Failure    Query    SELECT type_id FROM report_type_choice WHERE parent_id IN (SELECT type_id FROM report_type_choice WHERE parent_id = (SELECT type_id FROM report_type_choice WHERE type_name = '${first_category}')) UNION SELECT type_id FROM report_type_choice WHERE parent_id = (SELECT type_id FROM report_type_choice WHERE type_name = '${first_category}')
+    断开数据库
+    [Return]    ${CategoryTuple}

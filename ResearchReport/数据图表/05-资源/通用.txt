@@ -1,0 +1,42 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+用例失败退出操作
+    run key word if test failed    用例失败退出操作
+
+定位搜索输入框点击搜索
+    [Arguments]    ${输入query语句}
+    sleep    3
+    input text    xpath=//*[@id="JS-searchInput"]    ${输入query语句}    #输入搜索query    #此处可连接数据库查询
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-searchBtn"]
+
+定位条件择股tab中
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[1]/div[2]/a[1]    #定位到择股
+
+定位智绘图表tab中
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[1]/div[2]/a[2]    #定位到智绘图表
+
+定位数据表tab中
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[1]/div[2]/a[4]    #定位到数据表tab中
+
+跳转后切换窗口
+    ${titles}    Get window Titles
+    ${titles1}    select window
+
+关闭浏览器
+    sleep    5
+    Close Browser
+
+定位到智绘图表tab中的搜索框
+    [Arguments]    ${输入净利润大于500000万}
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-searchInput"]    #定位到搜索框
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-inputclear"]    #清除搜索框
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-searchInput"]    #定位输入框
+    sleep    3
+    input text    xpath=//*[@id="JS-searchInput"]    ${输入净利润大于500000万}    #{输入中美GDP}
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-searchBtn"]

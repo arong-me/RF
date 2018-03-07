@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+绘图-图表-同比
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[1]/div/span/span/span[1]/input    #点击同比
+
+绘图-图表-平均线
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[1]/div/span/span/span[3]/input    #点击平均线
+
+绘图-图表-中位值
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[1]/div/span/span/span[4]/input    #点击中位值
+
+绘图-图表-最大值
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[1]/div/span/span/span[5]/input    #点击最大值
+
+绘图-图表-最小值
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[1]/div/span/span/span[6]/input    #点击系列1
+
+展开同比按钮
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[1]/div/span/span/i    #展开同比按钮

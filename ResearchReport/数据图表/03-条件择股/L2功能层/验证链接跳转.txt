@@ -1,0 +1,38 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+股票跳转
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[2]/div/div[1]/table/tbody/tr[1]/td[2]/a    #股票跳转
+
+切换窗口
+    #    sleep    3
+    #    List Windows
+    #    Switch Browser    [0]    #使用索引在浏览器之间切换
+    sleep    3
+    ${titles}    Get window Titles
+    ${titles1}    select window
+
+定位下拉框
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[3]/select
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[3]/select/option[3]
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[3]/select/option[1]
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[2]/span[5]
+
+点击更多
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[2]/div/div[2]/table/tbody/tr[1]/td[3]/div/span[2]
+
+主题下的超链接跳转
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[2]/div/div[2]/table/tbody/tr[1]/td[3]/div/span[1]/a[1]
+
+切换窗口1
+    sleep    3
+    ${titles}    Get window Titles    #使用索引在浏览器之间切换
+    ${titles1}    select window

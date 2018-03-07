@@ -1,0 +1,18 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Resource          ../L3-DB层/索引表数据.txt
+Resource          ../../通用/L2-接口层/文件处理.txt
+
+*** Keywords ***
+生成data_id测试文件
+    [Arguments]    ${filename}
+    ${DataIdTuple}    获取所有的data_id
+    ${filename}    Set Variable    ${datasource_path}${/}${filename}.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    data_id.txt file has existed
+    ...    ELSE    将列表内容拆分写入txt文件中    ${DataIdTuple}    ${filename}    ${20000}
+
+将列表内容拆分写入txt文件中
+    [Arguments]    ${Tuple}    ${filename}    ${each_file_count}
+    Comment    ${each_file_count}    Evaluate    int(${each_file_count})
+    split_save_file    ${Tuple}    ${filename}    ${each_file_count}

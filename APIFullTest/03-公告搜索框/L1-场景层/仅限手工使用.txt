@@ -1,0 +1,58 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               调试所用
+Suite Setup       Suite_Setup    Notice    Notice_A01
+Suite Teardown
+Test Teardown
+Force Tags
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+Resource          ../../通用/L2-接口层/前置条件更新指标.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+更新公告主体
+    更新公告所有主体code
+
+更新公告类型
+    更新所有公告类型
+
+更新公告行业
+    更新所有公告行业
+
+更新公司usedname表的Excel表
+    更新公司usedname表的Excel表
+
+更新公司stockcode的Excel表
+    更新公司stockcode的Excel表
+
+单个调试使用
+    [Tags]    ygu
+    Comment    ${emaildata_path}    Set Variable    ${EMPTY}
+    Comment    Set Global Variable    ${emaildata_path}
+    Comment    #如果测试正式环境设置登录头信息
+    Comment    设置登录头信息
+    Comment    创建Session
+    Comment    ${pre_resultfile}    Set Variable    Notice1_s5_
+    Comment    set suite variable    ${pre_resultfile}
+    Comment    ${check_field_list}    Create List    industry
+    Comment    #校验指标
+    Comment    ALL公告校验query    种植业 医药商业 医疗服务 贸易 医药生物    ${check_field_list}
+    Comment    ALL公告校验query    一季报    category
+    Comment    ALL公告校验query    三季报    category
+    Comment    ALL公告校验query    交通运输    industry
+    Comment    ALL公告校验query    明天    time
+    Comment    ALL公告校验query    产业 股份变动 最新财报    ${check_field_list}
+    Comment    ${UsedName}    Set Variable    ${EMPTY}
+    Comment    ${UsedNameList}    Split String    ${UsedName}    ->
+    Comment    ${LEN}    Get Length    ${UsedNameList}
+    Comment    log    ${LEN}
+    Comment    ${UsedNameList}    Evaluate    '${UsedName}'.split('->')
+    Comment    ${LEN}    Get Length    ${UsedNameList}
+    Comment    log    ${LEN}
+    Comment    统计结果发送邮件    公告01验证单一搜索词    ${results_path}
+    [Teardown]

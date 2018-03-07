@@ -1,0 +1,21 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Resource          ../../资源配置/config.txt
+Library           String
+
+*** Keywords ***
+统计结果发送邮件
+    [Arguments]    ${subject}    ${filedir}    #主题|结果文件夹绝对路径
+    #编辑邮件发送内容
+    ${htmltext}    alarm_html    ${filedir}    %{G_DATACENTER}${/}Excel${/}casename.xlsx
+    #判断邮件内容是否为空
+    ${is_null}    is null    ${htmltext}
+    #定义主题
+    ${contain_list}    get_regexp_matches    ${htmltext}    error|fail|noexist
+    ${if_not_contain_fail}    is null    ${contain_list}
+    ${subject}    Run Keyword If    not ${is_null} and not ${if_not_contain_fail}    Set Variable    【问题警告】${subject} \
+    ...    ELSE    Set Variable    【问题提示】${subject}
+    #发送邮件
+    Run Keyword If    not ${is_null}    send_email    ${server_username}    ${server_pwd}    ${msg_from}    ${msg_to}
+    ...    ${subject}    ${htmltext}    ${filedir}
+    ...    ELSE    log    未生成问题文件，不发送警告邮件

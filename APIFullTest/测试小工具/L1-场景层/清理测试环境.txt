@@ -1,0 +1,7 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/前置条件更新指标.txt
+
+*** Test Cases ***
+更新所有测试数据
+    [Tags]    UpdataData
+    更新所有的测试数据

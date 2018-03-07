@@ -1,0 +1,64 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../L3-DB层/索引表数据.txt
+Resource          ../../通用/L2-接口层/获取solrweb接口返回值.txt
+Resource          ../../通用/L2-接口层/文件处理.txt
+Library           AqlicaiLibrary
+
+*** Variables ***
+${last_success_file}    ${EMPTY}    #存储之前已经运行通过id的文件
+
+*** Keywords ***
+循环读文件获取指标进行校验
+    [Arguments]    ${datasource_path}    ${file}
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    log    ${file}*.txt
+    ${scene}    Set Variable    1
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    循环读指标校验筛选项    ${querylist}
+
+循环读指标校验筛选项
+    [Arguments]    ${dataid_list}
+    : FOR    ${data_id}    IN    @{dataid_list}
+    \    #先排除掉之前测试已通过的id
+    \    ${exit}    判断文件是否包含某个字符串    ${last_success_file}    ${data_id}
+    \    Run Keyword If    not ${exit}    校验单个data_id    ${data_id}
+    \    ...    ELSE    log    ${data_id}已存在
+
+校验单个data_id
+    [Arguments]    ${data_id}
+    #获取数据库中data_id对应的    indicator_value    indicator_value_hb    indicator_value_tb
+    ${database_dict}    获取data_id对应indicator相关数据    ${data_id}
+    #获取solrweb返回结果
+    ${continue_flag}    ${solrweb_dict}    获取索引表data_id期望值    ${data_id}
+    ${continue_flag}    Run Keyword If    ${continue_flag}==1    校验solrweb返回结果与数据库返回结果    ${database_dict}    ${solrweb_dict}    ${data_id}
+    ...    ELSE    set Variable    ${continue_flag}
+    Run Keyword If    ${continue_flag}==1    Run Keywords    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${data_id}\n
+    ...    AND    append_to_file    ${last_success_file}    ${data_id}\n
+    ...    ELSE IF    ${continue_flag}==0    append_to_file    ${results_path}${/}${pre_resultfile}database_nodata.txt    ${data_id}\n
+    ...    ELSE IF    ${continue_flag}==-1    append_to_file    ${results_path}${/}${pre_resultfile}solrweb_nodata.txt    ${data_id}\n
+
+校验solrweb返回结果与数据库返回结果
+    [Arguments]    ${database_dict}    ${solrweb_dict}    ${data_id}
+    ${keys}    Get Dictionary Keys    ${database_dict}
+    ${same_flag}    set Variable    1
+    : FOR    ${key}    IN    @{keys}
+    \    log    ${key}
+    \    ${db_value}    Get From Dictionary    ${database_dict}    ${key}
+    \    ${solr_value}    Get From Dictionary    ${solrweb_dict}    ${key}
+    \    log    ${db_value}
+    \    ${same_flag}    Run Keyword If    ${db_value}!=${null}    比对单个键值是否一致    ${db_value}    ${solr_value}
+    \    ...    ELSE    set Variable    0
+    \    Exit For Loop If    ${same_flag}==-2
+    Run Keyword If    ${same_flag}==-2    append_to_file    ${results_path}${/}${pre_resultfile}${key}_mismatch.txt    ${data_id}\n
+    [Return]    ${same_flag}
+
+比对单个键值是否一致
+    [Arguments]    ${db_value}    ${solr_value}
+    ${same_flag}    Run Keyword If    ${db_value}==${solr_value}    set Variable    1
+    ...    ELSE    set Variable    -2
+    [Return]    ${same_flag}

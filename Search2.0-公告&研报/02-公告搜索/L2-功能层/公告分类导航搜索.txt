@@ -1,0 +1,43 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+进入证券研报一级分类
+    [Arguments]    ${一级公告分类}
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)
+    comment    Click Element    css=[filter-value=${一级公告分类}[0]]
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value=${一级公告分类}]
+    sleep    1
+
+进入证券研报二级分类
+    [Arguments]    ${一级公告分类}    ${二级公告分类}
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>li:nth-child(7)
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value=${一级公告分类}]
+    sleep    1
+    Click Element    css=li[filter-txt=${二级公告分类}]
+    sleep    1
+
+进入证券研报三级分类
+    [Arguments]    ${一级公告分类}    ${二级公告分类}    ${三级公告分类}
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>li:nth-child(7)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>ul:nth-of-type(1)>li:nth-child(6)
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value=${一级公告分类}]
+    sleep    1
+    Click Element    css=li[filter-txt=${二级公告分类}]>span
+    sleep    1
+    Click Element    css=li[filter-txt=${三级公告分类}]
+    sleep    1
+
+进入证券研报全部分类
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value="all"]
+    sleep    1

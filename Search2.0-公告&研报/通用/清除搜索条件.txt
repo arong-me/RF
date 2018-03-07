@@ -1,0 +1,26 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+清空搜索框
+    [Arguments]    ${公告研报类型}    # 公告研报类型只能输入：公告、证券研报、市场研报
+    Run Keyword If    '${公告研报类型}'=='公告'    同时清空
+    ...    ELSE IF    '${公告研报类型}'=='证券研报'    同时清空
+    ...    ELSE IF    '${公告研报类型}'=='市场研报'    清空关键字搜索框
+    ...    ELSE    log    类型不存在
+
+清空筛选条件
+    Click Element    css=.clear-tags
+    sleep    1
+
+清空公司搜索框
+    Input Text    css=#JS-stockInput    ${EMPTY}
+    sleep    1
+
+清空关键字搜索框
+    Input Text    css=#JS-searchInput    ${EMPTY}
+    sleep    1
+
+同时清空
+    清空公司搜索框
+    清空关键字搜索框

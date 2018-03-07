@@ -1,0 +1,8 @@
+*** Variables ***
+${UserId}         ${EMPTY}    #当前的用户ID
+${ResponseCookie}    ${EMPTY}    #登录请求返回的Cookie
+${AjaxSign}       ${EMPTY}    #Cookie中的Ajax签名
+${GuestId}        ${EMPTY}    #Cookie字段
+${CombMax_G}      35    #需要生成全量指标的最大组合数
+${CombMax_N}      10    #非全量场景的最大组合数
+${platform}       Linux    # 平台名称

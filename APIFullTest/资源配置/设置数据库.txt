@@ -1,0 +1,50 @@
+*** Settings ***
+Library           pymysql
+Library           DatabaseLibrary
+Resource          数据库config.txt
+
+*** Keywords ***
+连接线上测试数据库
+    [Documentation]    【说明】 连接到搜图数据库
+    [Tags]    ygu
+    ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db}    ${dbuser}    ${dbpassword}
+    ...    ${dbhost}    ${dbport}
+    ${pass}    Run Keyword If    not ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db}
+    ...    ${dbuser}    ${dbpassword}    ${dbhost}    ${dbport}
+    ...    ELSE    set Variable    ${pass}
+    Run Keyword Unless    ${pass}    Run Keyword And Continue on Failure    Connect To Database    pymysql    ${db}    ${dbuser}
+    ...    ${dbpassword}    ${dbhost}    ${dbport}
+
+连接公告研报数据库
+    [Documentation]    【说明】 连接到公告研报数据库
+    [Tags]    ygu
+    ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db_raa}    ${dbuser_raa}    ${dbpassword_raa}
+    ...    ${dbhost_raa}    ${dbport}
+    ${pass}    Run Keyword If    not ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db_raa}
+    ...    ${dbuser_raa}    ${dbpassword_raa}    ${dbhost_raa}    ${dbport}
+    ...    ELSE    set Variable    ${pass}
+    Run Keyword Unless    ${pass}    Run Keyword And Continue on Failure    Connect To Database    pymysql    ${db_raa}    ${dbuser_raa}
+    ...    ${dbpassword_raa}    ${dbhost_raa}    ${dbport}
+
+连接正式数据库
+    [Documentation]    【说明】 仅供测试获取测试数据源时使用，校验数据库时使用线上测试数据库
+    [Tags]    ygu
+    ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db}    ${dbuser_formal}    ${dbpassword_formal}
+    ...    ${dbhost_formal}    ${dbport}
+    ${pass}    Run Keyword If    not ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db}
+    ...    ${dbuser_formal}    ${dbpassword_formal}    ${dbhost_formal}    ${dbport}
+    ...    ELSE    set Variable    ${pass}
+    Run Keyword Unless    ${pass}    Run Keyword And Continue on Failure    Connect To Database    pymysql    ${db}    ${dbuser_formal}
+    ...    ${dbpassword_formal}    ${dbhost_formal}    ${dbport}
+
+连接正式从库
+    ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db}    ${dbuser_formal}    ${dbpassword_formal}
+    ...    121.41.26.224    ${dbport}
+    ${pass}    Run Keyword If    not ${pass}    Run Keyword And Return Status    Connect To Database    pymysql    ${db}
+    ...    ${dbuser_formal}    ${dbpassword_formal}    121.41.26.224    ${dbport}
+    ...    ELSE    set Variable    ${pass}
+    Run Keyword Unless    ${pass}    Run Keyword And Continue on Failure    Connect To Database    pymysql    ${db}    ${dbuser_formal}
+    ...    ${dbpassword_formal}    121.41.26.224    ${dbport}
+
+断开数据库
+    Run Keyword And Continue on Failure    Disconnect From Database

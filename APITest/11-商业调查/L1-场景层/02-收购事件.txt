@@ -1,0 +1,27 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建NoticeChart一级文件夹和NoticeChart_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    11-BusinessSurvey    BusinessSurvey_02
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../L2-接口层/商业调查事件搜索框.txt
+
+*** Test Cases ***
+01单事件
+    [Documentation]    BusinessSurvey
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    BusinessSurvey02_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}Acquisition
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    event1
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}

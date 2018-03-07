@@ -1,0 +1,22 @@
+*** Settings ***
+Resource          ../../资源配置/设置数据库.txt
+Library           DatabaseLibrary
+
+*** Keywords ***
+主体
+    连接数据库
+    ${MainbodyTuple}    Query    SELECT sec_name FROM sec_basic_info AS a INNER JOIN com_basic_info AS b ON a.com_uni_code=b.com_uni_code WHERE sec_small_type IN ('1004001001','1004001002') AND ipo_status != '1002006'
+    Comment    ${name}    Evaluate    '${mainbody[0][0]}'.decode('utf-8')
+    Comment    log    ${mainbody[0][0]}
+    Comment    ${length}    Get Length    ${MainbodyTuple}
+    Comment    @{MainbodydList}    create list
+    Comment    :FOR    ${i}    IN RANGE    ${length}
+    Comment    \    ${MainbodyDecode}    Evaluate    '${MainbodyTuple[${i}][0]}'.decode('utf-8')
+    Comment    \    @{MainbodydList}    create list    @{MainbodydList}    ${MainbodyDecode}
+    Comment    log many    @{MainbodydList}
+    [Return]    ${MainbodyTuple}
+
+财务指标
+    连接数据库
+    ${FinanceTuple}    Query    SELECT DISTINCT column_name_cn FROM sec_metadata_info WHERE category = '财务指标'
+    [Return]    ${FinanceTuple}

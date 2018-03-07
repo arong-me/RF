@@ -1,0 +1,15 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Variables ***
+${assert_login}    公告
+${assert_logout}    邮箱登录
+
+*** Keywords ***
+assert_by_ele_attr
+    [Arguments]    ${ele}    ${attr_name}    ${pre_value}    # ele：定位；attr_name：属性名；pre_value：预期值
+    Wait Until Page Contains Element    ${ele}
+    ${value}    Get Element Attribute    ${ele}@${attr_name}
+    log    ${value}
+    log    ${pre_value}
+    Should Contain    ${value}    ${pre_value}

@@ -1,0 +1,10 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+打开用户设置
+    Wait Until Page Contains Element	    css=#btn-user    10
+    Click Element    css=#btn-user
+
+点击退出登录
+    Click Element    css=.account-center-dropdown-item-wrapper.account-logout

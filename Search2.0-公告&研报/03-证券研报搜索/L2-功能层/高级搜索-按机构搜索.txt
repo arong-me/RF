@@ -1,0 +1,10 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+输入机构关键词
+    [Arguments]    ${机构关键字}    ${机构名称}
+    Input Text    css=#JS-advanceSearch>div:nth-child(4)>div>input    ${机构关键字}
+    sleep    1
+    Click Element    css=#JS-advanceSearch>div:nth-child(4)>div>ul>li[filter-value=${机构名称}]
+    sleep    1

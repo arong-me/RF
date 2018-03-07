@@ -1,0 +1,11 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+取消勾选股价
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/label[1]/input    #勾选股价
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/label[1]/input    #取消股价
+
+取消勾选涨跌幅
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/label[2]/input    #取消涨跌幅
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/label[2]/input    #勾选涨跌幅

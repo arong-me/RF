@@ -1,0 +1,2 @@
+*** Settings ***
+Resource          ../L2功能层/智绘图表-择股.txt

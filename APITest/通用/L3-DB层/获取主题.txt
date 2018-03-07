@@ -1,0 +1,8 @@
+*** Settings ***
+Resource          ../../资源配置/设置数据库.txt
+Library           DatabaseLibrary
+
+*** Keywords ***
+主题
+    连接数据库
+    ${concept}    Query    SELECT plate_name from plate_info group by plate_name

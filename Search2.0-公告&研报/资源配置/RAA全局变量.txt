@@ -1,0 +1,5 @@
+*** Variables ***
+${search_url}     http://www.aqlicai.cn/account/login    # Search2.0启动页URL
+${browser_name}    chrome    # 浏览器名称
+${implicit_wait_time}    5    # 智能等待时间
+${page_show_time}    3    # 页面展示时间

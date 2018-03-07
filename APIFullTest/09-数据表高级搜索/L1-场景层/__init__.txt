@@ -1,0 +1,8 @@
+*** Settings ***
+Suite Setup       NoticeAs_Directory_Setup
+Suite Teardown    NoticeAs_Directory_Teardown    ${emaildata_path}
+Test Setup
+Test Teardown
+Force Tags        DataChart
+Resource          ../L2-接口层/数据表高级搜索前后置操作.txt
+Resource          ../../资源配置/全局变量.txt

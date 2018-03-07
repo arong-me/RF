@@ -1,0 +1,42 @@
+*** Settings ***
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../L2-接口层/图表自动化前后置操作.txt
+Resource          ../L2-接口层/01主体+指标.txt
+Resource          ../../通用/L2-接口层/生成搜图测试数据.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+
+*** Test Cases ***
+01单主体
+    #生成单主体
+    生成主体
+    #生成测试组合指标
+    ${pre_resultfile}    Set Variable    chartauto01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}stockname_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+02单主体+行情指标
+    #生成单主体
+    生成主体
+    #生成测试组合指标
+    ${pre_resultfile}    Set Variable    chartauto01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}stockname-market
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+
+03单主体+财务指标
+    #生成单主体
+    生成主体
+    #生成测试组合指标
+    ${pre_resultfile}    Set Variable    chartauto01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}stockname-finance
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+
+04多主体+财务指标+行情指标
+    多主体和指标组合生成条件

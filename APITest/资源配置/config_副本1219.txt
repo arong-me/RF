@@ -1,0 +1,13 @@
+*** Settings ***
+Documentation     线上测试库配置信息
+
+*** Variables ***
+${db}             r_reportor    # 库名
+${dbuser}         test    # 数据库账号
+${dbpassword}     845cf0385974    # 数据库账户密码
+${dbhost}         120.26.41.22    # 数据库地址
+${dbport}         3306    # 数据库地址端口号
+${domainl}        www-dev.aqlicai.cn    #域名
+${username}       test3@abcft.com    #用户名
+${pwd}            1234qwer    #密码
+${apiurl}         www-dev.aqlicai.cn    # api地址

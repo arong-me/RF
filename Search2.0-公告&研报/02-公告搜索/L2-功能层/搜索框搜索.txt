@@ -1,0 +1,17 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+输入公司关键字
+    [Arguments]    ${关键词}
+    Input Text    css=#JS-stockInput    ${关键词}    #公司搜索框
+    sleep    1
+
+输入其他关键字
+    [Arguments]    ${关键词}
+    Input Text    css=#JS-searchInput    ${关键词}    #非公司搜索框
+    sleep    1
+
+点击搜索
+    Click Element    css=.search-btn
+    sleep    1

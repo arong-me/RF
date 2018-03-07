@@ -1,0 +1,80 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建normal_form一级文件夹和normal_form_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    01-Normal_Form    Normal_Form_01
+Test Teardown
+Force Tags        BVT
+Resource          ../../通用/L2-接口层/生成搜图测试数据.txt
+Resource          ../L2-接口层/01-主体+特殊表.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../L2-接口层/范式前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01单主体+特殊表
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 文件名格式为两种（详见L1场景层解释）
+    [Tags]    ygu
+    [Setup]
+    ${pre_resultfile}    Set Variable    Normal01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #校验指标
+    创建Session
+    范式1校验query    星源材质,营运能力表
+    范式1校验query    号百控股,监事会
+    范式1校验query    朗玛信息,高管
+    范式1校验query    扬子新材,现金流量表
+    范式1校验query    仟源医药,主营构成表
+    范式1校验query    朗玛信息,三大报表
+    范式1校验query    西昌电力,财务能力
+    范式1校验query    四方精创,机构持股表
+    范式1校验query    仟源医药,资本结构表
+    删除Sessions
+    [Teardown]
+
+02多主体+特殊表
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 多个主体（2-5个）+特殊表的局部测试
+    [Tags]    ygu
+    [Setup]
+    ${pre_resultfile}    Set Variable    Normal01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #校验指标
+    创建Session
+    范式1校验query    新雷能 启明星辰,十大流通股东表
+    范式1校验query    如意集团 粤水电 华建集团,资本结构表
+    范式1校验query    如意集团 粤水电 华建集团,利润表
+    范式1校验query    如意集团 粤水电 华建集团,成长能力表
+    范式1校验query    海川智能 沈阳化工 朗玛信息 新湖中宝,监事会
+    范式1校验query    海川智能 沈阳化工 朗玛信息 新湖中宝,营运能力表
+    范式1校验query    海川智能 沈阳化工 朗玛信息 新湖中宝,资产负债表
+    范式1校验query    天鹅股份 益佰制药 岱勒新材 凯马B 世纪鼎利,十大流通股东表
+    范式1校验query    天鹅股份 益佰制药 岱勒新材 凯马B 世纪鼎利,财报
+    删除Sessions
+    [Teardown]
+
+03最大边界值
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 测试最大边界值60个字符串的情况
+    [Tags]    ygu
+    [Setup]
+    [Timeout]
+    ${pre_resultfile}    Set Variable    Normal01_s3_
+    Set Global Variable    ${pre_resultfile}
+    #校验指标
+    创建Session
+    范式1校验query    中兴商业 上海电力 国发股份 五洲新春 绿茵生态 宝信软件 亿联网络 中体产业 大龙地产 天山股份 麦迪电气 景嘉微 中国铁建 好想你,主营构成表
+    范式1校验query    中兴商业 上海电力 国发股份 五洲新春 绿茵生态 宝信软件 亿联网络 中体产业 大龙地产 天山股份 麦迪电气 家家悦 中国铁建 好想你,偿债能力表
+    删除Sessions
+    [Teardown]

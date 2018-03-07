@@ -1,0 +1,28 @@
+*** Settings ***
+Resource          ../L3-DB层/获取搜索相关信息.txt
+Resource          文件处理.txt
+
+*** Keywords ***
+生成主体
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 从搜图数据库中获取公司名，生成到ChartStockName.txt保存
+    [Tags]    ygu
+    ${StocknameTuple}    获取主体
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}StockName.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    StockName.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成财务指标
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 从搜图数据库中获取财务指标名，生成到Finance.txt保存
+    [Tags]    ygu
+    ${FinanceTuple}    获取财务指标
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}finance.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    Finance.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${FinanceTuple}    ${filename}

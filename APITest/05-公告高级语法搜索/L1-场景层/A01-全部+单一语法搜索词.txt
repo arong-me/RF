@@ -1,0 +1,77 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    Notice    Notice_AGS01
+Suite Teardown
+Test Teardown
+Force Tags
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01标题必含
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.公司搜索框中测试一个公司名称
+    [Tags]    ygu
+    #生成主体
+    生成所有公告公司stockcode
+    #生成需要校验的stockcode和usedname
+    生成所有stockcode和usedname
+    生成所有stockname和stockcode
+    #生成需要测试的公司名称
+    ${pre_resultfile}    Set Variable    NoticeA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}NoticeStock
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+    [Teardown]
+
+02行业
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告分类词
+    [Tags]    ygu
+    [Setup]
+    #生成单公告分类
+    生成所有公告类型
+    #生成需要测试的公告分类
+    ${pre_resultfile}    Set Variable    NoticeA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}NoiceCategory_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+    [Teardown]
+
+03公告类型
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告行业词
+    [Tags]    ygu
+    #生成单公告行业
+    生成所有公告行业
+    #生成需要测试的行业
+    ${pre_resultfile}    Set Variable    NoticeA01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}NoticeIndustry_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+    [Teardown]

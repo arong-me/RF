@@ -1,0 +1,44 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+进入一级分类
+    [Arguments]    ${一级分类名称}    # 一级分类名称可以是：公告一级分类、证券研报一级分类、市场研报一级分类
+    Unselect Frame
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)
+    comment    Click Element    css=[filter-value=${一级公告分类}[0]]
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value=${一级分类名称}]
+    sleep    1
+
+进入二级分类
+    [Arguments]    ${一级分类}    ${二级分类}    # 二级分类必须从属于一级分类
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>li:nth-child(7)
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value=${一级分类}]
+    sleep    1
+    Click Element    css=li[filter-txt=${二级分类}]
+    sleep    1
+
+进入三级分类
+    [Arguments]    ${一级分类}    ${二级分类}    ${三级分类}    # 三级分类必须从属于二级分类，二级分类必须从属于一级分类
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>li:nth-child(7)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>ul:nth-of-type(1)>li:nth-child(6)
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value=${一级分类}]
+    sleep    1
+    Click Element    css=li[filter-txt=${二级分类}]>span
+    sleep    1
+    Click Element    css=li[filter-txt=${三级分类}]
+    sleep    1
+
+进入全部分类
+    Click Element    css=#JS-catesSelectList
+    sleep    1
+    Click Element    css=li[data-value="all"]
+    sleep    1

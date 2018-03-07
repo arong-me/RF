@@ -1,0 +1,23 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+点击收藏
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="page-table"]/div[8]/ul/li[1]/div[1]/span[1]    #点击收藏
+
+导出-查看原图
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="page-table"]/div[8]/ul/li[1]/div[1]/span[2]    #点击导出-
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="page-table"]/div[8]/ul/li[1]/div[1]/span[2]/div/ul/li[2]    #导出数据
+
+超链接跳转
+    sleep    5
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="page-table"]/div[8]/ul/li[1]/div[3]/p[2]/a    #来源跳转
+
+数据图表下定位第3条数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-searchInput"]
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-hot-searchlist"]/ul/li[3]

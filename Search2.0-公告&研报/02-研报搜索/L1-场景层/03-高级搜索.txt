@@ -1,0 +1,115 @@
+*** Settings ***
+Suite Setup       登录与退出.用户登录
+Suite Teardown    登录与退出.退出登录
+Test Setup
+Test Teardown
+Library           Selenium2Library
+Resource          ../../通用/清除搜索条件.txt
+Resource          ../../通用/高级搜索-按标题及正文匹配.txt
+Resource          ../../通用/高级搜索-按行业搜索.txt
+Resource          ../../通用/高级搜索-按分类搜索.txt
+Resource          ../../通用/高级搜索-按机构搜索.txt
+Resource          ../../通用/高级搜索-按作者搜索.txt
+Resource          ../../通用/高级搜索-按评级搜索.txt
+Resource          ../../通用/高级搜索-按页数搜索.txt
+Resource          ../../通用/高级搜索-按时间搜索.txt
+Resource          ../../通用/进入指定分类.txt
+Resource          ../../通用/高级搜索-按自定义日期搜索.txt
+Resource          ../../通用/进入指定频道.txt
+Resource          ../../通用/断言.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/登录与退出.txt
+Library           DateTime
+
+*** Test Cases ***
+标题及正文匹配
+    进入频道    研报
+    点击高级搜索
+    标题必含关键字    天然气
+    标题不含关键字    石油
+    内容必含关键字    利好
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    天然气
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(2)>span    title    石油
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(3)>span    title    利好
+    清除搜索条件.清空筛选条件
+
+按机构搜索
+    进入频道    研报
+    点击高级搜索
+    输入机构关键词    证券    浙商证券    证券研报
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    浙商证券
+    清除搜索条件.清空筛选条件
+
+按行业搜索
+    进入频道    研报
+    点击高级搜索
+    点击行业下拉框    研报
+    选择二级分类    计算机    计算机应用
+    关闭行业下拉框    研报
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    计算机应用
+    清除搜索条件.清空筛选条件
+
+按分类搜索
+    进入频道    研报
+    进入全部分类
+    点击高级搜索
+    点击分类下拉框    研报
+    选择二级分类    沪深股研究    行业研究
+    关闭分类下拉框    研报
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    行业研究
+    清除搜索条件.清空筛选条件
+
+按作者搜索
+    进入频道    研报
+    点击高级搜索
+    输入作者    刘威    研报
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    刘威
+    清除搜索条件.清空筛选条件
+
+按评级搜索
+    进入频道    研报
+    点击高级搜索
+    点击评级下拉框    研报
+    选择评级    买入
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    买入
+    清除搜索条件.清空筛选条件
+
+按页数搜索
+    进入频道    研报
+    点击高级搜索
+    点击页数下拉框    研报
+    选择页数    20页以上
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    20页以上
+    清除搜索条件.清空筛选条件
+
+按时间搜索
+    进入频道    研报
+    点击高级搜索
+    点击时间下拉框    研报
+    选择时间    近30天
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    近30天
+    清除搜索条件.清空筛选条件
+
+按自定义日期搜索
+    进入频道    研报
+    点击高级搜索
+    点击日期范围编辑框
+    选择开始时间-年    2017
+    选择开始时间-月    9
+    选择开始时间-日    1    #可能会出错，因为该月份的面板可能没展示这一日
+    ${time}    Get Current Date    result_format=datetime
+    选择结束时间-年    ${time.year}
+    选择结束时间-月    ${time.month}
+    选择结束时间-日    1    #可能会出错，因为该月份的面板可能没展示这一日
+    点击确定
+    sleep    ${page_show_time}
+    assert_by_ele_attr    css=.filter-taglist>li:nth-child(1)>span    title    2017-09-01
+    清除搜索条件.清空筛选条件

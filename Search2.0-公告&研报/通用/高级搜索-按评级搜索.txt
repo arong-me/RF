@@ -1,0 +1,24 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Variables ***
+${kind}           ${EMPTY}
+
+*** Keywords ***
+获取评级类型
+    [Arguments]    ${公告研报类型}    # 公告研报类型只能输入：证券研报、市场研报
+    ${kind}    Run Keyword If    '${公告研报类型}'=='证券研报'    Set Variable    ${8}
+    ...    ELSE IF    '${公告研报类型}'=='市场研报'    Set Variable    ${8}
+    ...    ELSE    log    类型不存在
+    [Return]    ${kind}
+
+点击评级下拉框
+    [Arguments]    ${研报类型}    # 公告研报类型必须是：证券研报、市场研报
+    ${kind}    获取评级类型    ${研报类型}
+    Click Element    css=#JS-advanceSearch>div:nth-child(${kind})
+    sleep    1
+
+选择评级
+    [Arguments]    ${评级名称}
+    Click Element    css=#JSselect-rating>div>ul>li[data-value=${评级名称}]
+    sleep    1

@@ -1,0 +1,5 @@
+*** Settings ***
+Documentation     【作者】qinghuaguan
+...
+...               【说明】
+...               1. 数据表功能层主要是为case分层调用

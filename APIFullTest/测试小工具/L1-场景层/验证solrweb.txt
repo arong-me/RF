@@ -1,0 +1,25 @@
+*** Settings ***
+Suite Setup       Suite_Setup    TestTools    Solr_01
+Resource          ../L2-接口层/文件拆分保存数据.txt
+Resource          ../L2-接口层/校验接口core_chart.txt
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+
+*** Test Cases ***
+比对接口core_chart
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.验证索引表financial_indicator_data_new每个data_id对应的indicator_value、indicator_value_tb、indicator_value_hb的数据是否和solrweb接口http://101.37.118.69:8080/solrweb/#/core_chart/query返回的数据一致
+    [Tags]    ygu
+    #定义场景文件名前缀
+    ${pre_resultfile}    Set Variable    solrweb_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}dataid
+    #定义上次运行通过文件名
+    ${last_success_file}    Set Variable    %{G_DATACENTER}${/}ReservedResults${/}${pre_resultfile}success.txt
+    Set Suite Variable    ${last_success_file}
+    #生成测试文件data_id
+    生成data_id测试文件    ${file}
+    #校验指标
+    循环读文件获取指标进行校验    ${datasource_path}    ${file}

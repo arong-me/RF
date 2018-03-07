@@ -1,0 +1,28 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          ../L3-DB层/获取单个query.txt
+Resource          文件处理.txt
+
+*** Keywords ***
+生成主体
+    ${StocknameTuple}    主体
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}stockname.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    stockname.txt file has existed    ELSE    将列表内容写入txt文件中    ${StocknameTuple}
+    ...    ${filename}
+
+将列表内容写入txt文件中
+    [Arguments]    ${Tuple}    ${filename}
+    ${length}    Get Length    ${Tuple}
+    @{list}    create list
+    : FOR    ${i}    IN RANGE    ${length}
+    \    ${Decode}    Evaluate    '${Tuple[${i}][0]}'.decode('utf-8')
+    \    Append To File    ${filename}    ${Decode}\n
+
+生成财务指标
+    ${FinanceTuple}    财务指标
+    Comment    log    ${FinanceTuple}
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}finance.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    finance.txt has \ existed    ELSE    将列表内容写入txt文件中    ${FinanceTuple}
+    ...    ${filename}

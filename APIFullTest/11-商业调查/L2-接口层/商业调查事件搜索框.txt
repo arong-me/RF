@@ -1,0 +1,66 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Library           String
+Library           OperatingSystem
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/接口结果基础校验.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/通用.txt
+Resource          ../../资源配置/config.txt
+Resource          ../../通用/L2-接口层/接口校验通用.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+
+*** Keywords ***
+循环读文件获取指标进行校验
+    [Arguments]    ${check_field_list}    ${datasource_path}    ${file}
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    ${scene}    Set Variable    1
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    循环读指标校验query    ${querylist}    ${check_field_list}
+
+循环读指标校验query
+    [Arguments]    ${querylist}    ${check_field_list}
+    创建Session
+    : FOR    ${query}    IN    @{querylist}
+    \    商业调查校验query    ${query}    ${check_field_list}
+    删除Sessions
+
+商业调查校验query
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${passed}    ${responseobj}     商业调查query语句post请求    ${multi_query}    ${check_field_list}
+    Run Keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    ...    ELSE    商业调查校验query返回Response结果    ${responseobj}    ${multi_query}    ${check_field_list}
+
+商业调查query语句post请求
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${post_data}    Create Dictionary    keyword=${multi_query}    tab_type=ai-surveys
+    #Post请求data格式
+    ${passed}    ${responseobj}    query语句请求    ${post_data}    /ajax/ai-stocks/search
+    [Return]    ${passed}    ${responseobj}
+
+商业调查校验query返回Response结果
+    [Arguments]    ${responseobj}    ${query}    ${check_field_list}    #返回reponse对象|搜索词
+    ${continue_flag}    ${data}    Response基础校验    ${responseobj}    ${query}
+    Run keyword If    ${continue_flag}==1    商业调查校验最外部数据    ${data}    ${query}    ${check_field_list}
+
+商业调查校验最外部数据
+    [Arguments]    ${data}    ${query}    ${check_field_list}
+    ${continue_flag}    ${graph}    校验非str类型字段存在且数据不为空    graph    ${data}    ${query}
+    Run keyword If    ${continue_flag}==1    商业调查校验内部的graph数据    ${graph}    ${query}    ${check_field_list}
+
+商业调查校验内部的graph数据
+    [Arguments]    ${data}    ${query}    ${check_field_list}
+    ${continue_flag}    ${item}    校验非str类型字段存在且数据不为空    item    ${data}    ${query}
+    Run keyword If    ${continue_flag}==1    校验商业调查中的items对应的每个字段    ${item}    ${query}    ${check_field_list}
+
+校验商业调查中的items对应的每个字段
+    [Arguments]    ${item}    ${query}    ${check_field_list}
+    ${continue_flag}    Set Variable    1
+    : FOR    ${t}    IN    @{item}
+    \    ${continue_flag}    校验字典内每个字段value不为空    ${t}    ${query}
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${query}\n
+    [Return]    ${continue_flag}

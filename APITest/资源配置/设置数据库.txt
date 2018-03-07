@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          config.txt
+Library           pymysql
+Library           DatabaseLibrary
+
+*** Keywords ***
+连接数据库
+    [Documentation]    【说明】 连接到数据库
+    Connect To Database    pymysql    ${db}    ${dbuser}    ${dbpassword}    ${dbhost}    ${dbport}
+    Comment    Connect To Database Using Custom Params    pymysql    database=${db},user=${dbuser},password=${dbpassword},host=${dbhost},port=3306,charset='utf8'
+    Comment    Connect To Database Using Custom Params    pyodbc    "Driver={MySQL ODBC 5.3 Unicode Driver};Server=${dbhost};Port=${dbport};Database=${db};User=${dbuser};PWD=${dbpassword}"

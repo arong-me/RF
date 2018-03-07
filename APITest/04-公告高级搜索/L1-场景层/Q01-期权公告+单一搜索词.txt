@@ -1,0 +1,69 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    04-NoticeAdvancedSearch    NoticeAS_Q01    期权公告
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/左选框+筛选框校验.txt
+Resource          ../L2-接口层/公告高级搜索前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01标题必含
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    NoticeASQ01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}NoticeTitle_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    公告筛选框校验query    平安    ${check_field_list}
+    公告筛选框校验query    分红    ${check_field_list}
+    公告筛选框校验query    公告    ${check_field_list}
+    公告筛选框校验query    复牌    ${check_field_list}
+    公告筛选框校验query    单位    ${check_field_list}
+    公告筛选框校验query    交易    ${check_field_list}
+    公告筛选框校验query    上海证券交易所    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    NoticeASQ01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    公告筛选框校验query    激励计划    ${check_field_list}
+    公告筛选框校验query    雄安新区    ${check_field_list}
+    公告筛选框校验query    收购    ${check_field_list}
+    公告筛选框校验query    瓦楞原纸    ${check_field_list}
+    公告筛选框校验query    东凌粮油    ${check_field_list}
+    公告筛选框校验query    变更    ${check_field_list}
+    公告筛选框校验query    共享单车    ${check_field_list}
+    公告筛选框校验query    公告书    ${check_field_list}
+    公告筛选框校验query    财务资助    ${check_field_list}
+    公告筛选框校验query    物联网    ${check_field_list}
+    删除Sessions
+
+03时间
+    ${pre_resultfile}    Set Variable    NoticeASQ01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    公告筛选框校验query    last_month    ${check_field_list}
+    公告筛选框校验query    last_6month    ${check_field_list}
+    公告筛选框校验query    not_limit    ${check_field_list}
+    公告筛选框校验query    last_year    ${check_field_list}
+    公告筛选框校验query    last_3month    ${check_field_list}
+    删除Sessions

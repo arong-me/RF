@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/生成单个指标.txt
+Resource          ../../通用/L2-接口层/主题-生成主题.txt
+
+*** Test Cases ***
+更新主体
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}stockname.txt
+    生成主体
+
+更新财务指标
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}finance.txt
+    生成财务指标
+
+更新主题
+    remove file    %{G_DATACENTER}${/}Concept${/}concept.txt
+    生成主题

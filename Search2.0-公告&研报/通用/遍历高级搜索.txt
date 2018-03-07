@@ -1,0 +1,14 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../资源配置/全局变量.txt
+
+*** Keywords ***
+高级搜索-遍历分类
+
+高级搜索-遍历行业
+
+高级搜索-遍历时间
+
+高级搜索-遍历评级
+
+高级搜索-遍历页数

@@ -1,0 +1,36 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Resource          通用.txt
+Resource          ../L3-DB层/获取指定名称对应的单个结果.txt
+
+*** Keywords ***
+读取特殊表期望结果
+    [Arguments]    ${tablename}    #特殊表名
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 读取特殊表quey返回接口中期望校验的列表
+    [Tags]    ygu
+    @{tablelist}    get_specialtable_list    %{G_DATACENTER}${/}Excel${/}specialtable.xlsx    ${tablename}
+    [Return]    @{tablelist}    #返回期望校验的特殊表列表
+
+读取stockcode对应的stockname
+    [Arguments]    ${stockcode}
+    ${stockname}    get_specialtable_str    %{G_DATACENTER}${/}Excel${/}stockcode.xlsx    ${stockcode}
+    #如果获取stockcode为空则查询数据库
+    ${is_null}    判断对象为空    ${stockname}
+    ${stockname}    Run Keyword If    ${is_null}    Set Variable    ${EMPTY}
+    ...    ELSE    Set Variable    ${stockname}
+    [Return]    ${stockname}
+
+读取stockcode对应的usedname
+    [Arguments]    ${stockname}
+    ${list}    Create List
+    ${passed}    ${usedname}    Run Keyword And Ignore Error    get_specialtable_str    %{G_DATACENTER}${/}Excel${/}usedname.xlsx    ${stockname}
+    ${is_null}    Run Keyword If    '${passed}'=='PASS'    判断对象为空    ${usedname}
+    ...    ELSE    set variable    ${False}
+    #将名称统一转换成大写
+    ${usedname_upper}    Run Keyword If    not ${is_null}    Convert To Uppercase    ${usedname}
+    ${UsedNameList}    Run Keyword If    ${is_null}    set Variable    ${list}
+    ...    ELSE    Split String    ${usedname_upper}    ->
+    [Return]    ${UsedNameList}

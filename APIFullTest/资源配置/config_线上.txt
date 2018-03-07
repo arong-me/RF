@@ -1,0 +1,15 @@
+*** Settings ***
+Documentation     线上测试环境配置信息
+
+*** Variables ***
+${url}            http://www-dev.analyst.ai    #域名
+${username}       test10@abcft.com    #用户名
+${pwd}            u/XMW/Ym4Zi0fwGuFqOHtzRpphz3QBt7eUs5eL3QlrrmyKzaCFEWZ816Z6zDAMGaFZ94GzdA05TFhUReaCrLLw==    #密码
+${apiurl_draw}    /ajax/ai-draw-chart/search    #智绘图表api地址
+${apiurl_stock}    /ajax/ai-stocks/search    #条件择股
+${apiurl_notice}    /ajax/notice/reading    # 公告api
+${apiurl_report}    /ajax/reportv2/search2    #研报api
+${server_username}    testeam.abcft    #公告邮箱用户名
+${server_pwd}     Test@123    #公共邮箱密码
+${msg_from}       testeam@abcft.com    #公告邮箱
+${msg_to}         ygu@abcft.com    #发送邮箱使用分号相隔ygu@abcft.com(ABC-Wuhan-Test-Team@niub.la)

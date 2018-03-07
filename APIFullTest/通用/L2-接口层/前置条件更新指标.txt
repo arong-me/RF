@@ -1,0 +1,116 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          生成公告研报测试数据.txt
+Resource          生成搜图测试数据.txt
+Resource          生成Excel表文件.txt
+
+*** Keywords ***
+更新主体
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}StockName.txt
+    生成主体
+
+更新公告所有主体code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoticeStock.txt
+    生成所有公告公司stockcode
+
+更新公司usedname表的Excel表
+    remove file    %{G_DATACENTER}${/}Excel${/}usedname.xlsx
+    生成所有stockcode和usedname
+
+更新公司stockcode的Excel表
+    remove file    %{G_DATACENTER}${/}Excel${/}stockcode.xlsx
+    生成所有stockname和stockcode
+
+更新港股code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}HKStock.txt
+    生成港股公司stockcode
+
+更新沪深股code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}HZStock.txt
+    生成沪深股公司stockcode
+
+更新沪深股名称
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}HZStockName.txt
+    生成沪深股公司名
+
+更新基金公司code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}FundStock.txt
+    生成基金公司stockcode
+
+更新美股code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}USStock.txt
+    生成美股公司stockcode
+
+更新股转系统code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ShareTransferStock.txt
+    生成股转系统stockcode
+
+更新债券公司code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}BondStock.txt
+    生成债券公司stockcode
+
+更新所有公告类型
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoiceCategory.txt
+    生成所有公告类型
+
+更新所有公告类型id
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoticeCategoryId.txt
+    生成公告类型id
+
+更新页面所有研报类型
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ReportCategory.txt
+    生成页面所有研报类型
+
+更新页面所有研报类型id
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ReportCategoryId.txt
+    生成页面所有研报类型id
+
+更新所有公告行业
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoticeIndustry.txt
+    生成所有公告行业
+
+更新研报搜索框测试行业
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ReportIndustry.txt
+    生成研报搜索框测试行业
+
+更新研报评级
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ReportRating.txt
+    生成研报评级
+
+更新研报机构
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}Institution.txt
+    生成研报机构
+
+更新财务指标
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}finance.txt
+    生成财务指标
+
+更新所有的测试数据
+    #更新数据相关测试主体
+    更新主体
+    #更新公告和研报测试所有主体stockcode
+    更新公告所有主体code
+    更新港股code
+    更新沪深股code
+    更新沪深股名称
+    更新基金公司code
+    更新美股code
+    更新股转系统code
+    更新债券公司code
+    #更新公告和研报测试所有主体stockcode和usedname|stockname对应的excel表
+    更新公司usedname表的Excel表
+    更新公司stockcode的Excel表
+    #更新公告类型
+    更新所有公告类型
+    更新所有公告类型id
+    #更新公告行业
+    更新所有公告行业
+    #更新研报类型
+    更新页面所有研报类型
+    更新页面所有研报类型id
+    #更新研报行业
+    更新研报搜索框测试行业
+    #更新研报评级
+    更新研报评级
+    #更新研报机构
+    更新研报机构

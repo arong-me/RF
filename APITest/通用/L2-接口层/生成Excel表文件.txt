@@ -1,0 +1,35 @@
+*** Settings ***
+Library           Collections
+Library           AqlicaiLibrary
+Resource          文件处理.txt
+Resource          ../L3-DB层/01获取主体相关信息.txt
+
+*** Keywords ***
+生成所有stockcode和usedname
+    ${MainbodyTuple}    获取所有stockcode和usedname
+    ${filename}    Set Variable    %{G_DATACENTER}${/}Excel${/}usedname.xlsx
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    usedname.xlsx file has existed
+    ${dict}    Run Keyword IF    not ${existFile}    将数据库返回的两列结果生成字典    ${MainbodyTuple}
+    Run Keyword IF    not ${existFile}    Run Keyword And Continue On Failure    write excel    ${filename}    ${dict}
+
+生成所有stockname和stockcode
+    [Documentation]    存放stockcode与stockname对应关系的表
+    ${MainbodyTuple}    获取所有stockname和stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}Excel${/}stockcode.xlsx
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    stockcode.xlsx \ file has existed
+    ${dict}    Run Keyword IF    not ${existFile}    将数据库返回的两列结果生成字典    ${MainbodyTuple}
+    Run Keyword IF    not ${existFile}    Run Keyword And Continue On Failure    write excel    ${filename}    ${dict}
+
+将数据库返回的两列结果生成字典
+    [Arguments]    ${Tuple}
+    ${value_list}    Create List
+    ${expectvalue_list}    Create List
+    : FOR    ${tu}    IN    @{Tuple}
+    \    ${value}    Evaluate    "${tu[0]}".decode('utf-8')
+    \    ${expectvalue}    Evaluate    "${tu[1]}".decode('utf-8')
+    \    Append To List    ${value_list}    ${value}
+    \    Append To List    ${expectvalue_list}    ${expectvalue}
+    ${dict}    Create Dictionary    value=${value_list}    expectvalue=${expectvalue_list}
+    [Return]    ${dict}

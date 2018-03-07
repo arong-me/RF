@@ -1,0 +1,177 @@
+*** Settings ***
+Resource          ../L3-DB层/获取搜索相关信息.txt
+Resource          文件处理.txt
+Resource          ../L3-DB层/02获取公告研报相关信息.txt
+
+*** Keywords ***
+生成所有公告公司stockcode
+    [Documentation]    所有公告公司代码文件名称NoticeStock.txt
+    [Tags]    ygu
+    ${StocknameTuple}    获取所有公告公司stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}NoticeStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    NoticeStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成美股公司stockcode
+    [Documentation]    美股公司代码文件名称USStock.txt
+    ${StocknameTuple}    获取美股公司stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}USStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    USStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成港股公司stockcode
+    [Documentation]    港股公司代码文件名称HKStock.txt
+    ${StocknameTuple}    获取港股公司stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}HKStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    HKStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成沪深股公司stockcode
+    [Documentation]    沪深股公司代码文件名称HZStock.txt(SH和SZ的结合)
+    ${StocknameTuple}    获取沪深股公司stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}HZStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    HZStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成沪深股公司名
+    [Documentation]    沪深股公司文件名称HZStockName.txt(SH和SZ的结合)
+    ${StocknameTuple}    获取沪深股公司名
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}HZStockName.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    HZStockName.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成基金公司stockcode
+    [Documentation]    基金公司代码文件名称FundStock.txt
+    ${StocknameTuple}    获取基金公司stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}FundStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    FundStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成债券公司stockcode
+    [Documentation]    BondStock.txt
+    [Tags]    ygu
+    ${StocknameTuple}    获取债券公司stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}BondStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    BondStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成股转系统stockcode
+    [Documentation]    股转系统公司ShareTransferStock.txt
+    ${StocknameTuple}    获取股转系统stockcode
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ShareTransferStock.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ShareTransferStock.txt file has existed
+    ...    ELSE    将列表内容写入txt文件中    ${StocknameTuple}    ${filename}
+
+生成所有公告类型
+    ${CategoryTuple}    获取公告分类
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}NoiceCategory.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    NoiceCategory.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryTuple}    ${filename}
+
+生成公告类型id
+    [Documentation]    NoticeCategoryId.txt
+    ${CategoryIdTuple}    获取公告分类id
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}NoticeCategoryId.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    NoticeCategoryId.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryIdTuple}    ${filename}
+
+生成二三级公告类型
+    [Arguments]    ${first_category}
+    [Documentation]    公告二三级类型文件名称NoticeCategory23.txt
+    #删除原始存在的文件
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoiceCategory23.txt
+    ${CategoryTuple}    获取一级类型下的二三级公告类型    ${first_category}
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}NoticeCategory23.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    NoticeCategory23.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryTuple}    ${filename}
+
+生成二三级公告类型id
+    [Arguments]    ${first_category}
+    [Documentation]    NoticeCategoryId23.txt
+    #删除原始存在的文件
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoticeCategoryId23.txt
+    ${IndustryTuple}    获取一级类型下的二三级公告类型id    ${first_category}
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}NoticeCategoryId23.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    NoticeCategoryId23.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${IndustryTuple}    ${filename}
+
+生成页面所有研报类型
+    [Documentation]    研报类型文件名称ReportCategory.txt
+    ${CategoryTuple}    获取页面所有研报类型
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ReportCategory.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ReportCategory.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryTuple}    ${filename}
+
+生成页面所有研报类型id
+    [Documentation]    研报类型id文件名称为ReportCategoryId.txt
+    ${CategoryIdTuple}    获取页面所有研报类型id
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ReportCategoryId.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ReportCategoryId.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryIdTuple}    ${filename}
+
+生成二三级研报类型
+    [Arguments]    ${first_category}
+    [Documentation]    研报二三级类型文件名称ReportCategory23.txt
+    #删除原始存在的文件
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ReportCategory23.txt
+    ${CategoryTuple}    获取一级类型下的二三级研报类型    ${first_category}
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ReportCategory23.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ReportCategory23.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryTuple}    ${filename}
+
+生成二三级研报类型id
+    [Arguments]    ${first_category}
+    [Documentation]    ReportCategoryId23.txt
+    #删除原始存在的文件
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}ReportCategoryId23.txt
+    ${IndustryTuple}    获取一级类型下的二三级研报类型id    ${first_category}
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ReportCategoryId23.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ReportCategoryId23.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${IndustryTuple}    ${filename}
+
+生成所有公告行业
+    [Documentation]    NoticeIndustry.txt
+    ${IndustryTuple}    获取公告行业
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}NoticeIndustry.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    NoticeIndustry.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${IndustryTuple}    ${filename}
+
+生成研报搜索框测试行业
+    ${IndustryTuple}    获取研报搜索框测试行业
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ReportIndustry.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ReportIndustry.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${IndustryTuple}    ${filename}
+
+生成研报评级
+    [Documentation]    研报评级文件名称ReportRating.txt
+    ${CategoryTuple}    获取研报评级
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}ReportRating.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    ReportRating.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${CategoryTuple}    ${filename}
+
+生成研报机构
+    [Documentation]    研报机构文件名称institution.txt
+    ${InstitutionTuple}    获取研报机构
+    ${filename}    Set Variable    %{G_DATACENTER}${/}SingleQuery${/}Institution.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    Institution.txt has \ existed
+    ...    ELSE    将列表内容写入txt文件中    ${InstitutionTuple}    ${filename}

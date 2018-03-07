@@ -1,0 +1,8 @@
+*** Settings ***
+Suite Setup       ReportAS_Directory_Setup
+Suite Teardown
+Test Setup
+Test Teardown
+Force Tags        ReportAS
+Resource          ../L2-接口层/研报高级搜索前后置操作.txt
+Resource          ../../资源配置/全局变量.txt

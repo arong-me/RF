@@ -1,0 +1,34 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          生成公告研报测试数据.txt
+Resource          生成搜图测试数据.txt
+Resource          生成Excel表文件.txt
+
+*** Keywords ***
+更新主体
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}StockName.txt
+    生成主体
+
+更新所有公告类型
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoiceCategory.txt
+    生成所有公告类型
+
+更新财务指标
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}finance.txt
+    生成财务指标
+
+更新所有公告行业
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoticeIndustry.txt
+    生成所有公告行业
+
+更新公告所有主体code
+    remove file    %{G_DATACENTER}${/}SingleQuery${/}NoticeStock.txt
+    生成所有公告公司stockcode
+
+更新公司usedname表的Excel表
+    remove file    %{G_DATACENTER}${/}Excel${/}usedname.xlsx
+    生成所有stockcode和usedname
+
+更新公司stockcode的Excel表
+    remove file    %{G_DATACENTER}${/}Excel${/}stockcode.xlsx
+    生成所有stockname和stockcode

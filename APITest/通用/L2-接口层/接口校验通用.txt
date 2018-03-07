@@ -1,0 +1,92 @@
+*** Settings ***
+Resource          通用.txt
+Library           OperatingSystem
+Library           AqlicaiLibrary
+
+*** Keywords ***
+校验非str类型字段存在且数据不为空
+    [Arguments]    ${field}    ${data}    ${query}
+    #判断字段类型存在
+    ${passed}    ${data1}    获取字典value    ${data}    ${field}
+    Run keyword If    '${passed}'!='PASS' and '${field}'=='items'    append_to_file    ${results_path}${/}${pre_resultfile}${field}_noexist.txt    ${query}:return data is ${data}\n
+    ...    ELSE IF    '${passed}'!='PASS' and '${field}'!='items'    append_to_file    ${results_path}${/}${pre_resultfile}${field}_noexist.txt    ${query}\n
+    #判断数据不为空
+    ${isnull}    Run keyword If    '${passed}'=='PASS'    判断对象为空    ${data1}
+    ...    ELSE    set variable    True
+    Run keyword If    '${passed}'=='PASS' and ${isnull}==True    append_to_file    ${results_path}${/}${pre_resultfile}${field}_nodata.txt    ${query}\n
+    ${continue_flag}    Run keyword If    '${passed}'=='PASS' and ${isnull}!=True    set variable    1
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}    ${data1}
+
+校验str类型字段存在且数据不为空
+    [Arguments]    ${field}    ${data}    ${query}
+    #判断字段类型存在
+    ${passed}    ${keyword}    获取字典value    ${data}    ${field}
+    Run keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}${field}_noexist.txt    ${query}\n
+    #判断数据不为空
+    Run keyword If    '${passed}'=='PASS' and ("${keyword}"=="" or "${keyword}"=="${None}")    append_to_file    ${results_path}${/}${pre_resultfile}${field}_nodata.txt    ${query}\n
+    ${continue_flag}    Run keyword If    '${passed}'!='PASS' or "${keyword}"=="" or "${keyword}"=="${None}"    set variable    -1
+    ...    ELSE    set variable    1
+    [Return]    ${continue_flag}    ${keyword}
+
+校验转义字符字段存在且数据不为空
+    [Arguments]    ${field}    ${data}    ${query}
+    #判断字段类型存在
+    ${passed}    ${keyword}    获取字典value    ${data}    ${field}
+    Run keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}${field}_noexist.txt    ${query}\n
+    #判断数据不为空
+    ${isnull}    Run keyword If    '${passed}'=='PASS'    is_null    r"${keyword}"
+    ...    ELSE    set variable    True
+    Run keyword If    '${passed}'=='PASS' and ${isnull}==True    append_to_file    ${results_path}${/}${pre_resultfile}${field}_nodata.txt    ${query}\n
+    ${continue_flag}    Run keyword If    '${passed}'=='PASS' and ${isnull}!=True    set variable    1
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}    ${keyword}
+
+校验items或者data下的每列数据
+    [Arguments]    ${field}    ${query}    ${expect_list}    ${items}
+    ${field_num}    Set Variable    0
+    ${field_name_list_length}    Get Length    ${expect_list}
+    ${success_flag}    Set Variable    1
+    ${len}    Get Length    ${items}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    ${continue_flag}    ${fieldname}    校验str类型字段存在且数据不为空    ${field}    ${items[${i}]}    ${query}
+    \    ${fieldname}    Run keyword If    ${continue_flag}==1    Replace String    ${fieldname}    ${SPACE}
+    \    ...    ${EMPTY}
+    \    ...    ELSE    Set variable    ${fieldname}
+    \    ${ifExist}    Run keyword If    '${fieldname}' in ${expect_list} and ${continue_flag}==1    Set variable    True
+    \    ...    ELSE    Set variable    False
+    \    ${add1}    Evaluate    ${field_num}+1
+    \    ${field_num}    Run keyword If    ${ifExist}==True    Set variable    ${add1}
+    \    ...    ELSE    Set variable    ${field_num}
+    \    ${success_flag}    Run keyword If    ${ifExist}!=True    Set variable    -1
+    \    ...    ELSE    Set variable    ${success_flag}
+    \    Run keyword If    ${ifExist}!=True    append_to_file    ${results_path}${/}${pre_resultfile}${field}_mismatch.txt    ${query}:return index ${i} mismatch ${field} is ${fieldname}\n
+    \    Exit For Loop If    ${ifExist}!=True
+    Run Keyword If    ${success_flag}==1 and ${field_name_list_length}!=${field_num}    append_to_file    ${results_path}${/}${pre_resultfile}${field}_length_mismatch.txt    ${query}\n
+    ${success_flag}    Run keyword If    ${success_flag}==1 and ${field_name_list_length}!=${field_num}    Set variable    -1
+    ...    ELSE    Set variable    ${success_flag}
+    [Return]    ${success_flag}
+
+获取items数据
+    [Arguments]    ${data}    ${query}
+    ${continue_flag}    ${items}    校验非str类型字段存在且数据不为空    items    ${data}    ${query}
+    [Return]    ${continue_flag}    ${items}
+
+获取parsed数据
+    [Arguments]    ${data}    ${query}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 获取公告parsed字短对应的数据
+    ...    2、如果结果为空返回${continue_flag}为-1
+    ${continue_flag}    ${parsed}    校验非str类型字段存在且数据不为空    parsed    ${data}    ${query}
+    [Return]    ${continue_flag}    ${parsed}    #是否继续运行标识|parsed数据
+
+校验字典内每个字段value不为空
+    [Arguments]    ${data}    ${query}
+    ${keys}    Get Dictionary Keys    ${data}
+    ${continue_flag}    Set Variable    1
+    : FOR    ${key}    IN    @{keys}
+    \    ${continue_flag}    ${value}    校验非str类型字段存在且数据不为空    ${key}    ${data}    ${query}
+    \    Exit For Loop If    ${continue_flag}!=1
+    [Return]    ${continue_flag}

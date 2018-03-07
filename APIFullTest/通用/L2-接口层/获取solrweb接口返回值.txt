@@ -1,0 +1,21 @@
+*** Settings ***
+Library           RequestsLibrary
+
+*** Keywords ***
+获取索引表data_id期望值
+    [Arguments]    ${id}
+    ${dict}    Create Dictionary    content-type=application/x-www-form-urlencoded
+    Create Session    api    http://101.37.118.69:8080    ${dict}
+    ${data}    Create Dictionary    indent=true    q=id:${id}    wt=json
+    ${payload}    Evaluate    urllib.urlencode(${data})    urllib
+    ${passed}    ${addr}    run_keyword_and_ignore_error    Get Request    api    /solrweb/core_chart/select    params=${payload}
+    log    ${addr.content}
+    #解析返回response值
+    ${response_jsondata}    Run Keyword And Continue On Failure    To Json    ${addr.content}
+    ${response}    Run Keyword And Continue On Failure    Get From Dictionary    ${response_jsondata}    response
+    ${docs}    Run Keyword And Continue On Failure    Get From Dictionary    ${response}    docs
+    ${passed}    ${doc_dict}    Run Keyword And Ignore Error    set variable    ${docs[0]}
+    ${continue_flag}    ${doc_dict}    Run Keyword If    '${passed}'!='PASS'    set variable    -1    ${None}
+    ...    ELSE    set variable    1    ${doc_dict}
+    Delete All Sessions
+    [Return]    ${continue_flag}    ${doc_dict}

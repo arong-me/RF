@@ -1,0 +1,35 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+翻页-下一页
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[2]/span[6]    #翻页-下一页
+
+翻页-尾页
+    #    sleep    3
+    #    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[6]/div[4]/div[3]/div[2]/span[8]    #翻页-尾页
+
+翻页- 1 2 3页
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[2]/span[3]    #翻页-1
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[2]/span[4]    #翻页2
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[2]/span[5]    #翻页3
+
+翻页-上一页
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[2]/span[2]    #选择上一页
+
+翻页-首页
+    #    sleep    3
+    #    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[6]/div[4]/div[3]/div[2]/span[1]    #选择首页
+
+翻页-选择每页条数
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[3]/select    #选择
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[3]/select/option[1]    #选择10页
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[3]/div[3]/select/option[3]    #选择50页

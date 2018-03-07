@@ -1,0 +1,5 @@
+*** Settings ***
+Suite Setup       Setup_Testbed_Variable
+Resource          资源配置/Setup.txt
+
+*** Keywords ***

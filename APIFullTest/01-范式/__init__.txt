@@ -1,0 +1,4 @@
+*** Settings ***
+Documentation     【说明】
+...               条件择股范式
+Suite Setup

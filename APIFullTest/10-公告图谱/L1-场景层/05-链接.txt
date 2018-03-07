@@ -1,0 +1,35 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup，在在DataSource/TotalSource/NoticeChart和DataSource/TotalResuls/NoticeChart 文件下创建二级目录NoticeChart_05
+...
+...               2、设置全局变量测试数据源路径${datasource_path}、邮件发送文件路径${emaldata_path}以及设置登录头
+Force Tags        BVT_Full
+Resource          ../L2-接口层/校验公告图谱链接.txt
+Library           String
+
+*** Test Cases ***
+01查看原文
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.测试查看原文中涉及到的链接
+    #http://114.55.38.153:11000/notice/notice/index?notice_id=544615&subject_id=1-10086687&event_id=51984&bysubject_id=1-10086689
+    校验pdf链接1接口
+    #http://114.55.38.153:11000/pdf/web/viewer.html?file=http://abc-crawler.oss-cn-hangzhou.aliyuncs.com/bb2d5a10a14ad15f05fbc8e43001309f.PDF
+    校验pdf链接2接口
+    #http://abc-crawler.oss-cn-hangzhou.aliyuncs.com/bb2d5a10a14ad15f05fbc8e43001309f.PDF
+    校验pdf链接3接口
+
+02知识图谱
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.测试点击知识图谱中涉及到的链接
+    #Get请求获取notice_id:http://114.55.38.153:11000/graph/graph/index?article_id=85871
+    校验知识图谱链接1接口
+    #notice-event-names
+    校验知识图谱链接2接口
+    #get-graph
+    校验知识图谱链接3接口

@@ -1,0 +1,20 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+进入登录页
+    Click Element    css=.startnow
+
+输入用户名
+    [Arguments]    ${username}
+    Input Text    css=#email    ${username}
+
+输入密码
+    [Arguments]    ${password}
+    Input Password    css=#password    ${password}
+
+点击登录
+    Click Button    css=.btn-login
+
+切换到邮箱登录
+    Click Element    css=body > div.wrap > div > div.switch_bar > div:nth-child(2)

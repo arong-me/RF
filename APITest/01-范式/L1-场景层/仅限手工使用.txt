@@ -1,0 +1,6 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/前置条件更新指标.txt
+
+*** Test Cases ***
+更新主体
+    更新主体

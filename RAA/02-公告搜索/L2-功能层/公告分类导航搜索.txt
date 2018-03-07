@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+进入公告一级分类
+    [Arguments]    ${一级公告分类}
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)
+    Click Element    css=[filter-value=${一级公告分类}[0]]
+
+进入公告二级分类
+    [Arguments]    ${一级公告分类}    ${二级公告分类}
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>li:nth-child(7)
+    Click Element    css=[filter-value=${一级公告分类}]>span
+    sleep    1
+    Click Element    css=[filter-value=${二级公告分类}]
+
+进入公告三级分类
+    [Arguments]    ${一级公告分类}    ${二级公告分类}    ${三级公告分类}
+    Comment    Click Element    css=.report-box.scrollable>li:nth-child(2)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>li:nth-child(7)>span
+    Comment    Click Element    css=.report-box.scrollable>ul:nth-of-type(1)>ul:nth-of-type(1)>li:nth-child(6)
+    Click Element    css=[filter-value=${一级公告分类}]>span
+    sleep    1
+    Click Element    css=[filter-value=${二级公告分类}]>span
+    sleep    1
+    Click Element    css=[filter-value=${三级公告分类}]

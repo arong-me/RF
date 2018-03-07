@@ -1,0 +1,99 @@
+*** Settings ***
+Suite Setup       Suite_Setup    Notice    Notice_A03
+Force Tags        BVT_Full
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01公司名称+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.公司搜索框中测试1个公司名称+搜索框中搜索1-2个关键词
+    [Tags]    ygu
+    #生成主体
+    生成所有公告公司stockcode
+    #生成需要校验的stockcode和usedname
+    生成所有stockcode和usedname
+    生成所有stockname和stockcode
+    #生成需要测试的公司名称+关键词
+    ${pre}    Set Variable    NoticeA03_s1_
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname    keyword
+    #校验指标
+    : FOR    ${i}    IN RANGE    1    3
+    \    ${filename}    Evaluate    '${pre}NoticeStock_x1-NoticeKeyword_x{0}'.format(str(${i}))
+    \    log    ${filename}
+    \    搜图生成组合指标    ${datasource_path}    ${filename}.txt    ${CombMax_N}
+    \    ${pre_resultfile}    set variable    ${pre}m${i}_
+    \    Set Suite Variable    ${pre_resultfile}
+    \    #校验指标
+    \    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${filename}
+
+02公司名称+公司名称
+    [Documentation]    【场景说明】
+    ...    1、两个公司名称场景为左边输入框中传入一个公司名称，右边输入框传入一个公司名称。
+    ...    2、校验的时候右边输入的公司名称会作为关键字来校验
+    [Tags]    ygu
+    #生成主体
+    生成所有公告公司stockcode
+    生成沪深股公司名
+    #生成需要校验的stockcode和usedname
+    生成所有stockcode和usedname
+    生成所有stockname和stockcode
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname    keyword
+    #生成需要测试的公告分类
+    ${pre_resultfile}    Set Variable    NoticeA03_s2_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}NoticeStock-HZStockName
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_N}
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+03公告分类+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索1个公告分类+1-2个关键词
+    [Tags]    ygu
+    #生成单公告分类
+    生成所有公告类型
+    #生成需要测试的公告分类+关键词
+    ${pre}    Set Variable    NoticeA03_s3_
+    #需要校验的字段list
+    ${check_field_list}    Create List    category    keyword
+    #校验指标
+    : FOR    ${i}    IN RANGE    1    3
+    \    ${filename}    Evaluate    '${pre}NoiceCategory_x1-NoticeKeyword_x{0}'.format(str(${i}))
+    \    log    ${filename}
+    \    搜图生成组合指标    ${datasource_path}    ${filename}.txt    ${CombMax_N}
+    \    ${pre_resultfile}    set variable    ${pre}m${i}_
+    \    Set Suite Variable    ${pre_resultfile}
+    \    #校验指标
+    \    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${filename}
+
+04公告行业+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索1个公告行业+1-2个关键词
+    [Tags]    ygu
+    #生成单公告行业
+    生成所有公告行业
+    #生成需要测试的公告行业+关键词
+    ${pre}    Set Variable    NoticeA03_s4_
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry    keyword
+    #校验指标
+    : FOR    ${i}    IN RANGE    1    3
+    \    ${filename}    Evaluate    '${pre}NoticeIndustry_x1-NoticeKeyword_x{0}'.format(str(${i}))
+    \    log    ${filename}
+    \    搜图生成组合指标    ${datasource_path}    ${filename}.txt    ${CombMax_N}
+    \    ${pre_resultfile}    set variable    ${pre}m${i}_
+    \    Set Suite Variable    ${pre_resultfile}
+    \    #校验指标
+    \    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${filename}

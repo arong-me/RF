@@ -1,0 +1,24 @@
+*** Keywords ***
+切换到数据tab
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[2]/span/span[2]    #切换到数据tab下    #导出数据
+
+数据tab下复制数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-printcharttablebtn"]    #切换到数据tab下
+
+数据tab下导出数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[2]/span[3]    #先点击下拉框显示出来    #导出数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[2]/span[3]/ul/li[1]    #然后再点击所要选择的下拉内容    #导出数据
+
+数据tab下导出图片
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[2]/span[3]    #导出图片
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[3]/div[2]/span[3]/ul/li[2]    #导出图片
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[11]/div/div/div[2]/p    #导出图片
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[11]/div/p/i    #XX关闭导出图片页面

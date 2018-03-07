@@ -1,0 +1,179 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup，在在DataSource/TotalSource/ReportAdvancedSearch和DataSource/TotalResuls/ReportAdvancedSearch 文件下创建二级目录ReportAS_A01
+...
+...               2、设置全局变量测试数据源路径${datasource_path}、邮件发送文件路径${emaldata_path}以及设置登录头
+Suite Setup       Suite_Setup    ReportAdvancedSearch    ReportAS_A01
+Suite Teardown
+Test Teardown
+Force Tags        BVT_Full
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报全部+筛选框校验.txt
+
+*** Test Cases ***
+01标题必含
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“标题必含”
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportASA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}ReportTitle_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+02标题不含
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“标题不含”
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportASA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}ReportTitle_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+03行业
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“单个行业”
+    Comment    #生成单公告行业
+    Comment    生成所有公告行业
+    Comment    #生成需要测试的行业
+    Comment    ${pre_resultfile}    Set Variable    ReportASA01_s3_
+    Comment    Set Suite Variable    ${pre_resultfile}
+    Comment    ${file}    Set Variable    ${pre_resultfile}NoticeIndustry_x1
+    Comment    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    Comment    #需要校验的字段list
+    Comment    ${check_field_list}    Create List    industry
+    Comment    #校验指标
+    Comment    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+04类型
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“单个公告类型”
+    ${pre_resultfile}    Set Variable    ReportASA01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #获取研报页面支持所有分类id
+    生成页面所有研报类型id
+    #生成需要测试的类型
+    ${file}    Set Variable    ${pre_resultfile}ReportCategoryId_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+05时间
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“时间”（其中只测试了时间对应几种场景，因为日期范围接口传参机制和测试时间的传参机制一样）
+    ${pre_resultfile}    Set Variable    ReportASA01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #生成需要测试的时间
+    ${file}    Set Variable    ${pre_resultfile}Time_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+06所在机构
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“所在机构”
+    #生成研报机构
+    生成研报机构
+    ${pre_resultfile}    Set Variable    ReportASA01_s6_
+    Set Suite Variable    ${pre_resultfile}
+    #生成需要测试的时间
+    ${file}    Set Variable    ${pre_resultfile}Institution
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    source
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+07作者
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“作者”
+    #生成需要测试的作者
+    ${pre_resultfile}    Set Variable    ReportASA01_s7_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}Author_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    author
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+08评级
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“评级”
+    Comment    #生成研报评级
+    Comment    生成研报评级
+    Comment    #生成需要测试的关键词
+    Comment    ${pre_resultfile}    Set Variable    ReportASA01_s8_
+    Comment    Set Suite Variable    ${pre_resultfile}
+    Comment    ${file}    Set Variable    ${pre_resultfile}ReportRating_x1
+    Comment    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    Comment    #需要校验的字段list
+    Comment    ${check_field_list}    Create List    rating
+    Comment    #校验指标
+    Comment    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+09页数
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.测试高级选项框中的“页数”
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportASA01_s9_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    page
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    10页以下    ${check_field_list}
+    研报ALL筛选框校验query    10-20页    ${check_field_list}
+    研报ALL筛选框校验query    20页以上    ${check_field_list}
+    删除Sessions

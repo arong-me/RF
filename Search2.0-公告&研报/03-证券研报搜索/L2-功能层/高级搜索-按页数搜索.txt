@@ -1,0 +1,12 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+点击页数下拉框
+    Click Element    css=#JS-advanceSearch>div:nth-child(9)
+    sleep    1
+
+选择页数
+    [Arguments]    ${页数}
+    Click Element    css=#JSselect-file_page>div>ul>li[filter-txt='${页数}']
+    sleep    1

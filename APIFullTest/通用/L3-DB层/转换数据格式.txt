@@ -1,0 +1,12 @@
+*** Settings ***
+Library           Collections
+
+*** Keywords ***
+将返回元组数据转换成列表
+    [Arguments]    ${Tuple}
+    ${length}    Get Length    ${Tuple}
+    ${list}    create list
+    : FOR    ${i}    IN RANGE    ${length}
+    \    Comment    ${Decode}    Evaluate    '${Tuple[${i}][0]}'.decode('utf-8')
+    \    Append To list    ${list}    ${Tuple[${i}][0]}
+    [Return]    ${list}

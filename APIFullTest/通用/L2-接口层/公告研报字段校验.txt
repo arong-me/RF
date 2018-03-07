@@ -1,0 +1,460 @@
+*** Settings ***
+Resource          通用.txt
+Resource          接口校验通用.txt
+Resource          ../L3-DB层/获取指定名称对应的单个结果.txt
+
+*** Keywords ***
+校验标题必含
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${continue_flag}    Set Variable    1
+    ${len}    Get Length    ${items}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag}    ${title}    校验转义字符字段存在且数据不为空    title    ${items[${i}]}    ${query}
+    \    #去除标题中的回车符
+    \    ${title}    Replace String    ${title}    \n    ${EMPTY}
+    \    #去除标题中的换行符
+    \    ${title}    Replace String    ${title}    \r    ${EMPTY}
+    \    #去除标题中的双引号
+    \    ${title}    Replace String    ${title}    \"    ${EMPTY}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag}==1    For循环校验title包含关键词    ${query}    ${title}
+    \    ...    ${filed_list}    ${i}
+    \    Exit For Loop If    ${continue_flag}!=1
+    [Return]    ${continue_flag}
+
+校验标题不含
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${continue_flag}    Set Variable    1
+    ${len}    Get Length    ${items}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag}    ${title}    校验转义字符字段存在且数据不为空    title    ${items[${i}]}    ${query}
+    \    #去除标题中的回车符
+    \    ${title}    Replace String    ${title}    \n    ${EMPTY}
+    \    #去除标题中的换行符
+    \    ${title}    Replace String    ${title}    \r    ${EMPTY}
+    \    #去除标题中的双引号
+    \    ${title}    Replace String    ${title}    \"    ${EMPTY}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag}==1    For循环校验title不含关键词    ${query}    ${title}
+    \    ...    ${filed_list}    ${i}
+    \    Exit For Loop If    ${continue_flag}!=1
+    [Return]    ${continue_flag}
+
+For循环校验title包含关键词
+    [Arguments]    ${query}    ${title}    ${filed_list}    ${i}
+    ${continue_flag}    Set Variable    1
+    ${title_filter_list}    Evaluate    re.findall(u"<font color='red'>(.+?)</font>",r"${title}".decode("utf-8"))    re
+    ${title_filter_str}    Evaluate    ''.join(${title_filter_list}).decode('utf-8')
+    #统一将title转换成小写
+    ${title_filter_str}    Convert To Lowercase    ${title_filter_str}
+    : FOR    ${field}    IN    @{filed_list}
+    \    #检验标题是否标红
+    \    ${passed}    ${exist}    Run Keyword And Ignore Error    Evaluate    "${field}" in "${title_filter_str}"
+    \    ${continue_flag}    Run Keyword If    '${passed}'!='PASS'    Set Variable    -1
+    \    ...    ELSE IF    ${exist}==True    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}title_include_mismatch.txt    ${query} return index ${i} mismatch title is "${title}" \n
+    [Return]    ${continue_flag}
+
+For循环校验title不含关键词
+    [Arguments]    ${query}    ${title}    ${filed_list}    ${i}
+    ${continue_flag}    Set Variable    1
+    ${title_filter_list}    Evaluate    re.findall(u"<font color='red'>(.+?)</font>",r"${title}".decode("utf-8"))    re
+    ${title_filter_str}    Evaluate    ''.join(${title_filter_list}).decode('utf-8')
+    #统一将title转换成小写
+    ${title_filter_str}    Convert To Lowercase    ${title_filter_str}
+    : FOR    ${field}    IN    @{filed_list}
+    \    #检验标题不含筛选框中的关键字
+    \    ${passed}    ${not_exist}    Run Keyword And Ignore Error    Evaluate    "${field}" not in "${title_filter_str}"
+    \    ${continue_flag}    Run Keyword If    '${passed}'!='PASS'    Set Variable    -1
+    \    ...    ELSE IF    ${not_exist}==True    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}title_include_mismatch.txt    ${query} return index ${i} mismatch title is "${title}" \n
+    [Return]    ${continue_flag}
+
+校验时间publish_at
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${starttimestamp}    获取日期字符串对应的时间戳    ${filed_list[0]} 00:00:00
+    ${endtimestamp}    获取日期字符串对应的时间戳    ${filed_list[1]} 23:59:59
+    ${len}    Get Length    ${items}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag_publish}    ${publish_at}    校验str类型字段存在且数据不为空    publish_at    ${items[${i}]}    ${query}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag_publish}==1 and '${publish_at}'<='${endtimestamp}' and '${publish_at}'>='${starttimestamp}'    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag_publish}==1 and ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}time_mismatch.txt    ${query} return \ index ${i} mismatch publish_time is "${publish_at}" \n
+    [Return]    ${continue_flag}
+
+校验页数file_pages
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${startpage}    Set Variable    ${filed_list[0]}
+    ${endpage}    Set Variable    ${filed_list[1]}
+    ${len}    Get Length    ${items}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag_file}    ${file_pages}    校验str类型字段存在且数据不为空    file_pages    ${items[${i}]}    ${query}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag_file}==1 and ${${file_pages}}<=${${endpage}} and ${${file_pages}}>=${${startpage}}    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag_file}==1 and ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}page_mismatch.txt    ${query} return index ${i} mismatch file_pages is "${file_pages}" \n
+    [Return]    ${continue_flag}
+
+校验评级rating
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${continue_flag}    Set Variable    1
+    ${len}    Get Length    ${items}
+    ${filed_list_str}    Evaluate    ''.join(${filed_list})
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag_rating}    ${rating}    Run Keyword If    '不限' not in '${query} '    校验str类型字段存在且数据不为空    rating
+    \    ...    ${items[${i}]}    ${query}
+    \    ...    ELSE    Set Variable    1    ${EMPTY}
+    \    ${continue_flag}    Run Keyword If    (${continue_flag_rating}==1 and '${rating}' in '${filed_list_str}') or '不限' in '${query} '    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag_rating}==1 and ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}rating_mismatch.txt    ${query} return index ${i} mismatch rating is "${rating}" \n
+    [Return]    ${continue_flag}
+
+校验研报搜索框机构source
+    [Arguments]    ${query}    ${exp_indicators_list}    ${items}    ${parsed}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、获取parsed中对应的id_list
+    ...    2、校验公告分类，校验接口中返回的category_map和query对应数据库core_doc中notice_abc_category表中的id值进行比对
+    ...    3、校验items中的category_id是否包含在category_map中
+    #获取parsed中source_map对应的source列表
+    Comment    ${parsed_source_list}    create list
+    ${continue_flag}    ${source_map}    校验非str类型字段存在且数据不为空    sourceMap    ${parsed}    ${query}
+    Comment    ${parsed_source_list}    Run keyword If    ${continue_flag}==1    Get Dictionary Keys    ${source_map}
+    ...    ELSE    set variable    ${parsed_source_list}
+    ${continue_flag}    Run keyword If    ${continue_flag}==1    校验所在机构source    ${query}    ${exp_indicators_list}    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+校验所在机构source
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${len}    Get Length    ${items}
+    ${filed_list_str}    Evaluate    ''.join(${filed_list})
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag_source}    ${source}    校验str类型字段存在且数据不为空    source    ${items[${i}]}    ${query}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag_source}==1 and '${source}' in '${filed_list_str}'    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag_source}==1 and ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}source_mismatch.txt    ${query} return index ${i} mismatch source is "${source}" \n
+    [Return]    ${continue_flag}
+
+校验作者author
+    [Arguments]    ${query}    ${filed_list}    ${items}
+    ${continue_flag}    Set Variable    1
+    ${len}    Get Length    ${items}
+    #目前只支持一个作者
+    ${filed_list_str}    Evaluate    ''.join(${filed_list})
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #校验每个keyword是否包含在title内
+    \    ${continue_flag_author}    ${author}    校验非str类型字段存在且数据不为空    author    ${items[${i}]}    ${query}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag_author}==1 and '${filed_list_str}' in ${author}    Set Variable    1
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${continue_flag}!=1
+    ${author}    Run Keyword If    ${continue_flag}!=1    Run Keyword And Continue On Failure    Evaluate    (' '.join(${author})).decode('utf-8')
+    ...    ELSE    Set Variable    None
+    Run Keyword If    ${continue_flag_author}==1 and ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}author_mismatch.txt    ${query} return index ${i} mismatch author is ${author}\n
+    [Return]    ${continue_flag}
+
+校验公告或者研报items下的stockname和stockcode
+    [Arguments]    ${field}    ${query}    ${expect_dict}    ${items}    #stockname或者stockcode字段|搜索词|期望结果|items数据
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、校验公告公司搜索词所需对比的stockcode和stockname字段同数据库中数据作比较
+    ${stockname_expect_list}    Get From Dictionary    ${expect_dict}    stockname
+    ${stockcode_expect_list}    Get From Dictionary    ${expect_dict}    stockcode
+    ${success_flag}    Set Variable    1
+    ${len}    Get Length    ${items}
+    ${query}    Run Keyword IF    "${query}"=="${EMPTY}"    Evaluate    ''.join(${stockcode_expect_list})
+    ...    ELSE    Set variable    ${query}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    #优先校验stockcode
+    \    ${continue_flag_code}    ${stockcode}    校验str类型字段存在且数据不为空    stockcode    ${items[${i}]}    ${query}
+    \    ${ifExist_code}    Run keyword If    '${stockcode}' in ${stockcode_expect_list} and ${continue_flag_code}==1    Set variable    True
+    \    ...    ELSE    Set variable    False
+    \    Run keyword If    ${continue_flag_code}==1 and ${ifExist_code}!=True    append_to_file    ${results_path}${/}${pre_resultfile}stockcode_mismatch.txt    ${query} index:${i} mismatch is ${stockcode}\n
+    \    #校验stockname不为空
+    \    ${continue_flag_name}    ${stockname}    Run keyword If    ${ifExist_code}==True    校验str类型字段存在且数据不为空    stockname
+    \    ...    ${items[${i}]}    ${query}
+    \    ...    ELSE    set variable    -1    ${None}
+    \    #带有.SZ和.SH的校验stockname是否匹配
+    \    ${success_flag}    Run keyword If    '.SZ' not in "${stockcode}" and ".SH" not in "${stockcode}" and ${continue_flag_name}==1    Set Variable    1
+    \    ...    ELSE IF    ${continue_flag_name}==1 and ${ifExist_code}==True    校验公告或者研报items下的stockname    ${query}    ${i}
+    \    ...    ${stockname}    ${stockname_expect_list}
+    \    ...    ELSE    Set Variable    -1
+    \    Exit For Loop If    ${success_flag}!=1 or ${continue_flag_name}!=1 or ${ifExist_code}!=True
+    [Return]    ${success_flag}
+
+校验公告或者研报items下的stockname
+    [Arguments]    ${query}    ${index}    ${stockname}    ${stockname_expect_list}
+    #将返回的股票名称转换为大写
+    ${stockname_upper}    Convert To Uppercase    ${stockname}
+    #将返回的股票名称去掉空格
+    ${stockname_noblank}    Replace String    ${stockname_upper}    ${SPACE}    ${EMPTY}
+    ${ifExist}    Run keyword If    "${stockname}" in ${stockname_expect_list} or "${stockname_noblank}" in ${stockname_expect_list}    Set variable    True
+    ...    ELSE    Set variable    False
+    ${success_flag}    Run keyword If    ${ifExist}!=True    Set variable    -1
+    ...    ELSE    Set variable    1
+    Run keyword If    ${ifExist}!=True    append_to_file    ${results_path}${/}${pre_resultfile}stockname_mismatch.txt    ${query} index:${index} mismatch is ${stockname}\n
+    [Return]    ${success_flag}
+
+校验keyword
+    [Arguments]    ${query}    ${data}    ${exp_indicators_list}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 目前只校验了返回接口中的keyword字段，后续需要添加items中的内容校验
+    [Tags]    ygu
+    ${continue_flag}    ${keyword}    校验str类型字段存在且数据不为空    keyword    ${data}    ${query}
+    ${continue_flag}    Run keyword If    ${continue_flag}==1    校验keyword字段对应的数据    ${keyword}    ${query}    ${exp_indicators_list}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+校验keyword字段对应的数据
+    [Arguments]    ${keyword}    ${query}    ${exp_keyword_list}
+    [Tags]    ygu
+    ${keyword_list}    Split String    ${keyword}    ,
+    #需要区分Mac平台和linux平台
+    ${exp_keyword_str}    Evaluate    ''.join(${exp_keyword_list})
+    ${exp_keyword_com}    Set Variable    ${exp_keyword_str}
+    ${continue_flag}    Set Variable    1
+    : FOR    ${re_k}    IN    @{keyword_list}
+    \    ${temp_keyword}    replace_string    ${exp_keyword_com}    ${re_k}    ${EMPTY}
+    \    ${exp_keyword_com}    Run Keyword If    '${re_k}' in '${exp_keyword_str}'    set variable    ${temp_keyword}
+    \    ...    ELSE    set variable    ${exp_keyword_com}
+    \    ${continue_flag}    Run Keyword If    '${re_k}' not in '${exp_keyword_str}'    set variable    -1
+    \    ...    ELSE    set variable    ${continue_flag}
+    \    Run Keyword If    ${continue_flag}!=1    append_to_file    ${results_path}${/}${pre_resultfile}mismatch_keyword.txt    ${query} return keyword is ${keyword}\n
+    \    Exit for loop If    ${continue_flag}!=1
+    ${length}    Get Length    ${exp_keyword_com}
+    Run Keyword If    ${continue_flag}==1 and ${length} !=0    append_to_file    ${results_path}${/}${pre_resultfile}mismatch_keyword.txt    ${query} return keyword is ${keyword}\n
+    ${continue_flag}    Run Keyword If    ${continue_flag}==1 and ${length}==0    set variable    1
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+校验category或者industry
+    [Arguments]    ${query}    ${field}    ${filed_list}    ${items}
+    ${field}    Run Keyword If    'industry' in '${field}'    Set Variable    industry_id
+    ...    ELSE    Set Variable    category_id
+    ${continue_flag}    校验category和industry对应的id    ${field}    ${query}    ${filed_list}    ${items}
+    [Return]    ${continue_flag}
+
+校验category和industry对应的id
+    [Arguments]    ${field}    ${query}    ${exp_indicators_list}    ${items}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    校验items中的category_id是否包含在category_map中 or
+    ...    校验items中的industry_id是否包含在industry_map中
+    ${continue_flag}    set variable    1
+    ${len}    Get Length    ${items}
+    : FOR    ${i}    IN RANGE    ${len}
+    \    ${continue_flag}    ${field_id}    校验str类型字段存在且数据不为空    ${field}    ${items[${i}]}    ${query}
+    \    ${continue_flag_mismatch}    Run keyword If    ${continue_flag}==1    For循环校验id是否包含期望list中的id    ${field_id}    ${exp_indicators_list}
+    \    ...    ELSE    set variable    -1
+    \    Run keyword If    ${continue_flag}==1 and ${continue_flag_mismatch}!=1    append_to_file    ${results_path}${/}${pre_resultfile}${field}_mismatch.txt    ${query} index ${i} mismatch is ${field_id}\n
+    \    Exit For Loop If    ${continue_flag_mismatch}!=1
+    [Return]    ${continue_flag_mismatch}
+
+For循环校验id是否包含期望list中的id
+    [Arguments]    ${re_id}    ${id_list}
+    Comment    ${re_id}    Evaluate    '${re_id}'[1:]
+    ${exist_flag}    set variable    1
+    : FOR    ${id}    IN    @{id_list}
+    \    ${id}    Evaluate    '${id}'[1:]
+    \    ${exist_flag}    Run Keyword If    '${id}' in '${re_id}'    set variable    1
+    \    ...    ELSE    set variable    -1
+    \    Exit for loop if    ${exist_flag}==1
+    [Return]    ${exist_flag}
+
+获取parsed中对应的id_list
+    [Arguments]    ${category_map}    #category_map或者industry_map
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 解析接口中返回的parsed中的category_map或者industry_map中对应的id值，返回list
+    ${parsed_category_id_list}    create list
+    ${null_list}    create list
+    ${category_map_keys}    Get Dictionary Keys    ${category_map}
+    : FOR    ${key}    IN    @{category_map_keys}
+    \    ${passed}    ${value}    Run Keyword And Ignore Error    Get From Dictionary    ${category_map}    ${key}
+    \    ${category_id_list}    Run Keyword If    '${passed}'=='PASS'    Evaluate    re.findall('[A-Z][0-9]{1,}','${value}')    re
+    \    ...    ELSE    set variable    ${null_list}
+    \    ${parsed_category_id_list}    Run Keyword If    '${passed}'=='PASS'    Combine Lists    ${parsed_category_id_list}    ${category_id_list}
+    \    ...    ELSE    set variable    ${parsed_category_id_list}
+    \    Exit for loop If    '${passed}'!='PASS'
+    ${parsed_category_id_list}    Evaluate    list(set(${parsed_category_id_list}))
+    [Return]    ${parsed_category_id_list}
+
+校验category_map或者industry_map与query中对应数据库的id
+    [Arguments]    ${parsed_category_id_list}    ${expect_category_id_list}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、在搜索框中搜索公告分类时，需要校验parse字段中的category_map，保证非空。
+    ...    2、保证搜索词对应的category_id包含于categroy_map中对应的category_id
+    ${expect_str}    Evaluate    ''.join(${expect_category_id_list})
+    ${continue_flag_expect}    set variable    1
+    #parsed返回id理论上应该等于expect
+    ${continue_flag_expect}    For循环校验id是否包含期望list中的id    ${expect_str}    ${parsed_category_id_list}
+    [Return]    ${continue_flag_expect}
+
+校验公告搜索框category
+    [Arguments]    ${query}    ${exp_indicators_list}    ${items}    ${parsed}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、获取parsed中对应的id_list
+    ...    2、校验公告分类，校验接口中返回的category_map和items字段下的categroy_id字段
+    #获取parsed中category_map对应的category_id列表
+    ${parsed_category_id_list}    create list
+    ${continue_flag}    ${category_map}    校验非str类型字段存在且数据不为空    category_map    ${parsed}    ${query}
+    ${parsed_category_id_list}    Run keyword If    ${continue_flag}==1    获取parsed中对应的id_list    ${category_map}
+    ...    ELSE    set variable    ${parsed_category_id_list}
+    ${parsed_expect_list_length}    Get Length    ${parsed_category_id_list}
+    Run keyword If    ${continue_flag}==1 and ${parsed_expect_list_length}==0    append_to_file    ${results_path}${/}${pre_resultfile}parsed_categoryid_notexist.txt    ${query}\n
+    ${continue_flag}    Run keyword If    ${continue_flag}==1 and ${parsed_expect_list_length}!=0    校验公告category_map以及category_id    ${query}    ${exp_indicators_list}    ${parsed_category_id_list}
+    ...    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+校验公告category_map以及category_id
+    [Arguments]    ${query}    ${exp_indicators_list}    ${parsed_category_id_list}    ${items}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、校验公告分类，校验接口中返回的category_map不为空
+    ...    2、校验items中的category_id是否包含在category_map对应的category_id列表中
+    #获取query对应数据库中的category_id列表
+    ${expect_category_id_list}    Create List
+    ${expect_category_id_list}    获取公告query对应数据库中的category_id列表    ${exp_indicators_list}
+    ${expect_list_length}    Get Length    ${expect_category_id_list}
+    ${parsed_list_length}    Get Length    ${parsed_category_id_list}
+    Comment    ${continue_flag}    Run keyword If    ${expect_list_length}==${parsed_list_length}    校验category_map或者industry_map与query中对应数据库的id    ${parsed_category_id_list}    ${expect_category_id_list}
+    ...    ELSE    set variable    -1
+    Comment    Run keyword If    ${expect_list_length}==0    append_to_file    ${results_path}${/}${pre_resultfile}database_category_noid.txt    ${query}\n
+    Comment    Run keyword If    ${expect_list_length}!=0 and ${continue_flag}==-1    append to file    ${results_path}${/}${pre_resultfile}parsed_category_mismatch.txt    ${query}\n
+    Comment    ${continue_flag}    Run keyword If    ${continue_flag}==1    校验category和industry对应的id    category_id    ${query}
+    ...    ${parsed_category_id_list}    ${items}
+    ...    ELSE    set variable    -1
+    ${continue_flag}    Run keyword If    ${expect_list_length}==${parsed_list_length}    校验category和industry对应的id    category_id    ${query}    ${parsed_category_id_list}
+    ...    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+获取公告query对应数据库中的category_id列表
+    [Arguments]    ${exp_indicators_list}
+    [Documentation]    暂时未用此关键词
+    ${expect_category_id_list}    create list
+    ${null_list}    create list
+    : FOR    ${category}    IN    @{exp_indicators_list}
+    \    ${passed}    ${category_id_list}    Run Keyword And Ignore Error    获取公告指定分类的id列表    ${category}
+    \    ${expect_category_id_list}    Run Keyword If    '${passed}'=='PASS'    Combine Lists    ${expect_category_id_list}    ${category_id_list}
+    \    ...    ELSE    set variable    ${expect_category_id_list}
+    \    Exit for loop If    '${passed}'!='PASS'
+    [Return]    ${expect_category_id_list}
+
+校验研报搜索框category
+    [Arguments]    ${query}    ${exp_indicators_list}    ${items}    ${parsed}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、获取parsed中对应的id_list
+    ...    2、校验研报分类，校验接口中返回的category_map和items字段下的categroy_id字段
+    #获取parsed中category_map对应的category_id列表
+    ${parsed_category_id_list}    create list
+    ${continue_flag}    ${category_map}    校验非str类型字段存在且数据不为空    category_map    ${parsed}    ${query}
+    ${parsed_category_id_list}    Run keyword If    ${continue_flag}==1    获取parsed中对应的id_list    ${category_map}
+    ...    ELSE    set variable    ${parsed_category_id_list}
+    ${parsed_expect_list_length}    Get Length    ${parsed_category_id_list}
+    Run keyword If    ${continue_flag}==1 and ${parsed_expect_list_length}==0    append_to_file    ${results_path}${/}${pre_resultfile}parsed_categoryid_notexist.txt    ${query}\n
+    ${continue_flag}    Run keyword If    ${continue_flag}==1 and ${parsed_expect_list_length}!=0    校验研报category_map以及category_id    ${query}    ${exp_indicators_list}    ${parsed_category_id_list}
+    ...    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+校验研报category_map以及category_id
+    [Arguments]    ${query}    ${exp_indicators_list}    ${parsed_category_id_list}    ${items}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、在搜索框中搜索研报分类时，需要校验parse字段中的category_map，保证非空。
+    ...    2、保证搜索词对应的category_id包含于categroy_map中对应的category_id
+    #获取query对应数据库中的category_id列表
+    ${expect_category_id_list}    获取研报query对应数据库中的category_id列表    ${parsed_category_id_list}
+    ${expect_list_length}    Get Length    ${expect_category_id_list}
+    Run keyword If    ${expect_list_length}==0    append_to_file    ${results_path}${/}${pre_resultfile}database_category_noid.txt    ${query}\n
+    ${continue_flag}    Run keyword If    ${expect_list_length}!=0    校验category和industry对应的id    category_id    ${query}    ${expect_category_id_list}
+    ...    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+获取研报query对应数据库中的category_id列表
+    [Arguments]    ${exp_indicators_list}
+    ${expect_category_id_list}    create list
+    ${null_list}    create list
+    : FOR    ${category}    IN    @{exp_indicators_list}
+    \    ${passed}    ${category_id_list}    Run Keyword And Ignore Error    获取研报指定类型期望展示的id列表    ${category}
+    \    ${expect_category_id_list}    Run Keyword If    '${passed}'=='PASS'    Combine Lists    ${expect_category_id_list}    ${category_id_list}
+    \    ...    ELSE    Set Variable    ${expect_category_id_list}
+    \    Exit for loop If    '${passed}'!='PASS'
+    [Return]    ${expect_category_id_list}
+
+校验搜索框industry
+    [Arguments]    ${query}    ${exp_indicators_list}    ${items}    ${parsed}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、获取parsed中的industry_id
+    ...    2、 校验公告行业，校验接口solr中返回industry_id是否和industry_map一致。该接口起解析数据库的作用，返回接口结果是无法直接比对数据库中的数据。
+    ...    3、校验items中的industry_id是否包含在industry_map中
+    #获取parsed中industry_map对应的industry_id列表
+    ${continue_flag}    ${industry_map}    校验非str类型字段存在且数据不为空    industry_map    ${parsed}    ${query}
+    ${parsed_industry_id_list}    Run keyword If    ${continue_flag}==1    获取parsed中对应的id_list    ${industry_map}
+    ...    ELSE    Create List
+    ${parsed_expect_list_length}    Get Length    ${parsed_industry_id_list}
+    Run keyword If    ${continue_flag}==1 and ${parsed_expect_list_length}==0    append_to_file    ${results_path}${/}${pre_resultfile}parsed_industryid_notexist.txt    ${query}\n
+    ${continue_flag}    Run keyword If    ${continue_flag}==1 and ${parsed_expect_list_length}!=0    校验industry_map以及industry_id    ${query}    ${exp_indicators_list}    ${parsed_industry_id_list}
+    ...    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+校验industry_map以及industry_id
+    [Arguments]    ${query}    ${exp_indicators_list}    ${parsed_industry_id_list}    ${items}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、 校验公告行业，校验接口solr中返回industry_id是否和industry_map一致。该接口起解析数据库的作用，返回接口结果是无法直接比对数据库中的数据。
+    ...    2、校验items中的industry_id是否包含在industry_map中
+    #获取query对应数据库中的category_id列表
+    ${exp_industry_id_list}    获取query对应数据库中的industry_id列表    ${exp_indicators_list}
+    ${expect_list_length}    Get Length    ${exp_industry_id_list}
+    ${parsed_list_length}    Get Length    ${parsed_industry_id_list}
+    ${continue_flag}    Run keyword If    ${expect_list_length}==${parsed_list_length}    校验category_map或者industry_map与query中对应数据库的id    ${parsed_industry_id_list}    ${exp_industry_id_list}
+    ...    ELSE    set variable    -1
+    Run keyword If    ${expect_list_length}==0    append_to_file    ${results_path}${/}${pre_resultfile}database_industry_noid.txt    ${query}\n
+    Run keyword If    ${expect_list_length}!=0 and ${continue_flag}==-1    append to file    ${results_path}${/}${pre_resultfile}parsed_industry_mismatch.txt    ${query}\n
+    ${continue_flag}    Run keyword If    ${continue_flag}==1    校验category和industry对应的id    industry_id    ${query}    ${parsed_industry_id_list}
+    ...    ${items}
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}
+
+获取query对应数据库中的industry_id列表
+    [Arguments]    ${exp_indicators_list}
+    ${expect_industry_id_list}    create list
+    ${null_list}    create list
+    : FOR    ${category}    IN    @{exp_indicators_list}
+    \    ${passed}    ${industry_id}    Run Keyword And Ignore Error    获取指定行业对应的id号    ${category}
+    \    Run Keyword If    '${passed}'=='PASS'    Append To List    ${expect_industry_id_list}    ${industry_id}
+    \    Exit for loop If    '${passed}'!='PASS'
+    [Return]    ${expect_industry_id_list}

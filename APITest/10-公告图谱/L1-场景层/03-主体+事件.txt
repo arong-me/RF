@@ -1,0 +1,28 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建NoticeChart一级文件夹和NoticeChart_03二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    10-NoticeChart    NoticeChart_03
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../L2-接口层/公告图谱搜索框.txt
+
+*** Test Cases ***
+01单主体+单事件
+    ${pre_resultfile}    Set Variable    NoticeChart03_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname    event
+    #校验指标
+    创建Session
+    公告图谱校验query    永辉超市近两年的对外投资情况    ${check_field_list}
+    公告图谱校验query    苏宁云商近两年的增资计划    ${check_field_list}
+    公告图谱校验query    苏宁云商近两年的员工持股计划    ${check_field_list}
+    公告图谱校验query    万达电影最近三年的停牌情况    ${check_field_list}
+    删除Sessions

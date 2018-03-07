@@ -1,0 +1,35 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource/Notice和DataSource/TotalResuls/Notice文件下下创建Notice_Q01二级文件夹
+...
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}以及设置登录头
+Suite Setup       Left_Suite_Setup    Notice    Notice_Q01    期权公告
+Suite Teardown
+Test Teardown
+Force Tags        BVT_Full
+Resource          ../../资源配置/全局变量.txt
+Resource          ../L2-接口层/左选框+搜索词.txt
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】公告分类为期权公告
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个关键词
+    [Tags]    ygu
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    NoticeQ01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}NoticeKeyword_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+    [Teardown]

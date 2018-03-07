@@ -1,0 +1,153 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    07-ReportAdvancedSearch    ReportAS_F01    期货研究
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报左选框+筛选框校验.txt
+
+*** Test Cases ***
+01标题必含
+    ${pre_resultfile}    Set Variable    ReportASF01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    区块链    ${check_field_list}
+    研报左选框+筛选框校验query    复牌公告    ${check_field_list}
+    研报左选框+筛选框校验query    意向书    ${check_field_list}
+    研报左选框+筛选框校验query    平安    ${check_field_list}
+    研报左选框+筛选框校验query    二级市场    ${check_field_list}
+    研报左选框+筛选框校验query    中远航运    ${check_field_list}
+    研报左选框+筛选框校验query    产业    ${check_field_list}
+    研报左选框+筛选框校验query    平安证券    ${check_field_list}
+    研报左选框+筛选框校验query    分红    ${check_field_list}
+    研报左选框+筛选框校验query    中行    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    ReportASF01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    第三季度资产负债表    ${check_field_list}
+    研报左选框+筛选框校验query    艾派克    ${check_field_list}
+    研报左选框+筛选框校验query    区块链    ${check_field_list}
+    研报左选框+筛选框校验query    复牌公告    ${check_field_list}
+    研报左选框+筛选框校验query    雅居乐    ${check_field_list}
+    研报左选框+筛选框校验query    意向书    ${check_field_list}
+    研报左选框+筛选框校验query    平安    ${check_field_list}
+    研报左选框+筛选框校验query    高精锻压    ${check_field_list}
+    研报左选框+筛选框校验query    二级市场    ${check_field_list}
+    研报左选框+筛选框校验query    重组进展公告    ${check_field_list}
+    删除Sessions
+
+03行业
+    [Documentation]    行业高级搜索框在左选框为全部时，被移除
+    ${pre_resultfile}    Set Variable    ReportASF01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    玻璃制造    ${check_field_list}
+    研报左选框+筛选框校验query    采掘    ${check_field_list}
+    研报左选框+筛选框校验query    化工    ${check_field_list}
+    研报左选框+筛选框校验query    稀有金属    ${check_field_list}
+    研报左选框+筛选框校验query    其他采掘    ${check_field_list}
+    研报左选框+筛选框校验query    畜禽养殖    ${check_field_list}
+    研报左选框+筛选框校验query    建筑材料    ${check_field_list}
+    研报左选框+筛选框校验query    建筑装饰    ${check_field_list}
+    研报左选框+筛选框校验query    石油开采    ${check_field_list}
+    研报左选框+筛选框校验query    非银金融    ${check_field_list}
+    删除Sessions
+
+04时间
+    ${pre_resultfile}    Set Variable    ReportASF01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    last_month    ${check_field_list}
+    研报左选框+筛选框校验query    last_6month    ${check_field_list}
+    研报左选框+筛选框校验query    not_limit    ${check_field_list}
+    研报左选框+筛选框校验query    last_year    ${check_field_list}
+    研报左选框+筛选框校验query    last_3month    ${check_field_list}
+    删除Sessions
+
+05所在机构
+    ${pre_resultfile}    Set Variable    ReportASF01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    source
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    汇丰银行    ${check_field_list}
+    研报左选框+筛选框校验query    安粮期货    ${check_field_list}
+    研报左选框+筛选框校验query    倍特期货    ${check_field_list}
+    研报左选框+筛选框校验query    西藏证券    ${check_field_list}
+    Comment    研报左选框+筛选框校验query    融阳投资    ${check_field_list}
+    研报左选框+筛选框校验query    江海证券    ${check_field_list}
+    研报左选框+筛选框校验query    隆众资讯    ${check_field_list}
+    研报左选框+筛选框校验query    华信万达期货    ${check_field_list}
+    研报左选框+筛选框校验query    华泰证券    ${check_field_list}
+    研报左选框+筛选框校验query    道润投资    ${check_field_list}
+    删除Sessions
+
+06作者
+    ${pre_resultfile}    Set Variable    ReportASF01_s6_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    author
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    李晨    ${check_field_list}
+    研报左选框+筛选框校验query    戴军    ${check_field_list}
+    研报左选框+筛选框校验query    王晓林    ${check_field_list}
+    研报左选框+筛选框校验query    钟奇    ${check_field_list}
+    研报左选框+筛选框校验query    景志钟    ${check_field_list}
+    研报左选框+筛选框校验query    张继强    ${check_field_list}
+    研报左选框+筛选框校验query    李晶    ${check_field_list}
+    研报左选框+筛选框校验query    唐笑    ${check_field_list}
+    研报左选框+筛选框校验query    凌鹏    ${check_field_list}
+    研报左选框+筛选框校验query    施毅    ${check_field_list}
+    删除Sessions
+
+07评级
+    Comment    ${pre_resultfile}    Set Variable    ReportASF01_s7_
+    Comment    Set Suite Variable    ${pre_resultfile}
+    Comment    #需要校验的字段list
+    Comment    ${check_field_list}    Create List    rating
+    Comment    #校验指标
+    Comment    创建Session
+    Comment    研报左选框+筛选框校验query    中性    ${check_field_list}
+    Comment    研报左选框+筛选框校验query    减持    ${check_field_list}
+    Comment    研报左选框+筛选框校验query    不限    ${check_field_list}
+    Comment    研报左选框+筛选框校验query    买入    ${check_field_list}
+    Comment    研报左选框+筛选框校验query    增持    ${check_field_list}
+    Comment    删除Sessions
+
+08页数
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportASF01_s8_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    page
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    10页以下    ${check_field_list}
+    研报左选框+筛选框校验query    10-20页    ${check_field_list}
+    研报左选框+筛选框校验query    20页以上    ${check_field_list}
+    删除Sessions

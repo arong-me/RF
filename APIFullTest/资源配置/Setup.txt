@@ -1,0 +1,67 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          ../通用/L2-接口层/文件处理.txt
+Resource          ../通用/L2-接口层/通用.txt
+
+*** Keywords ***
+Setup_Testbed_Variable
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 获取当前测试根目录路径如：E:\gitcode\Aqlicai_RFS\APITest
+    ...    2、设置测试数据路径
+    ...    3、作为全局前置条件
+    [Tags]    ygu
+    #Path Info
+    Set Environment Variable    G_SQAROOT    ${EXECDIR}    #获取当前测试根目录路径如：E:\gitcode\Aqlicai_RFS\APITest
+    Comment    Set Environment Variable    G_LOG    D:\\RobotFramework\\Robot_Report
+    Set Environment Variable    G_DATACENTER    %{G_SQAROOT}${/}APIFullTest${/}DataSource    #设置测试数据路径
+    Set Environment Variable    G_DATASOURCE    %{G_DATACENTER}${/}TotalSource    #设置测试数据源路径
+    Set Environment Variable    G_DATARESULTS    %{G_DATACENTER}${/}TotalRestuls    #设置测试数据结果路径
+    Evaluate    reload(sys)    sys    #设置系统的UTF-8格式
+    Evaluate    sys.setdefaultencoding('UTF-8')    sys
+    ${platform}    Evaluate    platform.system()    platform    #获取当前测试系统
+    Set Global Variable    ${platform}
+
+Suite_Setup
+    [Arguments]    ${firstname}    ${secondname}    #一级模块文件夹名|二级模块文件夹名
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、在一级模块文件夹下创建二级模块文件夹
+    ...    2、设置全局变量测试数据源路径${datasource_path}、二级场景存放结果路径${results_path}邮件发送文件路径${emaldata_path}
+    创建二级模块所需文件夹    ${firstname}    ${secondname}
+    #每个case数据源存放路径
+    ${datasource_path}    Set Variable    %{G_DATASOURCE}${/}${firstname}${/}${secondname}
+    Set Suite Variable    ${datasource_path}
+    #每个case结果存放路径
+    ${results_path}    Replace String    ${datasource_path}    %{G_DATASOURCE}    %{G_DATARESULTS}
+    Set Suite Variable    ${results_path}
+    #邮件附件路径
+    ${emaildata_path}    Set Variable    %{G_DATARESULTS}${/}${firstname}
+    Set Global Variable    ${emaildata_path}
+    #设置登录头信息
+    设置登录头信息
+
+Left_Suite_Setup
+    [Arguments]    ${firstname}    ${secondname}    ${left_category}    #一级模块文件夹名|二级模块文件夹名|左选框选择项
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、在一级模块文件夹下创建二级模块文件夹
+    ...    2、设置全局变量测试数据源路径${datasource_path}、二级场景存放结果路径${results_path}邮件发送文件路径${emaldata_path}
+    创建二级模块所需文件夹    ${firstname}    ${secondname}
+    #每个case数据源存放路径
+    ${datasource_path}    Set Variable    %{G_DATASOURCE}${/}${firstname}${/}${secondname}
+    Set Suite Variable    ${datasource_path}
+    #每个case结果存放路径
+    ${results_path}    Replace String    ${datasource_path}    %{G_DATASOURCE}    %{G_DATARESULTS}
+    Set Suite Variable    ${results_path}
+    #邮件附件路径
+    ${emaildata_path}    Set Variable    %{G_DATARESULTS}${/}${firstname}
+    Set Global Variable    ${emaildata_path}
+    #左选框选择项
+    ${first_category}    Set Variable    ${left_category}
+    Set Suite Variable    ${first_category}
+    #设置登录头信息
+    设置登录头信息

@@ -1,0 +1,135 @@
+*** Settings ***
+Library           Collections
+Library           RequestsLibrary
+Library           String
+Library           AqlicaiLibrary
+Resource          ../../资源配置/config.txt
+
+*** Keywords ***
+创建Session
+    [Tags]    ygu
+    Create Session    api    ${url}
+
+删除Sessions
+    Delete All Sessions
+
+固定Cookie的Post请求
+    [Arguments]    ${data}    ${apiurl}    #post的data数据|api
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.目前只测试择股api
+    ...
+    ...    【前置条件】
+    ...    创建文件夹
+    [Tags]    ygu
+    ${dict}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    Ajax-Sign=zU3+E7ot1O+E/gbB69nd+DNmMzVjNjBjNTVhZTA3NTA0NGJmMDcxNWU4M2FkODEwODI0OGUzZTFlMTZkMDE0NmU4MTVhMGFhMTE5NGU5Njjq8M77eJ9GdYGv3Q7kcA5p0WGV+r6GFt6NNq6W/HDj90LL/ZbNTYOj7JMIZfRipJ8Xed+0lXtRXES3jvFhw0Ke5o8z4rmHUhdNL40KgH+2aiHhq1UkkFpEYwr4XNn1nxc=    Cookie=_LOG_GUUID_=266a4237-fdd5-462c-bbed-3061b0ca4279; search_value=%u4E00%u5E26%u4E00%u8DEF; _SEARCH_NUMPERPAGE_=20; searchChart=%u4EBA%u5DE5%u667A%u80FD%u5E02%u573A%u89C4%u6A21; _NOTICE_READING_SEARCH_HISTORY_=%u6D69%u4E30%u79D1%u6280%20%u6E2F%u80A1%u516C%u544A%7C%u6D69%u4E30%u79D1%u6280%20%u519C%u6797%u7267%u6E14%7C%u519C%u6797%u7267%u6E14%7C%u6E2F%u80A1%u516C%u544A%7C%u5316%u5DE5%7C%u5BB6%u7528%u7535%u5668%7C%u516C%u544A%7C2017%u5E74; MEIQIA_EXTRA_TRACK_ID=0xO3ev8egS3pztNSw6BPyfPAlaz; searchTable=%u516C%u53F8%u524D%u4E94%u5927%u5BA2%u6237%u8D44%u6599%7CBalance%20sheet; drawChart=%u8FDC%u5149%u8F6F%u4EF6%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%u8868%7C%u8FDC%u5149%u8F6F%u4EF6%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u4E2D%u8861%u8BBE%u8BA1%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u8FDC%u5149%u8F6F%u4EF6%20%u534E%u707F%u5149%u7535%20%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u6717%u59FF%u80A1%u4EFD%20%u534E%u707F%u5149%u7535%20%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u4E9A%u58EB%u521B%u80FD%20%u4E2D%u8861%u8BBE%u8BA1%20%u8D22%u62A5%7C%u4E9A%u58EB%u521B%u80FD%7C%u8FDC%u5149%u8F6F%u4EF6%7C%u91D1%u5965%u535A%7C%u521B%u6E90%u6587%u5316%7C%u4E1C%u5B8F%u80A1%u4EFD%u2506%u8D35%u5DDE%u8305%u53F0%20%u51C0%u5229%u6DA6%20%20%u8425%u4E1A%u6536%u5165; PHPSESSID=0adc9jkd42ia747u98mgg4spm7; _ga=GA1.2.572295110.1513700004; _gid=GA1.2.376358646.1513827237; userid=a26f97c50341a78ae76758f0fc4c19c7; _AJAX_SIGN_KEY_=zU3+E7ot1O+E/gbB69nd+DNmMzVjNjBjNTVhZTA3NTA0NGJmMDcxNWU4M2FkODEwODI0OGUzZTFlMTZkMDE0NmU4MTVhMGFhMTE5NGU5Njjq8M77eJ9GdYGv3Q7kcA5p0WGV+r6GFt6NNq6W/HDj90LL/ZbNTYOj7JMIZfRipJ8Xed+0lXtRXES3jvFhw0Ke5o8z4rmHUhdNL40KgH+2aiHhq1UkkFpEYwr4XNn1nxc%3D; stocks=%u5E73%u5B89%u94F6%u884C%u2506%u6628%u65E5%u6DA8%u8DCC%u5E45%u5927%u4E8E6%25%u7684%u516C%u53F8%u2506%u6668%u9E23B%u2506%u4E07%u79D1A%7C%u4EBA%u5DE5%u667A%u80FD%u6210%u5206%u80A1%7C%u6DF1%u5357%u7535%u8DEF%7C%u6668%u9E23B%20%u6210%u957F%u80FD%u529B%u8868%7C%u6668%u9E23B%20%u6210%u957F%u80FD%u529B%7C%u53F7%u767E%u63A7%u80A1%7C%u91D1%u5229%u534E%u7535%7C%u6668%u9E23B%7C%u4E07%u79D1A%u2506%u4E07%u79D1A; _identity=f6bbf49148b92db2a28851801274af07d2b472019a66095b9fd450a1fac6996ca%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_identity%22%3Bi%3A1%3Bs%3A79%3A%22%5B%22a26f97c50341a78ae76758f0fc4c19c7%22%2C%22ZgoyVP2W8puzen-YRQoSBiiAjH3BPaMy%22%2C2592000%5D%22%3B%7; _SEARCH_NUMPERPAGE_=20; searchChart=%u4EBA%u5DE5%u667A%u80FD%u5E02%u573A%u89C4%u6A21; _NOTICE_READING_SEARCH_HISTORY_=%u6D69%u4E30%u79D1%u6280%20%u6E2F%u80A1%u516C%u544A%7C%u6D69%u4E30%u79D1%u6280%20%u519C%u6797%u7267%u6E14%7C%u519C%u6797%u7267%u6E14%7C%u6E2F%u80A1%u516C%u544A%7C%u5316%u5DE5%7C%u5BB6%u7528%u7535%u5668%7C%u516C%u544A%7C2017%u5E74; MEIQIA_EXTRA_TRACK_ID=0xO3ev8egS3pztNSw6BPyfPAlaz; searchTable=%u516C%u53F8%u524D%u4E94%u5927%u5BA2%u6237%u8D44%u6599%7CBalance%20sheet; drawChart=%u8FDC%u5149%u8F6F%u4EF6%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%u8868%7C%u8FDC%u5149%u8F6F%u4EF6%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u4E2D%u8861%u8BBE%u8BA1%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u8FDC%u5149%u8F6F%u4EF6%20%u534E%u707F%u5149%u7535%20%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u6717%u59FF%u80A1%u4EFD%20%u534E%u707F%u5149%u7535%20%206%u4E2A%u6708%u5185%u8BC4%u7EA7%u660E%u7EC6%7C%u4E9A%u58EB%u521B%u80FD%20%u4E2D%u8861%u8BBE%u8BA1%20%u8D22%u62A5%7C%u4E9A%u58EB%u521B%u80FD%7C%u8FDC%u5149%u8F6F%u4EF6%7C%u91D1%u5965%u535A%7C%u521B%u6E90%u6587%u5316%7C%u4E1C%u5B8F%u80A1%u4EFD%u2506%u8D35%u5DDE%u8305%u53F0%20%u51C0%u5229%u6DA6%20%20%u8425%u4E1A%u6536%u5165; PHPSESSID=0adc9jkd42ia747u98mgg4spm7; _ga=GA1.2.572295110.1513700004; _gid=GA1.2.376358646.1513827237; userid=a26f97c50341a78ae76758f0fc4c19c7; _AJAX_SIGN_KEY_=zU3+E7ot1O+E/gbB69nd+DNmMzVjNjBjNTVhZTA3NTA0NGJmMDcxNWU4M2FkODEwODI0OGUzZTFlMTZkMDE0NmU4MTVhMGFhMTE5NGU5Njjq8M77eJ9GdYGv3Q7kcA5p0WGV+r6GFt6NNq6W/HDj90LL/ZbNTYOj7JMIZfRipJ8Xed+0lXtRXES3jvFhw0Ke5o8z4rmHUhdNL40KgH+2aiHhq1UkkFpEYwr4XNn1nxc%3D; stocks=%u5E73%u5B89%u94F6%u884C%u2506%u6628%u65E5%u6DA8%u8DCC%u5E45%u5927%u4E8E6%25%u7684%u516C%u53F8%u2506%u6668%u9E23B%u2506%u4E07%u79D1A%7C%u4EBA%u5DE5%u667A%u80FD%u6210%u5206%u80A1%7C%u6DF1%u5357%u7535%u8DEF%7C%u6668%u9E23B%20%u6210%u957F%u80FD%u529B%u8868%7C%u6668%u9E23B%20%u6210%u957F%u80FD%u529B%7C%u53F7%u767E%u63A7%u80A1%7C%u91D1%u5229%u534E%u7535%7C%u6668%u9E23B%7C%u4E07%u79D1A%u2506%u4E07%u79D1A
+    log    ${data}
+    ${addr}    Post Request    api    ${apiurl}    data=${data}    headers=${dict}
+    [Return]    ${addr}    #response返回对象
+
+动态获取Cookie的Post请求
+    [Arguments]    ${data}    ${apiurl}    #post的data数据|api
+    Comment    ${AjaxSign}    get ajaxsign    ${url}
+    Comment    ${ResponseCookie}    get cookie    ${url}    test3@abcft.com    Ae53A0jePiPVzX4qBtAfku/0vpw2Ng7YJ5HSPCrkHx+fWcT5OwFw6IaoBHI351hQey/4aumiaPrSyx2tiITXKA==
+    ${headers}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    ajax-sign=${AjaxSign}    cookie=${ResponseCookie}
+    ${addr}    Post Request    api    ${apiurl}    data=${data}    headers=${headers}
+    [Return]    ${addr}    #response返回对象
+
+带data的Get请求
+    [Arguments]    ${url}    ${api}    ${data}    #域名或者ip地址加端口号|api接口|params参数
+    ${dict}    Create Dictionary    content-type=application/x-www-form-urlencoded
+    Create Session    api    ${url}    ${dict}
+    ${payload}    Evaluate    urllib.urlencode(${data})    urllib
+    ${passed}    ${responseobj}    run_keyword_and_ignore_error    Get Request    api    ${api}    params=${payload}
+    Delete All Sessions
+    [Return]    ${passed}    ${responseobj}    #get请求是否成功|get请求返回对象
+
+不带data的Get请求
+    [Arguments]    ${url}    ${api}    #域名或者ip地址加端口号|api接口
+    ${dict}    Create Dictionary    content-type=application/x-www-form-urlencoded
+    Create Session    api    ${url}    ${dict}
+    ${passed}    ${responseobj}    run_keyword_and_ignore_error    Get Request    api    ${api}
+    Delete All Sessions
+    [Return]    ${passed}    ${responseobj}    #get请求是否成功|get请求返回对象
+
+设置登录头信息
+    ${AjaxSign}    get ajaxsign    ${url}
+    ${ResponseCookie}    get cookie    ${url}    ${username}    ${pwd}
+    Set Global Variable    ${AjaxSign}
+    Set Global Variable    ${ResponseCookie}
+
+校验Http返回码
+    [Arguments]    ${responseobj}    ${responsecode}
+    [Tags]    ygu
+    Should Be Equal As Strings    ${responseobj.status_code}    ${responsecode}
+
+获取字典value
+    [Arguments]    ${dict}    ${key}    #字典 |字段key名
+    [Tags]    ygu
+    ${passed}    ${Revalue}    run_keyword_and_ignore_error    Get From Dictionary    ${dict}    ${key}
+    Comment    ${passed}    ${Revalue}    run_keyword_and_ignore_error    set variable    ${dict['${key}']}
+    ${Revalue}    Run Keyword If    '${passed}'=='PASS'    set variable    ${Revalue}
+    ...    ELSE    set variable    ${None}
+    [Return]    ${passed}    ${Revalue}    #存在与否标识|如果key存在则返回相应value;不存在则返回${None}
+
+去除多余的空格
+    [Arguments]    ${source}
+    [Tags]    ygu
+    ${dest}    Replace String    ${source}    ${SPACE}    ${EMPTY}
+    [Return]    ${dest}
+
+将字典unicode数据转化成st字典
+    [Arguments]    ${dict}
+    ${json_str}    Evaluate    json.dumps(${dict})    json
+    ${str}    Evaluate    '${json_str}'.encode("unicode-escape")
+    ${json}    Evaluate    json.loads(${str})    json
+    [Return]    ${json}
+
+获取solrweb接口doc数据
+    [Arguments]    ${host}    ${api}    ${data}
+    ${dict}    Create Dictionary    content-type=application/x-www-form-urlencoded
+    Create Session    api    ${host}    ${dict}
+    Comment    ${data}    Create Dictionary    indent=true    q=id:${id}    wt=json
+    ${payload}    Evaluate    urllib.urlencode(${data})    urllib
+    ${passed}    ${addr}    run_keyword_and_ignore_error    Get Request    api    ${api}    params=${payload}
+    log    ${addr.content}
+    #解析返回response值
+    ${response_jsondata}    Run Keyword And Continue On Failure    To Json    ${addr.content}
+    ${response}    Run Keyword And Continue On Failure    Get From Dictionary    ${response_jsondata}    response
+    ${docs}    Run Keyword And Continue On Failure    Get From Dictionary    ${response}    docs
+    Delete All Sessions
+    [Return]    ${docs}
+
+判断字典中所有key对应的value是否为空
+    [Arguments]    ${dict}    #字典
+    ${keys}    Get Dictionary Keys    ${dict}
+    : FOR    ${key}    IN    @{keys}
+    \    ${value}    Get From Dictionary    ${dict}    ${key}
+    \    ${is_null}    判断对象为空    ${value}
+    \    Exit For Loop If    ${is_null}
+    [Return]    ${is_null}
+
+判断对象为空
+    [Arguments]    ${obj}
+    ${is_null}    is null    ${obj}
+    [Return]    ${is_null}
+
+获取最近时间的起始日期
+    [Arguments]    ${dateRange}
+    ${starttime}    Run Keyword If    '${dateRange}'=='today'    today_str
+    ...    ELSE IF    'yest' in '${dateRange}'    get_day_of_day    ${-1}
+    ...    ELSE IF    '${dateRange}'=='last_7day'    get_day_of_day    ${-6}
+    ...    ELSE IF    '${dateRange}'=='last_month'    get_day_of_day    ${-29}
+    ...    ELSE IF    '${dateRange}'=='last_3month'    get_today_month    ${-3}
+    ...    ELSE IF    '${dateRange}'=='last_6month'    get_today_month    ${-6}
+    ...    ELSE IF    '${dateRange}'=='last_year'    get_today_month    ${-12}
+    ...    ELSE    get_today_month    ${-7}
+    ${endtime}    Run Keyword If    '${dateRange}'=='today' or 'yest' in '${dateRange}'    Set Variable    ${starttime}
+    ...    ELSE    today_str
+    [Return]    ${starttime}    ${endtime}
+
+获取日期字符串对应的时间戳
+    [Arguments]    ${datetime_str}
+    ${timestamp}    Get Time    epoch    ${datetime_str}
+    [Return]    ${timestamp}

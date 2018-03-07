@@ -1,0 +1,59 @@
+*** Settings ***
+Suite Setup       Suite_Setup    03-Notice    Notice_A04
+Force Tags        BVT
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+
+*** Test Cases ***
+01两个公告分类+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索两个公告分类+1-2个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA04_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    交易提示 交易所公告,联讯证券    ${check_field_list}
+    ALL公告校验query    交易提示 交易所公告,网信集团    ${check_field_list}
+    ALL公告校验query    交易提示 交易所公告,识别    ${check_field_list}
+    ALL公告校验query    交易提示 交易所公告,修订    ${check_field_list}
+    ALL公告校验query    交易提示 交易所公告,金通证券    ${check_field_list}
+    ALL公告校验query    债券付息兑付 基金成立,中行 万达    ${check_field_list}
+    ALL公告校验query    债券付息兑付 基金成立,中行 担保    ${check_field_list}
+    ALL公告校验query    债券付息兑付 基金成立,中行 高精锻压    ${check_field_list}
+    ALL公告校验query    债券付息兑付 基金成立,中行 锂电池    ${check_field_list}
+    ALL公告校验query    债券付息兑付 基金成立,中行 变更    ${check_field_list}
+    删除Sessions
+
+02两个公告行业+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索两个公告行业+1-2个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA04_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    涂料油漆油墨制造 水电,新城房产    ${check_field_list}
+    ALL公告校验query    涂料油漆油墨制造 水电,业绩    ${check_field_list}
+    ALL公告校验query    涂料油漆油墨制造 水电,分红    ${check_field_list}
+    ALL公告校验query    涂料油漆油墨制造 水电,二级市场    ${check_field_list}
+    ALL公告校验query    涂料油漆油墨制造 水电,概念    ${check_field_list}
+    ALL公告校验query    农产品加工 房屋建设,所属行业 中远航运    ${check_field_list}
+    ALL公告校验query    农产品加工 房屋建设,所属行业 激励计划    ${check_field_list}
+    ALL公告校验query    农产品加工 房屋建设,所属行业 重组    ${check_field_list}
+    ALL公告校验query    农产品加工 房屋建设,所属行业 远洋地产    ${check_field_list}
+    ALL公告校验query    农产品加工 房屋建设,所属行业 十大股东持股情况    ${check_field_list}
+    删除Sessions

@@ -1,0 +1,12 @@
+*** Keywords ***
+全屏展开
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[1]/div[1]/span[2]    #全屏展开
+
+全屏下切换图表和数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[11]/div[2]/span/span[1]    #切换到数据tab下
+
+切换图表退出全屏
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[11]/div[1]/div[3]/span[6]    #切换到数据tab下

@@ -1,0 +1,34 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../05-资源/通用.txt
+Resource          ../../05-资源/前置条件资源.txt
+Resource          ../../05-资源/config.txt
+
+*** Keywords ***
+切换到仅看表
+    [Arguments]    ${输入query语句}
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[10]/div/div/div[1]/span[2]    #切换到仅看表
+    input text    xpath=//*[@id="JS-searchInput"]    ${输入query语句}    #输入搜索query    #此处可连接数据库查询
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-searchBtn"]    #点击搜索
+
+导出数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[11]/ul/li[1]/div[1]/span[2]/div/ul/li[1]    #导出数据
+
+进入搜表全屏
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="page-table"]/div[8]/ul/li[1]/div[2]/div/div/table/tbody/tr[1]    #进入搜表全屏
+
+复制表格
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="fin-charttable-fullscreen_copybtn"]    #复制表格
+
+大屏页面导出数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-fin-charttable_fullscreen"]/div[1]/div/span[4]
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-fin-charttable_fullscreen"]/div[1]/div/span[4]/ul/li[5]
+
+退出全屏
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-fin-charttable_fullscreen"]/div[1]/div/span[5]    #退出全屏

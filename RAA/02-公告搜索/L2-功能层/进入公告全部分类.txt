@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../资源配置/搜索词.txt
+
+*** Keywords ***
+点击资讯中心频道
+    Click Element    css=.nav-tab>a:nth-child(3)
+
+点击公告导航
+    Select Frame    id=company-notice-iframe
+
+点击公告全部分类
+    Click Element    css=.subscribe-title.reportNotice-navtitle
+    Click Element    css=.all-type
+
+输入关键字
+    [Arguments]    ${关键词}
+    Input Text    css=.JS-searchiptbox    ${关键词}
+
+点击智能搜索
+    Click Element    css=#JS-searchBtn
+
+清空筛选条件
+    Click Element    css=.filter-clear
+
+清空搜索框
+    Input Text    css=.JS-searchiptbox    ${EMPTY}

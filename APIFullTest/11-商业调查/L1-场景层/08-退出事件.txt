@@ -1,0 +1,10 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup，在在DataSource/TotalSource/BusinessSurvey和DataSource/TotalResuls/BusinessSurvey文件下创建二级目录BusinessSurvey_08
+...
+...               2、设置全局变量测试数据源路径${datasource_path}、邮件发送文件路径${emaldata_path}以及设置登录头
+
+*** Test Cases ***
+01单事件

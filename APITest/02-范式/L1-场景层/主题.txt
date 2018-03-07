@@ -1,0 +1,5 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/生成主题.txt
+
+*** Test Cases ***
+01单主题

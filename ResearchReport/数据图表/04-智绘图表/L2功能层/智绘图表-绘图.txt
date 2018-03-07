@@ -1,0 +1,25 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+绘图-点击系列
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="highcharts-tdsojrs-545"]/svg/g[6]/g/g/g[1]/text    #点击系列1
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="highcharts-tdsojrs-545"]/svg/g[6]/g/g/g[2]/text    #点击系列2
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="highcharts-tdsojrs-545"]/svg/g[6]/g/g/g[1]/text    #取消系列1
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="highcharts-tdsojrs-545"]/svg/g[6]/g/g/g[2]/text    #取消系列2
+
+大家这样绘制-01
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[3]/div[3]/div/div/ul[1]/li[2]/p    #大家这样绘制01图
+
+经常一起画的数据-01
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[3]/div[3]/div/div/ul[2]/li[2]/p    #大家一起绘制
+
+图表-数据切换
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[2]/span/span[1]    #切换图表
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[2]/span/span[2]    #切换数据

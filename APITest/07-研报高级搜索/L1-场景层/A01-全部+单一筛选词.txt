@@ -1,0 +1,174 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    07-ReportAdvancedSearch    ReportAS_A01
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报全部+筛选框校验.txt
+
+*** Test Cases ***
+01标题必含
+    ${pre_resultfile}    Set Variable    ReportASA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    区块链    ${check_field_list}
+    研报ALL筛选框校验query    复牌公告    ${check_field_list}
+    研报ALL筛选框校验query    雅居乐    ${check_field_list}
+    研报ALL筛选框校验query    意向书    ${check_field_list}
+    研报ALL筛选框校验query    平安    ${check_field_list}
+    研报ALL筛选框校验query    二级市场    ${check_field_list}
+    研报ALL筛选框校验query    重组进展公告    ${check_field_list}
+    研报ALL筛选框校验query    中远航运    ${check_field_list}
+    研报ALL筛选框校验query    产业    ${check_field_list}
+    研报ALL筛选框校验query    平安证券    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    ReportASA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    审计    ${check_field_list}
+    研报ALL筛选框校验query    云计算    ${check_field_list}
+    研报ALL筛选框校验query    恒大地产    ${check_field_list}
+    研报ALL筛选框校验query    毛利率    ${check_field_list}
+    研报ALL筛选框校验query    神州绿盟    ${check_field_list}
+    研报ALL筛选框校验query    瓦楞原纸    ${check_field_list}
+    研报ALL筛选框校验query    中海发展    ${check_field_list}
+    研报ALL筛选框校验query    可行性研究    ${check_field_list}
+    研报ALL筛选框校验query    财务资助    ${check_field_list}
+    研报ALL筛选框校验query    公开发行    ${check_field_list}
+    删除Sessions
+
+03行业
+    [Documentation]    行业高级搜索框在左选框为全部时，被移除
+    Comment    ${pre_resultfile}    Set Variable    ReportASA01_s3_
+    Comment    Set Suite Variable    ${pre_resultfile}
+    Comment    #需要校验的字段list
+    Comment    ${check_field_list}    Create List    industry
+    Comment    #校验指标
+    Comment    创建Session
+    Comment    研报ALL筛选框校验query    IT服务    ${check_field_list}
+    Comment    研报ALL筛选框校验query    电力    ${check_field_list}
+    Comment    研报ALL筛选框校验query    普钢    ${check_field_list}
+    Comment    研报ALL筛选框校验query    风电设备    ${check_field_list}
+    Comment    研报ALL筛选框校验query    化学制品    ${check_field_list}
+    Comment    研报ALL筛选框校验query    氨纶    ${check_field_list}
+    Comment    研报ALL筛选框校验query    传媒    ${check_field_list}
+    Comment    研报ALL筛选框校验query    工程机械    ${check_field_list}
+    Comment    研报ALL筛选框校验query    钾肥    ${check_field_list}
+    Comment    研报ALL筛选框校验query    乘用车    ${check_field_list}
+    Comment    删除Sessions
+
+04类型
+    ${pre_resultfile}    Set Variable    ReportASA01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    S004004    ${check_field_list}
+    研报ALL筛选框校验query    S004016    ${check_field_list}
+    研报ALL筛选框校验query    E010    ${check_field_list}
+    研报ALL筛选框校验query    E018    ${check_field_list}
+    研报ALL筛选框校验query    E007    ${check_field_list}
+    Comment    研报ALL筛选框校验query    E017    ${check_field_list}
+    研报ALL筛选框校验query    E021    ${check_field_list}
+    研报ALL筛选框校验query    S004017    ${check_field_list}
+    研报ALL筛选框校验query    E022    ${check_field_list}
+    研报ALL筛选框校验query    E026    ${check_field_list}
+    删除Sessions
+
+05时间
+    ${pre_resultfile}    Set Variable    ReportASA01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #生成需要测试的时间
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    last_month    ${check_field_list}
+    研报ALL筛选框校验query    last_3month    ${check_field_list}
+    研报ALL筛选框校验query    last_6month    ${check_field_list}
+    研报ALL筛选框校验query    last_year    ${check_field_list}
+    研报ALL筛选框校验query    not_limit    ${check_field_list}
+    删除Sessions
+
+06所在机构
+    ${pre_resultfile}    Set Variable    ReportASA01_s6_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    source
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    泰信黄金    ${check_field_list}
+    研报ALL筛选框校验query    申银万国期货    ${check_field_list}
+    研报ALL筛选框校验query    凯基证券    ${check_field_list}
+    研报ALL筛选框校验query    九州证券    ${check_field_list}
+    研报ALL筛选框校验query    国盛证券    ${check_field_list}
+    研报ALL筛选框校验query    山西证券    ${check_field_list}
+    研报ALL筛选框校验query    美国汇盛    ${check_field_list}
+    研报ALL筛选框校验query    海证期货    ${check_field_list}
+    研报ALL筛选框校验query    东亚证券    ${check_field_list}
+    研报ALL筛选框校验query    信达证券    ${check_field_list}
+    删除Sessions
+
+07作者
+    ${pre_resultfile}    Set Variable    ReportASA01_s7_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    author
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    石家骏    ${check_field_list}
+    研报ALL筛选框校验query    孙轶佳    ${check_field_list}
+    研报ALL筛选框校验query    王宇琼    ${check_field_list}
+    研报ALL筛选框校验query    张鹏    ${check_field_list}
+    研报ALL筛选框校验query    张一平    ${check_field_list}
+    研报ALL筛选框校验query    谢璐    ${check_field_list}
+    研报ALL筛选框校验query    程兵    ${check_field_list}
+    研报ALL筛选框校验query    黄飙    ${check_field_list}
+    研报ALL筛选框校验query    王宇轩    ${check_field_list}
+    研报ALL筛选框校验query    邢自强    ${check_field_list}
+    删除Sessions
+
+08评级
+    Comment    ${pre_resultfile}    Set Variable    ReportASA01_s8_
+    Comment    Set Suite Variable    ${pre_resultfile}
+    Comment    #需要校验的字段list
+    Comment    ${check_field_list}    Create List    rating
+    Comment    #校验指标
+    Comment    创建Session
+    Comment    研报ALL筛选框校验query    中性    ${check_field_list}
+    Comment    研报ALL筛选框校验query    减持    ${check_field_list}
+    Comment    研报ALL筛选框校验query    不限    ${check_field_list}
+    Comment    研报ALL筛选框校验query    买入    ${check_field_list}
+    Comment    研报ALL筛选框校验query    增持    ${check_field_list}
+    Comment    研报ALL筛选框校验query    卖出    ${check_field_list}
+    Comment    删除Sessions
+
+09页数
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportASA01_s9_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    page
+    #校验指标
+    创建Session
+    研报ALL筛选框校验query    10页以下    ${check_field_list}
+    研报ALL筛选框校验query    10-20页    ${check_field_list}
+    研报ALL筛选框校验query    20页以上    ${check_field_list}
+    删除Sessions

@@ -1,0 +1,12 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+点击评级下拉框
+    Click Element    css=#JS-advanceSearch>div:nth-child(8)
+    sleep    1
+
+选择评级
+    [Arguments]    ${评级名称}
+    Click Element    css=#JSselect-rating>div>ul>li[data-value=${评级名称}]
+    sleep    1

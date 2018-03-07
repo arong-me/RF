@@ -1,0 +1,26 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          清除搜索条件.txt
+
+*** Keywords ***
+点击高级搜索
+    Click Element    css=.ui-search-section>div>div:nth-child(3)
+    sleep    1
+
+标题必含关键字
+    [Arguments]    ${标题必含关键字}
+    Input Text    css=input[name="title_include"]    ${标题必含关键字}
+    Click Element    css=#JS-advanceSearch>div:nth-of-type(1)>button
+    sleep    1
+
+标题不含关键字
+    [Arguments]    ${标题不含关键字}
+    Input Text    css=input[name="title_not_include"]    ${标题不含关键字}
+    Click Element    css=#JS-advanceSearch>div:nth-of-type(2)>button
+    sleep    1
+
+内容必含关键字
+    [Arguments]    ${内容必含关键字}
+    Input Text    css=input[name="content_include"]    ${内容必含关键字}
+    Click Element    css=#JS-advanceSearch>div:nth-of-type(3)>button
+    sleep    1

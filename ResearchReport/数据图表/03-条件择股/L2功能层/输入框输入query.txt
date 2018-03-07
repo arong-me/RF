@@ -1,0 +1,12 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+复制
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=//*[@id="JS-printfintablebtn"]
+
+导出数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[4]/span[2]
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[4]/span[2]/ul/li

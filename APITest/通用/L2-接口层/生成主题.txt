@@ -1,0 +1,12 @@
+*** Settings ***
+Resource          ../L3-DB层/获取主题.txt
+Resource          文件处理.txt
+Resource          生成单个指标.txt
+
+*** Keywords ***
+生成主题
+    ${concept}    主题
+    ${filename}    Set Variable    %{G_DATACENTER}${/}Concept${/}concept.txt
+    ${existFile}    文件是否存在    ${filename}
+    Run Keyword IF    ${existFile}    log    concept.txt file has existed    ELSE    将列表内容写入txt文件中    ${concept}
+    ...    ${filename}

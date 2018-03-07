@@ -1,0 +1,51 @@
+*** Settings ***
+Library           Collections
+Library           RequestsLibrary
+Library           String
+
+*** Keywords ***
+创建Session
+    ${dict}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    ajax-sign=seXl9AuSYAVS5soUAPjwqmI3OWU4NDc5YTVjZjljMmEwMWRhMGJjZWZkNjg0YmFhY2U4ZjFjNzczYzZiMDUyODdiOGIwN2M5MDc2YjAzZGQd2izZ0paDJwFZ7rPhB4Pp5HGdcoAX8rqS0JpKRnm66eHlEK3+mJvYPqZtYlDnma8rBpjDKV1UEfsOj6wyyFLae7xKIkGLCp5wvRDuRxRg6QYNXww+J3cfgrqHgqR5QBg=    cookie=raa_callback=raa_callback_150755225859db6c028b717; _SEARCH_NUMPERPAGE_=20; userid=MTQ5NTQ0NTc0NCC6N5XA; _ga=GA1.2.1391916438.1507602110; _gid=GA1.2.1447837997.1507692090; PHPSESSID=e5ig6lc7tcqptgosc8v4p6hr61; _AJAX_SIGN_KEY_=1LTaz5fNsyW/clLicvWKjDg4ZTAwZmVlMGU3ZDQ1NDM2OWZmYzQ2YjhjYjBhZjM3NmY4OWFkOWE0YjEwNjQxZTYwMjBlOWM5MDJlZDg5NzcyMXJ4djOfGIbJ2W9JGfK4p2ZmpF6dXL67qHuhbbs5ddgdHDzg6Ovp6J/rK0ZJFNRPhUE/76GA5wA7KHSPgmstv3gPpnTbLKEHi3b0p76/PE2tlwSQOBLphfUFYsm7D+M%3D; _LOG_GUUID_=7155df76-0f0a-42bc-9b0a-cba691463ecd; _identity=0bcfbeb017250cf51d467fe5362c562200885c7e1bb8f3cee3036705d2ea117ea%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_identity%22%3Bi%3A1%3Bs%3A67%3A%22%5B%22MTQ5NTQ0NTc0NCC6N5XA%22%2C%223ekJr8YHuqXLptM_bxA-JunrpatiRY7t%22%2C2592000%5D%22%3B%7D; search_value=%u65E0%u5F62%u8D44%u4EA7%u644A%u9500%u540C%u6BD4%20%u57FA%u672C%u6BCF%u80A1%u6536%u76CA%u540C%u6BD4%7C%u65E0%u5F62%u8D44%u4EA7%u644A%u9500%u540C%u6BD4%7C%u57FA%u672C%u6BCF%u80A1%u6536%u76CA%u540C%u6BD4%7CIPO%7C%u8463%u4E8B%u957F%u738B%u77F3%7C%u51C0%u5229%u6DA6; raa_callback=raa_callback_150755225859db6c028b717; _SEARCH_NUMPERPAGE_=20; userid=MTQ5NTQ0NTc0NCC6N5XA; _ga=GA1.2.1391916438.1507602110; PHPSESSID=e5ig6lc7tcqptgosc8v4p6hr61; _AJAX_SIGN_KEY_=1LTaz5fNsyW/clLicvWKjDg4ZTAwZmVlMGU3ZDQ1NDM2OWZmYzQ2YjhjYjBhZjM3NmY4OWFkOWE0YjEwNjQxZTYwMjBlOWM5MDJlZDg5NzcyMXJ4djOfGIbJ2W9JGfK4p2ZmpF6dXL67qHuhbbs5ddgdHDzg6Ovp6J/rK0ZJFNRPhUE/76GA5wA7KHSPgmstv3gPpnTbLKEHi3b0p76/PE2tlwSQOBLphfUFYsm7D+M%3D; _LOG_GUUID_=7155df76-0f0a-42bc-9b0a-cba691463ecd; _identity=0bcfbeb017250cf51d467fe5362c562200885c7e1bb8f3cee3036705d2ea117ea%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_identity%22%3Bi%3A1%3Bs%3A67%3A%22%5B%22MTQ5NTQ0NTc0NCC6N5XA%22%2C%223ekJr8YHuqXLptM_bxA-JunrpatiRY7t%22%2C2592000%5D%22%3B%7D; search_value=%u65E0%u5F62%u8D44%u4EA7%u644A%u9500%u540C%u6BD4%20%u57FA%u672C%u6BCF%u80A1%u6536%u76CA%u540C%u6BD4%7C%u65E0%u5F62%u8D44%u4EA7%u644A%u9500%u540C%u6BD4%7C%u57FA%u672C%u6BCF%u80A1%u6536%u76CA%u540C%u6BD4%7CIPO%7C%u8463%u4E8B%u957F%u738B%u77F3%7C%u51C0%u5229%u6DA6"
+    Create Session    api    http://www-dev.aqlicai.cn    ${dict}
+
+校验Http返回码
+    [Arguments]    ${responseobj}    ${responsecode}
+    Should Be Equal As Strings    ${responseobj.status_code}    ${responsecode}
+
+获取字典value
+    [Arguments]    ${dict}    ${key}    #字典 字段名
+    ${passed}    Run Keyword And Return Status    Get From Dictionary    ${dict}    ${key}
+    ${Revalue}    Run Keyword If    ${passed}    set variable    ${dict['${key}']}
+    ...    ELSE    set variable    None
+    [Return]    ${Revalue}
+
+校验字典str类型value完全匹配
+    [Arguments]    ${key}    ${expect_value}    ${dict}    #${expect_value}为字符串或者整型
+    ${revalue}    获取字典value    ${dict}    ${key}
+    ${equal}    Evaluate    'None'==str('${revalue}')
+    ${ifmatch}    Run keyword If    ${equal}!=True and '${revalue}'=='${expect_value}'    Set variable    True
+    ...    ELSE    Set variable    False
+    [Teardown]
+    [Return]    ${ifmatch}
+
+校验字典str类型value存在list中
+    [Arguments]    ${key}    ${list}    ${dict}
+    ${revalue}    获取字典value    ${dict}    ${key}
+    Comment    List Should Contain Value    ${list}    ${revalue}
+    ${equal}    Evaluate    'None'==str('${revalue}')
+    ${ifExist}    Run keyword If    ${equal}!=True and '${revalue}' in ${list}    Set variable    True
+    ...    ELSE    Set variable    False
+    [Return]    ${ifExist}
+
+去除多余的空格
+    [Arguments]    ${source}
+    ${space}    Evaluate    str(' ')
+    ${dest}    Replace String    ${source}    ${space}    ${EMPTY}
+    [Return]    ${dest}
+
+Request请求
+    [Arguments]    ${query}
+    ${data}    Create Dictionary    keyword=${query}
+    log    ${data}
+    ${addr}    Post Request    api    /ajax/ai-stocks/search    data=${data}
+    [Return]    ${addr}    #response返回对象

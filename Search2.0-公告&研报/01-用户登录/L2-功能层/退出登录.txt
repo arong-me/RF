@@ -1,0 +1,10 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+打开用户设置
+    Wait Until Page Contains Element    css=.user-name    10
+    Click Element    css=.user-name
+
+点击退出登录
+    Click Element    css=.JS-user-logout_link.user-logout

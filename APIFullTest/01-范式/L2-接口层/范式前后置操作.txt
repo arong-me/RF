@@ -1,0 +1,23 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/结果统计.txt
+
+*** Keywords ***
+Normal_Directory_Setup
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、创建一级模块所需文件夹Normal_Form
+    创建一级模块所需文件夹    Normal_Form
+    #清空TotalSource下的normal_form文件夹
+    清空文件夹    %{G_DATASOURCE}${/}Normal_Form
+    #清空TotalRestult下的normal_form文件夹
+    清空文件夹    %{G_DATARESULTS}${/}Normal_Form
+
+Normal_Directory_Teardown
+    [Arguments]    ${results_path}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    整个范式Directory结束后统计结果发送邮件
+    Run Keyword If    "${results_path}"!=""    统计结果发送邮件    验证范式搜索框    ${results_path}

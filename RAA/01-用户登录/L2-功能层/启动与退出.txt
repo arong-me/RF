@@ -1,0 +1,14 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+关闭页面
+    Close Browser
+
+进入启动页
+    [Arguments]    ${raa_url}    ${browser_name}
+    Open Browser    ${raa_url}    ${browser_name}
+    页面最大化
+
+页面最大化
+    Maximize Browser Window

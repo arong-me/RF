@@ -1,0 +1,3 @@
+*** Settings ***
+Resource          ../../05-资源/前置条件资源.txt
+Resource          ../../05-资源/通用.txt

@@ -1,0 +1,113 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    06-Report    Report_A01
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报全部+搜索框.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01公司名称
+    [Documentation]    需要等待接口修改后再测试该场景，因为目前公司左选框没有删除
+    ${pre_resultfile}    Set Variable    ReportA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    创建Session
+    ALL研报校验query    300095.SZ    ${check_field_list}
+    ALL研报校验query    600573.SH    ${check_field_list}
+    ALL研报校验query    300436.SZ    ${check_field_list}
+    ALL研报校验query    000793.SZ    ${check_field_list}
+    ALL研报校验query    601016.SH    ${check_field_list}
+    ALL研报校验query    603966.SH    ${check_field_list}
+    ALL研报校验query    601500.SH    ${check_field_list}
+    ALL研报校验query    600501.SH    ${check_field_list}
+    ALL研报校验query    300219.SZ    ${check_field_list}
+    ALL研报校验query    600367.SH    ${check_field_list}
+    删除Sessions
+
+02研报分类
+    ${pre_resultfile}    Set Variable    ReportA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    Comment    ALL研报校验query    化工原料    ${check_field_list}
+    ALL研报校验query    半导体    ${check_field_list}
+    ALL研报校验query    公司研究    ${check_field_list}
+    ALL研报校验query    外文报告    ${check_field_list}
+    ALL研报校验query    市场研究    ${check_field_list}
+    ALL研报校验query    车辆交通    ${check_field_list}
+    ALL研报校验query    其他制造    ${check_field_list}
+    ALL研报校验query    教育培训    ${check_field_list}
+    ALL研报校验query    综合    ${check_field_list}
+    ALL研报校验query    连锁零售    ${check_field_list}
+    删除Sessions
+
+03研报行业
+    ${pre_resultfile}    Set Variable    ReportA01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    ALL研报校验query    稀有金属    ${check_field_list}
+    ALL研报校验query    汽车零部件    ${check_field_list}
+    ALL研报校验query    其他建材    ${check_field_list}
+    ALL研报校验query    旅游综合    ${check_field_list}
+    ALL研报校验query    电气自动化设备    ${check_field_list}
+    ALL研报校验query    光学光电子    ${check_field_list}
+    ALL研报校验query    专用设备    ${check_field_list}
+    ALL研报校验query    通信设备    ${check_field_list}
+    ALL研报校验query    食品加工    ${check_field_list}
+    ALL研报校验query    商业物业经营    ${check_field_list}
+    删除Sessions
+
+04关键词
+    ${pre_resultfile}    Set Variable    ReportA01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    ALL研报校验query    审计    ${check_field_list}
+    ALL研报校验query    云计算    ${check_field_list}
+    ALL研报校验query    艾派克    ${check_field_list}
+    ALL研报校验query    报表    ${check_field_list}
+    ALL研报校验query    股份变动    ${check_field_list}
+    ALL研报校验query    公告    ${check_field_list}
+    ALL研报校验query    回购交易    ${check_field_list}
+    ALL研报校验query    月度经营    ${check_field_list}
+    ALL研报校验query    买入    ${check_field_list}
+    ALL研报校验query    变更    ${check_field_list}
+    删除Sessions
+
+05所在机构
+    ${pre_resultfile}    Set Variable    ReportA01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    source
+    #校验指标
+    创建Session
+    Comment    ALL研报校验query    凯基证券    ${check_field_list}
+    Comment    ALL研报校验query    汇丰银行    ${check_field_list}
+    Comment    ALL研报校验query    倍特期货    ${check_field_list}
+    Comment    ALL研报校验query    融阳投资    ${check_field_list}
+    ALL研报校验query    江海证券    ${check_field_list}
+    ALL研报校验query    西部证券    ${check_field_list}
+    Comment    ALL研报校验query    大唐金融    ${check_field_list}
+    Comment    ALL研报校验query    隆众资讯    ${check_field_list}
+    Comment    ALL研报校验query    华信万达期货    ${check_field_list}
+    ALL研报校验query    华泰证券    ${check_field_list}
+    删除Sessions

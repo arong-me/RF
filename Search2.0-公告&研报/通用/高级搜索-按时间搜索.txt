@@ -1,0 +1,29 @@
+*** Settings ***
+Library           Selenium2Library
+Library           Collections
+
+*** Variables ***
+${kind}           ${EMPTY}
+@{下拉时间}           今天    昨天    近7天    近30天    近三个月    近半年    近一年
+
+*** Keywords ***
+获取时间类型
+    [Arguments]    ${公告研报类型}    # 公告研报类型只能输入：公告、证券研报、市场研报
+    ${kind}    Run Keyword If    '${公告研报类型}'=='公告'    Set Variable    ${6}
+    ...    ELSE IF    '${公告研报类型}'=='证券研报'    Set Variable    ${10}
+    ...    ELSE IF    '${公告研报类型}'=='市场研报'    Set Variable    ${7}
+    ...    ELSE    log    类型不存在
+    [Return]    ${kind}
+
+点击时间下拉框
+    [Arguments]    ${公告研报类型}
+    ${kind}    获取时间类型    ${公告研报类型}
+    Click Element    css=#JS-advanceSearch>div:nth-child(${kind})
+    sleep    1
+
+选择时间
+    [Arguments]    ${时间}
+    ${n}    Get Index From List    ${下拉时间}    ${时间}
+    ${m}    Evaluate    ${n}+${2}
+    Click Element    css=#JSselect-dateRange>div>ul>li:nth-child(${m})
+    sleep    1

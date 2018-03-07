@@ -1,0 +1,36 @@
+*** Settings ***
+Resource          通用.txt
+Resource          接口校验通用.txt
+
+*** Keywords ***
+检验draw_Type字段
+    [Arguments]    ${table}    ${query}    #|返回数据table字段对应的数据|query
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 校验最外部的draw_type字段是否为table
+    [Tags]    ygu
+    ${continue_flag}    ${draw_type}    校验str类型字段存在且数据不为空    draw_type    ${table}    ${query}
+    Run keyword If    ${continue_flag}!=1 or '${draw_type}'!='table'    append_to_file    ${results_path}${/}${pre_resultfile}drawtype_mismatchl.txt    ${query}\n
+    ${continue_flag}    Run keyword If    ${continue_flag}==1 and '${draw_type}'=='table'    set variable    1
+    ...    ELSE    set variable    -1
+    [Return]    ${continue_flag}    #是否继续运行标识
+
+校验内部的data下的items下的table
+    [Arguments]    ${query}    ${expect_dict}    @{data1}    #搜索语句|期望校验的结果|data数据
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 校验内部data数据下的items字段
+    [Tags]    ygu
+    ${table_name_list}    Get From Dictionary    ${expect_dict}    table
+    ${success_flag}    Set Variable    1
+    : FOR    ${d}    IN    @{data1}
+    \    ${success_flag}    ${items}    Run keyword If    ${success_flag}==1    获取items数据    ${d}
+    \    ...    ${query}
+    \    ...    ELSE    set variable    -1    ${None}
+    \    ${success_flag}    Run keyword If    ${success_flag}==1    校验items或者data下的每列数据    table    ${query}
+    \    ...    ${table_name_list}    ${items}
+    \    ...    ELSE    set variable    -1
+    \    Exit For Loop If    ${success_flag}!=1
+    [Return]    ${success_flag}    #是否继续运行标识

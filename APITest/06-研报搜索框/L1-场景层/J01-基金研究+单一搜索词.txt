@@ -1,0 +1,41 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    06-Report    Report_J01    基金研究
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../L2-接口层/研报左选框+搜索词.txt
+Resource          ../L2-接口层/研报搜索框前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个关键词
+    [Tags]    ygu
+    ${pre_resultfile}    Set Variable    ReportJ01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    研报左选框校验query    回购交易    ${check_field_list}
+    研报左选框校验query    物联网    ${check_field_list}
+    研报左选框校验query    合作    ${check_field_list}
+    研报左选框校验query    人工智能    ${check_field_list}
+    研报左选框校验query    复牌    ${check_field_list}
+    研报左选框校验query    产业    ${check_field_list}
+    研报左选框校验query    评估    ${check_field_list}
+    研报左选框校验query    买入    ${check_field_list}
+    研报左选框校验query    一带一路    ${check_field_list}
+    研报左选框校验query    月度经营    ${check_field_list}
+    删除Sessions
+    [Teardown]

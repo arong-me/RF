@@ -1,0 +1,113 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup，在在DataSource/TotalSource/Report和DataSource/TotalResuls/Report文件下创建二级目录Report_A01
+...
+...               2、设置全局变量测试数据源路径${datasource_path}、邮件发送文件路径${emaldata_path}以及设置登录头
+Suite Setup       Suite_Setup    Report    Report_A01
+Suite Teardown
+Test Teardown
+Force Tags        BVT_Full
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报全部+搜索框.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01公司名称
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.研报搜索框中测试一个公司名称
+    #生成主体
+    生成沪深股公司stockcode
+    #生成需要校验的stockcode和usedname
+    生成所有stockcode和usedname
+    生成所有stockname和stockcode
+    #生成需要测试的公司名称
+    ${pre_resultfile}    Set Variable    ReportA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}HZStock
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+02研报分类
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.研报搜索框中测试一个研报分类
+    #生成单研报分类
+    生成页面所有研报类型
+    #生成需要测试的公告分类
+    ${pre_resultfile}    Set Variable    ReportA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}ReportCategory_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+03研报行业
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.研报搜索框中测试一个研报行业
+    #生成研报搜索框测试行业    #搜索框研报行业去除部分作为分类的行业名称
+    生成研报搜索框测试行业
+    #生成需要测试的行业
+    ${pre_resultfile}    Set Variable    ReportA01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}ReportIndustry_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+04关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.研报搜索框中测试一个研报关键词
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportA01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}ReportKeyword_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+05所在机构
+    [Documentation]    【作者】ygu
+    ...
+    ...    【前置条件】研报分类为全部
+    ...
+    ...    【说明】
+    ...    1.研报搜索框中测试一个研报机构
+    #生成研报机构
+    生成研报机构
+    ${pre_resultfile}    Set Variable    ReportA01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #生成需要测试的时间
+    ${file}    Set Variable    ${pre_resultfile}Institution
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    source
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}

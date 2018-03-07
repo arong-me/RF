@@ -1,0 +1,12 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Resource          ../../资源配置/config.txt
+
+*** Keywords ***
+统计结果发送邮件
+    [Arguments]    ${subject}    ${filedir}    #主题|结果文件夹绝对路径
+    #编辑邮件发送内容
+    ${htmltext}    count_result    ${filedir}    %{G_DATACENTER}${/}Excel${/}casename.xlsx
+    #发送邮件
+    send_email    ${server_username}    ${server_pwd}    ${msg_from}    ${msg_to}    ${subject}    ${htmltext}
+    ...    ${filedir}

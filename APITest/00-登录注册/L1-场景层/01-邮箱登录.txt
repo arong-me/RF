@@ -1,0 +1,46 @@
+*** Settings ***
+Resource          ../L2-接口层/邮箱登录校验.txt
+
+*** Test Cases ***
+01正确用户名和正确密码
+    [Tags]    BVT
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+02正确用户名和错误密码
+
+03密码登录邮箱未注册
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+04超长用户名
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+05非邮箱账号
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+06特殊字符用户名
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+07超长密码
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+08特殊字符密码
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}
+
+09密码小于8位
+    ${邮箱用户名}    Set Variable    ${username}
+    ${邮箱密码}    Set Variable    ${pwd}
+    登录post请求    ${邮箱用户名}    ${邮箱密码}

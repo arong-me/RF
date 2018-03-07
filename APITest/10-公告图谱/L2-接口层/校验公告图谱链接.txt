@@ -1,0 +1,54 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/通用.txt
+
+*** Keywords ***
+校验pdf链接1接口
+    ${data}    Create Dictionary    notice_id=544615    subject_id=1-10086687    event_id=51984    bysubject_id=1-10086689
+    ${passed}    ${responseobj}    带data的Get请求    http://114.55.38.153:11000    /notice/notice/index    ${data}
+    Should Be Equal As Strings    ${passed}    PASS
+    Should Be Equal As Integers    ${responseobj.status_code}    200
+
+校验pdf链接2接口
+    ${data}    Create Dictionary    file=http://abc-crawler.oss-cn-hangzhou.aliyuncs.com/bb2d5a10a14ad15f05fbc8e4300130f.PDF
+    ${passed}    ${responseobj}    带data的Get请求    http://114.55.38.153:11000    /pdf/web/viewer.html    ${data}
+    Should Be Equal As Strings    ${passed}    PASS
+    Should Be Equal As Integers    ${responseobj.status_code}    200
+
+校验pdf链接3接口
+    ${passed}    ${responseobj}    不带data的Get请求    http://abc-crawler.oss-cn-hangzhou.aliyuncs.com    /cninfo.com.cn/211b1363-34d9-3d28-8cd7-6a156269afff.pdf
+    Should Be Equal As Strings    ${passed}    PASS
+    Should Be Equal As Integers    ${responseobj.status_code}    200
+
+校验知识图谱链接1接口
+    ${data}    Create Dictionary    article_id=85871
+    ${passed}    ${responseobj}    带data的Get请求    http://114.55.38.153:11000    /graph/graph/index    ${data}
+    Should Be Equal As Strings    ${passed}    PASS
+    Should Be Equal As Strings    ${responseobj.status_code}    200
+
+校验知识图谱链接2接口
+    Create Session    api    http://114.55.38.153:11000
+    ${dict}    Create Dictionary    notice_id=544615
+    ${responseobj}    固定Cookie的Post请求    ${dict}    /graph/graph/get-graph
+    Delete All Sessions
+    Should Be Equal As Integers    ${responseobj.status_code}    200
+    ${responsedata}    To Json    ${responseobj.content}
+    ${success}    Get From Dictionary    ${responsedata}    success
+    Should Be Equal As Strings    ${success}    1
+    ${result}    Get From Dictionary    ${responsedata}    result
+    ${is_null}    判断字典中所有key对应的value是否为空    ${result}
+    Should Not Be True    ${is_null}
+
+校验知识图谱链接3接口
+    Create Session    api    http://114.55.38.153:11000
+    ${dict}    Create Dictionary    notice_id=544615
+    ${responseobj}    固定Cookie的Post请求    ${dict}    /graph/graph/notice-event-names
+    Delete All Sessions
+    Should Be Equal As Integers    ${responseobj.status_code}    200
+    ${responsedata}    To Json    ${responseobj.content}
+    ${success}    Get From Dictionary    ${responsedata}    success
+    Should Be Equal As Strings    ${success}    1
+    ${result}    Get From Dictionary    ${responsedata}    result
+    :FOR    ${re}    IN    @{result}
+    \    ${is_null}    判断字典中所有key对应的value是否为空    ${re}
+    \    Exit For Loop If    ${is_null}
+    Should Not Be True    ${is_null}

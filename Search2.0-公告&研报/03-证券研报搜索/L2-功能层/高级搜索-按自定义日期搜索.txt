@@ -1,0 +1,52 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../时间控件参数.txt
+
+*** Keywords ***
+点击日期范围编辑框
+    Click Element    css=#JS-daterange
+    sleep    1
+
+选择开始时间-年
+    [Arguments]    ${开始年份}
+    Click Element    css=.timepl>div:nth-child(1) .year-select
+    sleep    1
+    Click Element    css=.timepl>div:nth-child(1) option[value='${开始年份}']
+    sleep    1
+
+选择开始时间-月
+    [Arguments]    ${开始月份}
+    ${start_mouth}    Evaluate    ${开始月份}-${1}
+    Click Element    css=.timepl>div:nth-child(1) .month-select
+    sleep    1
+    Click Element    css=.timepl>div:nth-child(1) option[value='${start_mouth}']
+    sleep    1
+
+选择开始时间-日
+    [Arguments]    ${开始日}
+    Click Element    css=.timepl>div:nth-child(1)>div>table>tbody>tr:nth-child(1)>td[date='${开始日}']
+    sleep    1
+
+选择结束时间-年
+    [Arguments]    ${结束年份}
+    Click Element    css=.timepl>div:nth-child(2) .year-select
+    sleep    1
+    Click Element    css=.timepl>div:nth-child(2) option[value='${结束年份}']
+    sleep    1
+
+选择结束时间-月
+    [Arguments]    ${结束月份}
+    ${end_mouth}    Evaluate    ${结束月份}-${1}
+    Click Element    css=.timepl>div:nth-child(2) .month-select
+    sleep    1
+    Click Element    css=.timepl>div:nth-child(2) option[value='${end_mouth}']
+    sleep    1
+
+选择结束时间-日
+    [Arguments]    ${开始日}
+    Click Element    css=.timepl>div:nth-child(2)>div>table>tbody>tr:nth-child(1)>td[date="${开始日}"]
+    sleep    1
+
+点击确定
+    Click Element    css=.range-btn.range-confirmBtn
+    sleep    1

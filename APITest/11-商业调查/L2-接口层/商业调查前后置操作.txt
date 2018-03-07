@@ -1,0 +1,21 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/结果统计.txt
+Resource          ../../通用/L2-接口层/文件处理.txt
+
+*** Keywords ***
+BusinessSurvey_Directory_Setup
+    [Tags]    ygu
+    创建一级模块所需文件夹    11-BusinessSurvey
+    #清空TotalSource下的ReportAdvancedSearch文件夹
+    清空文件夹    %{G_DATASOURCE}${/}11-BusinessSurvey
+    #清空TotalRestult下的ReportAdvancedSearch文件夹
+    清空文件夹    %{G_DATARESULTS}${/}11-BusinessSurvey
+
+BusinessSurvey_Directory_Teardown
+    [Arguments]    ${results_path}    #一级模块对应的文件夹路径
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    整个公告Directory结束后统计结果发送邮件
+    [Tags]    ygu
+    Run Keyword If    "${results_path}"!=""    统计结果发送邮件    验证商业调查    ${results_path}

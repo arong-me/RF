@@ -1,0 +1,45 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup，在在DataSource/TotalSource/NoticeChart和DataSource/TotalResuls/NoticeChart 文件下创建二级目录NoticeChart_01
+...
+...               2、设置全局变量测试数据源路径${datasource_path}、邮件发送文件路径${emaldata_path}以及设置登录头
+Suite Setup       Suite_Setup    NoticeChart    NoticeChart_01
+Suite Teardown
+Test Teardown
+Force Tags        BVT_Full
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../L2-接口层/公告图谱搜索框.txt
+
+*** Test Cases ***
+01单公司简称
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 测试单个公司简称
+    ${pre_resultfile}    Set Variable    NoticeChart01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    创建Session
+    公告图谱校验query    光线传媒    ${check_field_list}
+    公告图谱校验query    永辉超市    ${check_field_list}
+    删除Sessions
+
+02单公司全称
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 测试单个公司全称
+    ${pre_resultfile}    Set Variable    NoticeChart01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    创建Session
+    公告图谱校验query    北京光线传媒股份有限公司    ${check_field_list}
+    公告图谱校验query    永辉超市股份有限公司    ${check_field_list}
+    删除Sessions

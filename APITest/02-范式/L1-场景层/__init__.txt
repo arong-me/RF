@@ -1,0 +1,9 @@
+*** Settings ***
+Documentation     【说明】
+...
+...               1. 文件名格式为两种
+...
+...               1）query不带数目默认为1：[范式normalform首字母][编号]_[场景scene首字母][编号]_[query1]_x[query数目]-[query2]
+...
+...               2）query均带数目：[范式normalform首字母][编号]_[场景scene首字母][编号]_[query1]_x[query数目]-[query2]_x[query2数目]
+Suite Setup

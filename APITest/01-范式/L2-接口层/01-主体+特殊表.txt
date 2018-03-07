@@ -1,0 +1,127 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Library           String
+Library           OperatingSystem
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/读取表结果.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../../通用/L2-接口层/接口结果基础校验.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/通用.txt
+Resource          ../../资源配置/config.txt
+Resource          ../../通用/L2-接口层/搜图表结果校验.txt
+Resource          ../../通用/L2-接口层/接口校验通用.txt
+
+*** Keywords ***
+循环读文件获取指标进行校验
+    [Arguments]    ${datasource_path}    ${file}    #测试数据存放的路径|生成文件名格式
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 先清理之前已有的该场景的文件，必须遗留上次的测试结果
+    ...    2、循环读取所有关乎各自场景下的所有文件
+    [Tags]    ygu
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    创建Session
+    ${scene}    Set Variable    1
+    Comment    清理文件夹下指定的文件    ${results_path}    ${pre_resultfile}
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    循环读指标校验query    ${querylist}
+
+循环读指标校验query
+    [Arguments]    ${querylist}    # 所有指标列表
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 循环读取一个文件下的所有query语句
+    ...    2、将读取的语句拆分成所需要校验的字段传入校验流程
+    ...    3、拆分两个指标使用英文逗号
+    [Tags]    ygu
+    : FOR    ${query}    IN    @{querylist}
+    \    范式1校验query    ${query}
+
+范式1校验query
+    [Arguments]    ${query}    #主体名和特殊表名
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 主要讲传入的校验字段得出期望校验的数据存放到字典中
+    ...    2、校验post请求返回的statuscode是否为200
+    ...    2、返回200后，将query语句、response对象以及校验数据的字典作为参数传入后面校验流程中
+    [Tags]    ygu
+    @{indicatorlist}    Split String    ${query}    ,
+    ${stock_name}    Set Variable    @{indicatorlist}[0]
+    ${table_name}    Set Variable    @{indicatorlist}[1]
+    ${passed}    ${responseobj}    ${query}    ${exp_indicators_dict}    范式1query语句post请求    ${stock_name}    ${table_name}
+    Run Keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    ...    ELSE    范式1校验query返回Response结果    ${responseobj}    ${query}    ${exp_indicators_dict}
+
+范式1query语句post请求
+    [Arguments]    ${stock_name}    ${table_name}    #主体名和特殊表名
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 主要讲传入的校验字段得出期望校验的数据存放到字典中
+    ...    2、校验post请求返回的statuscode是否为200
+    ...    2、返回200后，将query语句、response对象以及校验数据的字典作为参数传入后面校验流程中
+    [Tags]    ygu
+    @{stock_name_list}    Split String    ${stock_name}    ${SPACE}    #
+    Comment    ${table_name}    Set Variable    利润表
+    @{table_name_list}    读取特殊表期望结果    ${table_name}    #    自写库获取
+    Comment    @{table_name_list}    Create list    利润表    资产负债表    现金流量表
+    ${stock_name_nospace}    去除多余的空格    ${stock_name}
+    #将期望的校验结果存入字典中
+    ${exp_indicators_dict}    Create Dictionary    stock_name=@{stock_name_list}    table=@{table_name_list}
+    ${query}    Set Variable    ${stock_name_nospace}${table_name}
+    log    ${query}
+    ${data}    Create Dictionary    keyword=${query}    tab_type=ai-stocks
+    ${passed}    ${responseobj}    query语句请求    ${data}    ${apiurl_stock}
+    [Return]    ${passed}    ${responseobj}    ${query}    ${exp_indicators_dict}    # post请求成功与失败标识|返回的response对象|query语句|期望校验结果
+
+范式1校验query返回Response结果
+    [Arguments]    ${responseobj}    ${query}    ${exp_indicators_dict}    #返回reponse对象|搜索词| 期望比对结果字典
+    [Tags]    ygu
+    ${continue_flag}    ${data}    Response基础校验    ${responseobj}    ${query}
+    ${continue_flag}    ${table}    Run keyword If    ${continue_flag}==1    校验非str类型字段存在且数据不为空    table    ${data}
+    ...    ${query}
+    ...    ELSE    set variable    ${continue_flag}    ${None}
+    ${continue_flag}    Run keyword If    ${continue_flag}==1    检验draw_Type字段    ${table}    ${query}
+    ...    ELSE    set variable    ${continue_flag}
+    Run keyword If    ${continue_flag}==1    范式1校验table下的data数据    ${table}    ${query}    ${exp_indicators_dict}
+
+范式1校验table下的data数据
+    [Arguments]    ${table}    ${query}    ${expect_dict}    #返回数据table字段对应的数据|query|期望校验字段的字典数据
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 校验table内部的data字段是否存在，存在后校验内部data数据中的stock_name以及items下的table字段对应的特殊表数据
+    [Tags]    ygu
+    ${continue_flag}    ${data1}    校验非str类型字段存在且数据不为空    data    ${table}    ${query}
+    Run keyword If    ${continue_flag}==1    范式1校验内部的data数据    ${data1}    ${query}    ${expect_dict}
+
+范式1校验内部的data数据
+    [Arguments]    ${data1}    ${query}    ${expect_dict}    #返回数据内部data字段对应的数据|query|期望校验字段的字典数据
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 校验table内部的data数据包含stock_name以及items下的table字段对应的特殊表数据
+    [Tags]    ygu
+    ${stock_name_list}    Get From Dictionary    ${expect_dict}    stock_name
+    ${success_flag}    校验items或者data下的每列数据    stock_name    ${query}    ${stock_name_list}    ${data1}
+    log    ${success_flag}
+    ${success_flag}    Run keyword If    ${success_flag}==1    校验内部的data下的items下的table    ${query}    ${expect_dict}    @{data1}
+    ...    ELSE    set variable    -1
+    log    ${success_flag}
+    Run keyword If    ${success_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${query}\n
+
+清理范式1环境
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 清理范式1每个case之后的环境，目前只写了Delete All Session，之后可以增加其他action。
+    ...    2. 作为后置条件
+    [Tags]    ygu
+    Delete All Sessions

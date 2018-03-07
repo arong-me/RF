@@ -1,0 +1,146 @@
+*** Settings ***
+Library           String
+Resource          ../../资源配置/设置数据库.txt
+Resource          转换数据格式.txt
+
+*** Keywords ***
+获取公告指定分类的id列表
+    [Arguments]    ${category}
+    连接公告研报数据库
+    ${passed}    ${CategoryIdTuple}    Run Keyword If    '${category}'=='一季报'    Run Keyword And Ignore Error    Query    SELECT DISTINCT category_id FROM notice_abc_category WHERE category_name LIKE '一季%'
+    ...    ELSE IF    '${category}'=='三季报'    Run Keyword And Ignore Error    Query    SELECT DISTINCT category_id FROM notice_abc_category WHERE category_name LIKE '三季%'
+    ...    ELSE    Run Keyword And Ignore Error    Query    SELECT DISTINCT category_id FROM notice_abc_category WHERE category_name = '${category}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${CategoryIdTuple}
+    ...    ELSE    set variable    0
+    #判断分类id存在/不存在
+    ${CategoryId_List}    Run Keyword If    ${Len}!=0    将返回元组数据转换成列表    ${CategoryIdTuple}
+    ...    ELSE    Create List
+    断开数据库
+    [Return]    ${CategoryId_List}
+
+获取公告指定类型id的名称
+    [Arguments]    ${category_id}
+    连接公告研报数据库
+    ${passed}    ${CategoryNameTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT category_name FROM notice_abc_category WHERE category_id= '${category_id}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${CategoryNameTuple[0][0]}
+    ...    ELSE    set variable    0
+    ${Category}    Run Keyword If    ${Len}==0    set variable    ${EMPTY}
+    ...    ELSE    Evaluate    '${CategoryNameTuple[0][0]}'.decode('utf-8')
+    断开数据库
+    [Return]    ${Category}
+
+获取stockcode对应的stockname
+    [Arguments]    ${stockcode}
+    连接线上测试数据库
+    ${passed}    ${StockNameTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT sec_name FROM sec_basic_info WHERE abc_code = '${stockcode}' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(sec_name,'')!=''
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${StockNameTuple}
+    ...    ELSE    set variable    0
+    ${stockname}    Run Keyword If    ${Len}==0    set variable    ${EMPTY}
+    ...    ELSE    Evaluate    "${StockNameTuple[0][0]}".decode("utf-8")
+    断开数据库
+    [Return]    ${stockname}
+
+获取stockname对应的stockcode
+    [Arguments]    ${stockname}
+    连接线上测试数据库
+    ${passed}    ${StockCodeTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT abc_code FROM sec_basic_info WHERE sec_name = '${stockname}' AND ipo_status IN('1002007','1002009','1002010') \ AND IFNULL(abc_code,'')!=''
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${StockCodeTuple}
+    ...    ELSE    set variable    0
+    ${stockcode}    Run Keyword If    ${Len}==0    set variable    ${EMPTY}
+    ...    ELSE    set variable    ${StockCodeTuple[0][0]}
+    断开数据库
+    [Return]    ${stockcode}
+
+获取stockcode对应的usedname
+    [Arguments]    ${sec_name}
+    连接线上测试数据库
+    ${list}    create list
+    ${passed}    ${UsedNameTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT used_name FROM sec_basic_info WHERE sec_name='${sec_name}' AND used_name !='—' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(used_name,'')!=''
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${UsedNameTuple}
+    ...    ELSE    set variable    0
+    ${UsedNameList}    Run Keyword If    ${Len}==0    set Variable    ${list}
+    ...    ELSE    Split String    ${UsedNameTuple[0][0]}    ->
+    断开数据库
+    [Return]    ${UsedNameList}
+
+获取研报指定类型id的名称
+    [Arguments]    ${category_id}
+    连接公告研报数据库
+    ${passed}    ${CategoryNameTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT type_name FROM report_type_choice WHERE type_id = '${category_id}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${CategoryNameTuple[0][0]}
+    ...    ELSE    set variable    0
+    ${Category}    Run Keyword If    ${Len}==0    set variable    ${EMPTY}
+    ...    ELSE    Evaluate    '${CategoryNameTuple[0][0]}'.decode('utf-8')
+    断开数据库
+    [Return]    ${Category}
+
+获取三级行业名称对应id
+    [Arguments]    ${industry_name}
+    连接正式数据库
+    ${passed}    ${IndustryIdTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT third_indu_code AS indu_name FROM sec_industry_new WHERE third_indu_name='${industry_name}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${IndustryIdTuple}
+    ...    ELSE    set variable    0
+    #判断分类id存在/不存在
+    ${IndustryId}    Run Keyword If    ${Len}==0    set variable    ${EMPTY}
+    ...    ELSE    set variable    T${IndustryIdTuple[0][0]}
+    log    ${IndustryId}
+    断开数据库
+    [Return]    ${IndustryId}
+
+获取指定行业对应的id号
+    [Arguments]    ${industry}
+    连接线上测试数据库
+    ${passed}    ${IndustryIdTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT indu_code FROM abc_industry WHERE indu_standard = '1001014' AND indu_name = '${industry}' AND CHAR_LENGTH(indu_code)=6 ORDER BY parent_id,indu_code
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${IndustryIdTuple[0][0]}
+    ...    ELSE    set variable    0
+    log    ${IndustryIdTuple[0][0][3:6]}
+    ${industry_id}    Run Keyword If    ${Len}==0    set variable    ${EMPTY}
+    ...    ELSE IF    '${IndustryIdTuple[0][0][3:6]}'=='000'    set variable    F${IndustryIdTuple[0][0][0:3]}
+    ...    ELSE IF    '${IndustryIdTuple[0][0][4:6]}'=='00'    set variable    S${IndustryIdTuple[0][0][0:4]}
+    ...    ELSE    set variable    T${IndustryIdTuple[0][0]}
+    log    ${industry_id}
+    断开数据库
+    [Return]    ${industry_id}
+
+获取研报一级类型对应期望的类型id
+    [Arguments]    ${category_id}
+    连接公告研报数据库
+    ${passed}    ${CategoryIdTuple}    Run Keyword And Ignore Error    Query    SELECT type_id FROM report_type_choice WHERE parent_id = '${category_id}' UNION ALL SELECT type_id FROM report_type_choice WHERE parent_id IN (SELECT type_id FROM report_type_choice WHERE parent_id = '${category_id}') UNION ALL SELECT type_id FROM report_type_choice WHERE type_name = '${category_id}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${CategoryIdTuple}
+    ...    ELSE    set variable    0
+    #判断分类id存在/不存在
+    ${CategoryId_List}    Run Keyword If    ${Len}!=0    将返回元组数据转换成列表    ${CategoryIdTuple}
+    ...    ELSE    Create List
+    断开数据库
+    [Return]    ${CategoryId_List}
+
+获取研报二级类型对应期望的类型id
+    [Arguments]    ${category_id}
+    连接公告研报数据库
+    ${passed}    ${CategoryIdTuple}    Run Keyword And Ignore Error    Query    SELECT type_id FROM report_type_choice WHERE parent_id = '${category_id}' UNION ALL SELECT '${category_id}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${CategoryIdTuple}
+    ...    ELSE    set variable    0
+    #判断分类id存在/不存在
+    ${CategoryId_List}    Run Keyword If    ${Len}!=0    将返回元组数据转换成列表    ${CategoryIdTuple}
+    ...    ELSE    Create List
+    断开数据库
+    [Return]    ${CategoryId_List}
+
+获取研报指定类型期望展示的id列表
+    [Arguments]    ${category_id}
+    ${category_id_list}    Run Keyword If    "R" in "${category_id}"    获取研报一级类型对应期望的类型id    ${category_id}
+    ...    ELSE IF    "S" in "${category_id}"    获取研报二级类型对应期望的类型id    ${category_id}
+    ...    ELSE    Create List    ${category_id}
+    [Return]    ${category_id_list}
+
+获取研报指定分类的id列表
+    [Arguments]    ${category}
+    连接公告研报数据库
+    ${passed}    ${CategoryIdTuple}    Run Keyword And Ignore Error    Query    SELECT DISTINCT type_id FROM report_type_choice WHERE type_name ='${category}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${CategoryIdTuple}
+    ...    ELSE    set variable    0
+    #判断分类id存在/不存在
+    ${CategoryId_List}    Run Keyword If    ${Len}!=0    将返回元组数据转换成列表    ${CategoryIdTuple}
+    ...    ELSE    Create List
+    断开数据库
+    [Return]    ${CategoryId_List}

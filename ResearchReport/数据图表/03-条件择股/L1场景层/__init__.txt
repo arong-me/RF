@@ -1,0 +1,5 @@
+*** Settings ***
+Documentation     【作者】qinghuaguan
+...
+...               【说明】
+...               1. 条件择股UI界面 和交互的验证

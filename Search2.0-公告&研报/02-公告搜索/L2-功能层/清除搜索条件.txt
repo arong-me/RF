@@ -1,0 +1,12 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+清空搜索框
+    Input Text    css=#JS-stockInput    ${EMPTY}
+    Input Text    css=#JS-searchInput    ${EMPTY}
+    sleep    1
+
+清空筛选条件
+    Click Element    css=.clear-tags
+    sleep    1

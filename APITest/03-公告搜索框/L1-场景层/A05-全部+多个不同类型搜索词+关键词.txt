@@ -1,0 +1,60 @@
+*** Settings ***
+Suite Setup       Suite_Setup    03-Notice    Notice_A05
+Force Tags        BVT
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01公司+多个分类+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索1个公司名称+1-2个公告分类+1-2个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA05_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname    category    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 姜超    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 哈药集团    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 前十名股东持股情况    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 修订    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 金融行业    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 复牌    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 平安证券    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 单位    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 制造业    ${check_field_list}
+    ALL公告校验query    002311.SZ,终止上市 增发 投资项目 中商集团    ${check_field_list}
+    删除Sessions
+
+02多个分类+多个行业+关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索1-2个公告分类+1-2个公告行业+1-2个关键词
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA05_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category    industry    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    深交所公告 聚氨酯 交易    ${check_field_list}
+    ALL公告校验query    深交所公告 聚氨酯 投资项目    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 分红    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 概念    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 合作    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 报告    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 决议    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 制造业    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 回购交易    ${check_field_list}
+    ALL公告校验query    基金运作变动 港股公告,医药生物 专业工程,雅居乐 评估    ${check_field_list}
+    删除Sessions

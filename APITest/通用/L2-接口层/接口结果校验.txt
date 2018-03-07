@@ -1,0 +1,67 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          通用.txt
+
+*** Keywords ***
+query语句请求
+    [Arguments]    ${query}    ${exp_indicators_dict}
+    ${passed}    ${responseobj}    run_keyword_and_ignore_error    Request请求    ${query}
+    Comment    Run keyword If    '${passed}'=='PASS' and '${responseobj.status_code}'=='200'    校验Response结果code值为0    ${responseobj}    ${query}    ${exp_indicators_dict}
+    ...    ELSE    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    [Return]    ${passed}    ${responseobj}
+
+校验内部的data下的stock_name
+    [Arguments]    ${check_flag}    ${query}    ${expect_dict}    @{data1}
+    ${stock_name_list}    Get From Dictionary    ${expect_dict}    stock_name
+    ${stock_num}    Set Variable    0
+    ${stockname_name_list_length}    Get Length    ${stock_name_list}
+    ${success_flag}    Set Variable    1
+    : FOR    ${d}    IN    @{data1}
+    \    Comment    log    ${d}
+    \    ${ifExist}    校验字典str类型value存在list中    stock_name    ${stock_name_list}    ${d}
+    \    ${add1}    Evaluate    ${stock_num}+1
+    \    ${stock_num}    Run keyword If    ${ifExist}==True and ${check_flag}==1    Set variable    ${add1}
+    \    ...    ELSE    Set variable    ${stock_num}
+    \    ${success_flag}    Run keyword If    ${ifExist}!=True or ${check_flag} !=1    Set variable    -1
+    \    ...    ELSE    Set variable    ${success_flag}
+    \    Run keyword If    ${ifExist}!=True and ${check_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}stockname_mismatchl.txt    ${query}\n
+    \    Exit For Loop If    ${ifExist}!=True or ${check_flag} !=1
+    Run Keyword If    ${success_flag}==1 and ${stockname_name_list_length}!=${stock_num}    append_to_file    ${results_path}${/}${pre_resultfile}stock_name_length_mismatch.txt    ${query}\n
+    ${success_flag}    Run keyword If    ${success_flag}==1 and ${stockname_name_list_length}!=${stock_num}    Set variable    -1
+    ...    ELSE    Set variable    ${success_flag}
+    [Return]    ${success_flag}
+
+校验内部的data下的items下的table
+    [Arguments]    ${check_flag}    ${query}    ${expect_dict}    @{data1}
+    ${table_name_list}    Get From Dictionary    ${expect_dict}    table
+    ${success_flag}    Set Variable    1
+    : FOR    ${d}    IN    @{data1}
+    \    ${success_flag}    校验item数据    ${check_flag}    ${query}    ${d}    ${table_name_list}
+    \    Exit For Loop If    ${success_flag}!=1 and ${check_flag}!=1
+    [Return]    ${success_flag}
+
+校验item数据
+    [Arguments]    ${check_flag}    ${query}    ${d}    ${table_name_list}
+    @{items}    获取字典value    ${d}    items
+    ${special_result_flag}    特殊表校验For    ${check_flag}    ${query}    ${table_name_list}    @{items}
+    ${success_flag}    Set Variable    ${special_result_flag}
+    [Return]    ${success_flag}    #是否校验成功的标识
+
+特殊表校验For
+    [Arguments]    ${check_flag}    ${query}    ${table_name_list}    @{items}    # items是返回数据，table_name_list是期望正确的结果
+    ${table_num}    Set Variable    0
+    ${success_flag}    Set Variable    1
+    : FOR    ${t}    IN    @{items}
+    \    ${ifExist}    校验字典str类型value存在list中    table    ${table_name_list}    ${t}
+    \    ${add1}    Evaluate    ${table_num}+1
+    \    ${table_num}    Run keyword If    ${ifExist}==True and ${check_flag}==1    Set variable    ${add1}
+    \    ...    ELSE    Set variable    ${table_num}
+    \    ${success_flag}    Run keyword If    ${ifExist}!=True or ${check_flag}!=1    Set variable    -1
+    \    ...    ELSE    Set variable    ${success_flag}
+    \    Run Keyword If    ${ifExist}!=True and ${check_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}table_mismatch.txt    ${query}\n
+    \    Exit For Loop If    ${ifExist}!=True or ${check_flag}!=1
+    ${table_name_list_length}    Get Length    ${table_name_list}
+    Run keyword If    ${success_flag}==1 and ${table_name_list_length}!=${table_num}    append_to_file    ${results_path}${/}${pre_resultfile}table_length_mismatch.txt    ${query}\n
+    ${success_flag}    Run keyword If    ${success_flag}==1 and ${table_name_list_length}!=${table_num}    Set variable    -1
+    ...    ELSE    Set variable    ${success_flag}
+    [Return]    ${success_flag}    #校验是否成功的标识

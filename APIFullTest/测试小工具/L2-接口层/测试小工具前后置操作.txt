@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/文件处理.txt
+
+*** Keywords ***
+TestTools_Directory_Setup
+    [Tags]    ygu
+    创建一级模块所需文件夹    TestTools
+    #清空TotalSource下的NoticeAdvancedSearchScreen文件夹
+    清空文件夹    %{G_DATASOURCE}${/}TestTools
+    #清空TotalRestult下的notice文件夹
+    清空文件夹    %{G_DATARESULTS}${/}TestTools

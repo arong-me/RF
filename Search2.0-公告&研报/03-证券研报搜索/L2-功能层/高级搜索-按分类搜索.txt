@@ -1,0 +1,24 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+点击分类下拉框
+    Click Element    css=#JS-advanceSearch>div:nth-child(6)>i
+    sleep    1
+
+选择一级分类
+    [Arguments]    ${一级分类}
+    Click Element    css=td[filter-txt=${一级分类}]>a
+    sleep    1
+    [Teardown]
+
+选择二级分类
+    [Arguments]    ${一级分类}    ${二级分类}
+    Click Element    css=td[filter-txt=${一级分类}]>a
+    sleep    1
+    Click Element    css=a[filter-txt=${二级分类}]
+    sleep    1
+
+关闭分类下拉框
+    Click Element    css=#JS-advanceSearch>div:nth-child(6)>.multi-contain>i
+    sleep    1

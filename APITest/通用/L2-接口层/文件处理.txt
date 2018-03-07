@@ -1,0 +1,34 @@
+*** Settings ***
+Library           OperatingSystem
+
+*** Keywords ***
+文件是否存在
+    [Arguments]    ${filename}
+    ${existFile}    Evaluate    os.path.exists(r'${filename}')    os
+    log    ${existFile}
+    [Return]    ${existFile}
+
+创建文件夹
+    [Arguments]    ${path}    ${name}
+    ${directory}    Evaluate    os.path.join(r'${path}','${name}')    os
+    log    ${directory}
+    ${existFile}    文件是否存在    ${directory}
+    Run Keyword Unless    ${existFile}    create_directory    ${directory}
+
+创建测试所需文件夹
+    [Arguments]    ${name}
+    创建文件夹    %{G_DATACENTER}    ${name}
+    ${path1}    Set Variable    %{G_DATACENTER}${/}${name}
+    创建文件夹    ${path1}    datasource    #生成组合指标存放路径
+    创建文件夹    ${path1}    testresults    #测试结果存放路径
+
+删除文件列表中的文件
+    [Arguments]    ${dir}    @{filelist}
+    :FOR    ${filename}    IN    @{filelist}
+    \    Remove file    ${dir}${/}${filename}
+
+清理文件夹下的文件
+    [Arguments]    ${dir}    ${filename}
+    ${filelist}    List Files In Directory    ${dir}    ${filename}*.txt
+    ${length}    Get Length    ${filelist}
+    Run Keyword If    ${length}!=0    删除文件列表中的文件    ${dir}    @{filelist}

@@ -1,0 +1,31 @@
+*** Settings ***
+Suite Setup       用户登录
+Suite Teardown    退出登录
+Test Setup
+Test Teardown
+Library           Selenium2Library
+Resource          ../L2-功能层/进入公告全部分类.txt
+Resource          ../L2-功能层/公告分类导航搜索.txt
+Resource          ../L2-功能层/公告筛选.txt
+Resource          ../L2-功能层/子模块.txt
+Resource          ../../01-用户登录/L2-功能层/子模块.txt
+
+*** Test Cases ***
+按公告一级分类关键字搜索
+    进入公告全部分类
+    sleep    ${page_show_time}
+    清空搜索框和已筛选条件
+    进入公告一级分类    沪深股票公告
+    sleep    ${page_show_time}
+
+按公告二级分类关键字搜索
+    进入公告全部分类
+    清空搜索框和已筛选条件
+    进入公告二级分类    沪深股票公告    定期报告
+    sleep    ${page_show_time}
+
+按公告三级分类关键字搜索
+    进入公告全部分类
+    清空搜索框和已筛选条件
+    进入公告三级分类    沪深股票公告    定期报告    业绩快报
+    sleep    ${page_show_time}

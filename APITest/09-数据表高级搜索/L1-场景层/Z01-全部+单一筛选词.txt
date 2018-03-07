@@ -1,0 +1,76 @@
+*** Settings ***
+Documentation     【作者】qinghuaguan
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建 datasheet 一级文件夹和Datasheet _Z0100二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    datasheet    Datasheet _Z0100
+Suite Teardown
+Test Teardown
+Force Tags
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+筛选框校验.txt
+
+*** Test Cases ***
+01标题必含
+    [Documentation]    【作者】qinghuaguan
+    ...
+    ...    【说明】
+    ...    1. 数据表高级搜索 标题必含
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    datasheet01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}TableTitle_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list    \ kk
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+02标题不含
+    [Documentation]    【作者】qinghuaguan
+    ...
+    ...    【说明】
+    ...    1. 数据表高级搜索 标题不含
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    datasheet01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    ${file}    Set Variable    ${pre_resultfile}TableTitle_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_uninclude
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+03机构
+    [Documentation]    【作者】qinghuaguan
+    ...
+    ...    【说明】
+    ...    1. 数据表高级搜索 机构
+    ${pre_resultfile}    Set Variable    datasheet01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #生成需要测试的时间
+    ${file}    Set Variable    ${pre_resultfile}TableOrg_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    publish
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}
+
+04时间
+    [Documentation]    【作者】qinghuaguan
+    ...
+    ...    【说明】
+    ...    1. 数据表高级搜索 时间验证
+    ${pre_resultfile}    Set Variable    datasheet01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #生成需要测试的时间
+    ${file}    Set Variable    ${pre_resultfile}Time_x1
+    搜图生成组合指标    ${datasource_path}    ${file}.txt    ${CombMax_G}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${file}

@@ -1,0 +1,22 @@
+*** Settings ***
+Resource          ../../资源配置/设置数据库.txt
+
+*** Keywords ***
+获取所有的data_id
+    连接正式数据库
+    ${DataIdTuple}    Run Keyword And Continue on Failure    Query    SELECT data_id FROM financial_indicator_data_new WHERE push_flag=1
+    断开数据库
+    [Return]    ${DataIdTuple}
+
+获取data_id对应indicator相关数据
+    [Arguments]    ${data_id}
+    连接正式数据库
+    ${passed}    ${IndicatorTuple}    Run Keyword And Ignore Error    Query    SELECT indicator_value,indicator_value_hb,indicator_value_tb FROM financial_indicator_data_new WHERE data_id='${data_id}'
+    ${Len}    Run Keyword If    '${passed}'=='PASS'    Get Length    ${IndicatorTuple}
+    ...    ELSE    set variable    0
+    ${indicator}    ${indicator_hb}    ${indicator_tb}    Run Keyword If    ${Len}==0    set variable    ${None}
+    ...    ${None}    ${None}
+    ...    ELSE    set variable    ${IndicatorTuple[0][0]}    ${IndicatorTuple[0][1]}    ${IndicatorTuple[0][2]}
+    ${database_dict}    Create Dictionary    indicator_value=${indicator}    indicator_value_hb=${indicator_hb}    indicator_value_tb=${indicator_tb}
+    断开数据库
+    [Return]    ${database_dict}

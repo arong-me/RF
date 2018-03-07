@@ -1,0 +1,20 @@
+*** Settings ***
+Suite Setup       用户登录
+Resource          ../L2-功能层/启动与退出.txt
+Resource          ../L2-功能层/用户登录.txt
+Resource          ../../资源配置/config.txt
+Resource          ../../资源配置/RAA全局变量.txt
+Resource          ../L2-功能层/退出登录.txt
+Resource          ../L2-功能层/子模块.txt
+Resource          ../L3-页面层/退出登录.txt
+
+*** Test Cases ***
+退出登录
+    [Setup]
+    sleep    ${page_show_time}
+    打开用户设置
+    sleep    1
+    点击退出登录
+    sleep    ${page_show_time}
+    Page Should Contain    ${assert_logout}
+    关闭页面

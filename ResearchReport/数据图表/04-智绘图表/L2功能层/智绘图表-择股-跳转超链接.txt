@@ -1,0 +1,24 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../05-资源/通用.txt
+
+*** Keywords ***
+股票代码跳转个股页面
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[2]/div/div[1]/table/tbody/tr[1]/td[2]/a    #点击股票代码下的“工商银行”跳转到个股页面
+    Page Should Contain    工商银行    #效验是否存在文本工商银行
+    sleep    3
+    跳转后切换窗口
+
+股票简称跳转到个股页面
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[2]/div/div[1]/table/tbody/tr[1]/td[3]/a    #点击股票简称下的“工商银行”跳转到个股页面
+    Page Should Contain    工商银行    #效验是否存在文本工商银行
+    sleep    3
+    跳转后切换窗口
+
+指标跳转到画图页面
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[2]/div/div[2]/table/tbody/tr[1]/td[3]/a    #点击指标跳转到画图页面
+    sleep    3
+    跳转后切换窗口

@@ -1,0 +1,8 @@
+*** Settings ***
+Library           AqlicaiLibrary
+
+*** Keywords ***
+读取特殊表期望结果
+    [Arguments]    ${tablename}
+    @{tablelist}    get_specialtable    %{G_DATACENTER}${/}Excel${/}specialtable.xlsx    ${tablename}
+    [Return]    @{tablelist}

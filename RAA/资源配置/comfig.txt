@@ -1,0 +1,6 @@
+*** Variables ***
+${db}             kaopu    # 库名
+${dbuser}         r_reportor    # 数据库账号
+${dbpassword}     P@password    # 数据库账户密码
+${dbhost}         10.11.255.110    # 数据库地址
+${dbpost}         6033    # 数据库地址端口号

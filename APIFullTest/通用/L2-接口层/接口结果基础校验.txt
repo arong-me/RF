@@ -1,0 +1,50 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          通用.txt
+Resource          接口校验通用.txt
+
+*** Keywords ***
+query语句请求
+    [Arguments]    ${data}    ${apiurl}    #post中data对应的字典数据
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 没有请求头的post请求
+    [Tags]    ygu
+    ${passed}    ${responseobj}    Run Keyword And Ignore Error    动态获取Cookie的Post请求    ${data}    ${apiurl}
+    [Return]    ${passed}    ${responseobj}
+
+校验Response返回status_code值为200
+    [Arguments]    ${responseobj}    ${query}
+    Run keyword If    '${responseobj.status_code}'!='200'    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    ${continue_flag}    Run keyword If    '${responseobj.status_code}'!='200'    set variable    -1
+    ...    ELSE    set variable    1
+    [Return]    ${continue_flag}
+
+校验Response结果code值为0
+    [Arguments]    ${responseobj}    ${query}    #是否继续运行标识|response对象|query
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 校验Response返回的结果code是否为0
+    [Tags]    ygu
+    ${passed}    ${responsedata}    Run Keyword And Ignore Error    To Json    ${responseobj.content}
+    ${continue_flag}    ${code}    Run keyword If    '${passed}'=='PASS'    校验str类型字段存在且数据不为空    code    ${responsedata}
+    ...    ${query}
+    ...    ELSE    set variable    -1    -1
+    ${continue_flag}    Run keyword If    ${continue_flag}==1 and ${code}==0    set variable    1
+    ...    ELSE    set variable    -1
+    Run keyword If    ${continue_flag}!=1    append to file    ${results_path}${/}${pre_resultfile}fail.txt    ${query}:return code is ${code}\n
+    [Return]    ${continue_flag}    ${responsedata}
+
+Response基础校验
+    [Arguments]    ${responseobj}    ${query}
+    #校验Response返回status_code为200
+    ${continue_flag}    校验Response返回status_code值为200    ${responseobj}    ${query}
+    ${continue_flag}    ${responsedata}    Run Keyword If    ${continue_flag}==1    校验Response结果code值为0    ${responseobj}    ${query}
+    ...    ELSE    set variable    -1    ${None}
+    #校验最外部data存在且不为空
+    ${continue_flag}    ${data}    Run Keyword If    ${continue_flag}==1    校验非str类型字段存在且数据不为空    data    ${responsedata}
+    ...    ${query}
+    ...    ELSE    set variable    -1    ${None}
+    [Return]    ${continue_flag}    ${data}

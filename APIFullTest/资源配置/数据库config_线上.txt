@@ -1,0 +1,13 @@
+*** Variables ***
+${dbport}         3306    # 数据库地址端口号
+${db}             r_reportor    # 库名
+${db_raa}         core_doc    #公告研报类型使用数据库名
+${dbuser_raa}     test_team    # 线上测试公告研报类型数据库账号
+${dbpassword_raa}    0987654321    # 线上测试公告研报类型数据库账户密码
+${dbhost_raa}     120.26.12.152    #线上测试公告研报类型数据库地址
+${dbuser}         test_team    # 线上测试数据库账号
+${dbpassword}     0987654321    # 线上测试数据库账户密码
+${dbhost}         120.26.12.152    #线上测试搜图绘表数据库地址
+${dbuser_formal}    test    # 正式数据库账号
+${dbpassword_formal}    845cf0385974    # 正式测试数据库账户密码
+${dbhost_formal}    120.26.41.22    #正式搜图绘表数据库地址

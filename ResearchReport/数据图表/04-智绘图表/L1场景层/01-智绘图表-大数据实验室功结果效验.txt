@@ -1,0 +1,23 @@
+*** Settings ***
+Documentation     【作者】qinghuaguan
+...
+...               【说明】
+...               1. 智绘图表搜索后验证 大数据实验室的切换
+Resource          ../L2功能层/智绘图表-择股.txt
+Resource          ../L2功能层/智绘图表-择股-跳转超链接.txt
+Resource          ../L2功能层/智绘图表-择股-_翻页.txt
+Resource          ../../05-资源/通用.txt
+Resource          ../../05-资源/config.txt
+Resource          ../../05-资源/前置条件资源.txt
+
+*** Test Cases ***
+效验大数据实验室
+    sleep    10
+    线上正式环境登录
+    定位其他tab中
+    定位智绘图表tab中
+    定位到智绘图表tab中的搜索框    贵州茅台 净利润 \ 营业收入
+    大数据实验室
+    效验大家这样绘制
+    关闭浏览器
+    [Teardown]

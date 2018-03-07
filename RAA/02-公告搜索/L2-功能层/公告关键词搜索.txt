@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+进入资讯中心频道
+    Click Element    css=.nav-tab>a:nth-child(3)
+    Sleep    1
+
+进入公告列表
+    Select Frame    id=company-notice-iframe
+    Sleep    2
+
+进入公告全部分类
+    Click Element    css=.subscribe-title.reportNotice-navtitle
+    Sleep    1
+    Click Element    css=.all-type
+    Sleep    1
+
+搜索关键字
+    Input Text    css=.JS-searchiptbox    2017年平安银行一般公告
+    sleep    1
+    Click Element    css=#JS-searchBtn
+    sleep    3
+
+清空筛选条件
+    Click Element    css=.filter-clear
+    sleep    1

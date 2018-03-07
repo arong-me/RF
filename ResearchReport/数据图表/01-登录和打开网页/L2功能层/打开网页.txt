@@ -1,0 +1,10 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../05-资源/config.txt
+
+*** Keywords ***
+打开网页
+    [Arguments]    ${线上正式地址}
+    Open Browser    ${线上正式地址}    chrome    #http://www.researchreport.cn/
+    Maximize Browser Window
+    [Teardown]

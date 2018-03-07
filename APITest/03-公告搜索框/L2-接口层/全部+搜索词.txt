@@ -1,0 +1,106 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../../通用/L2-接口层/公告研报字段校验.txt
+Resource          ../../通用/L2-接口层/接口校验通用.txt
+Resource          ../../通用/L2-接口层/接口结果基础校验.txt
+Resource          ../../通用/L2-接口层/读取表结果.txt
+Resource          ../../通用/L2-接口层/公告研报获取头格式和期望值.txt
+
+*** Keywords ***
+循环读文件获取指标进行校验
+    [Arguments]    ${check_field_list}    ${datasource_path}    ${file}
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    ${scene}    Set Variable    1
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    循环读指标校验query    ${querylist}    ${check_field_list}
+
+循环读指标校验query
+    [Arguments]    ${querylist}    ${check_field_list}
+    创建Session
+    : FOR    ${query}    IN    @{querylist}
+    \    ALL公告校验query    ${query}    ${check_field_list}
+    删除Sessions
+
+ALL公告校验query
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${passed}    ${responseobj}    ${query}    ${exp_indicators_dict}    ALL公告query语句post请求    ${multi_query}    ${check_field_list}
+    Run Keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    ...    ELSE    ALL公告校验query返回Response结果    ${responseobj}    ${query}    ${exp_indicators_dict}
+
+ALL公告query语句post请求
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${exp_indicators_dict}    Create Dictionary
+    ${post_data}    Create Dictionary
+    ${keyword_filter}    Set Variable    ${EMPTY}
+    ${query}    Set Variable    ${EMPTY}
+    #将期望的校验结果存入字典中
+    ${indicatorlist}    Split String    ${multi_query}    ,
+    ${LEN}    Get Length    ${indicatorlist}
+    : FOR    ${i}    IN RANGE    ${LEN}
+    \    ${query_list}    Split String    ${indicatorlist[${i}]}    ${SPACE}
+    \    #获取stockname期望校验的值
+    \    ${stockname}    ${exp_stockname_list}    ${exp_stockcode_list}    Run Keyword IF    '${check_field_list[${i}]}'=='stockname'    获取公司post的头格式和期望的list
+    \    ...    ${query_list[0]}
+    \    ...    ELSE    Set Variable    ${EMPTY}    ${post_data}    ${post_data}
+    \    #获取stockname的post格式
+    \    Run Keyword IF    "${stockname}"!="${EMPTY}"    Set To Dictionary    ${post_data}    stockname=${stockname}    stock_filter=${query_list[0]}
+    \    #获取期望校验的值
+    \    Run Keyword IF    '${check_field_list[${i}]}'!='stockname'    Set To Dictionary    ${exp_indicators_dict}    ${check_field_list[${i}]}=${query_list}
+    \    ...    ELSE    Set To Dictionary    ${exp_indicators_dict}    stockname=${exp_stockname_list}    stockcode=${exp_stockcode_list}
+    \    #获取非左选框公司名post传递字段
+    \    ${keyword_filter}    Run Keyword If    '${check_field_list[${i}]}'=='stockname'    Set Variable    ${keyword_filter}
+    \    ...    ELSE IF    '${keyword_filter}'=='${EMPTY}'    Set Variable    ${indicatorlist[${i}]}
+    \    ...    ELSE    Set Variable    ${keyword_filter} ${indicatorlist[${i}]}
+    \    ${query}    Run Keyword If    '${check_field_list[${i}]}'=='stockname'    Set Variable    ${stockname}(${query_list[0]});
+    \    ...    ELSE    Set Variable    ${query}
+    ${query}    Run Keyword If    "${query}"=="${EMPTY}"    Set Variable    ${keyword_filter}
+    ...    ELSE IF    "${keyword_filter}"=="${EMPTY}"    Replace String    ${query}    ;    ${EMPTY}
+    ...    ELSE    Set Variable    ${query}${keyword_filter}
+    #Post请求data格式
+    Run Keyword IF    "${keyword_filter}"!="${EMPTY}"    Set To Dictionary    ${post_data}    keyword_filter=${keyword_filter}
+    ${passed}    ${responseobj}    query语句请求    ${post_data}    ${apiurl_notice}
+    [Return]    ${passed}    ${responseobj}    ${query}    ${exp_indicators_dict}
+
+ALL公告校验query返回Response结果
+    [Arguments]    ${responseobj}    ${query}    ${exp_indicators_dict}    #返回reponse对象|搜索词| 期望比对结果字典
+    ${continue_flag}    ${data}    Response基础校验    ${responseobj}    ${query}
+    Run keyword If    ${continue_flag}==1    ALL公告校验最外部数据    ${data}    ${query}    ${exp_indicators_dict}
+
+ALL公告校验最外部数据
+    [Arguments]    ${data}    ${query}    ${exp_indicators_dict}
+    ${keys}    Get Dictionary Keys    ${exp_indicators_dict}
+    log    ${keys}
+    #校验items数据是否为空
+    ${continue_flag_items}    ${items}    获取items数据    ${data}    ${query}
+    #为空需要由于校验数据库中的title较慢，需要人工比对
+    #不为空
+    ${continue_flag_id}    ${parsed}    Run keyword If    ${continue_flag_items}==1    获取parsed数据    ${data}    ${query}
+    ...    ELSE    set variable    -1    ${None}
+    : FOR    ${key}    IN    @{keys}
+    \    log    ${key}
+    \    ${filed_list}    Get From Dictionary    ${exp_indicators_dict}    ${key}
+    \    log    ${filed_list}
+    \    ${continue_flag}    Run keyword If    ${continue_flag_items}!=1 or (${continue_flag_id}!=1 and ('${key}'=='category' or '${key}'=='industry'))    set variable    -1
+    \    ...    ELSE IF    '${key}'=='keyword'    校验keyword    ${query}    ${data}
+    \    ...    ${filed_list}
+    \    ...    ELSE IF    '${key}'=='stockname'    校验公告或者研报items下的stockname和stockcode    stockname    ${query}
+    \    ...    ${exp_indicators_dict}    ${items}
+    \    ...    ELSE IF    '${key}'=='category' and ${continue_flag_id}==1    校验公告搜索框category    ${query}    ${filed_list}
+    \    ...    ${items}    ${parsed}
+    \    ...    ELSE IF    '${key}'=='industry' and ${continue_flag_id}==1    校验搜索框industry    ${query}    ${filed_list}
+    \    ...    ${items}    ${parsed}
+    \    ...    ELSE    set variable    1
+    \    Comment    ${continue_flag}    Run keyword If    '${key}'=='keyword'    校验keyword    ${query}
+    \    ...    ${data}    ${filed_list}
+    \    ...    ELSE IF    '${key}'=='stockname' and ${continue_flag_items}==1    校验公告或者研报items下的stockname和stockcode    stockname    ${query}
+    \    ...    ${exp_indicators_dict}    ${items}
+    \    ...    ELSE IF    '${key}'=='category' and ${continue_flag_id}==1    校验公告搜索框category    ${query}    ${filed_list}
+    \    ...    ${items}    ${parsed}
+    \    ...    ELSE IF    '${key}'=='industry' and ${continue_flag_id}==1    校验搜索框industry    ${query}    ${filed_list}
+    \    ...    ${items}    ${parsed}
+    \    ...    ELSE    set variable    -1
+    \    Exit for loop If    ${continue_flag}!=1
+    Run Keyword If    ${continue_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${query}\n

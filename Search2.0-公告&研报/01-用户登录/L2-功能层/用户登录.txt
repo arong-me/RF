@@ -1,0 +1,15 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+输入用户名
+    [Arguments]    ${username}
+    Wait Until Page Contains Element    css=.JS-input-username    10
+    Input Text    css=.JS-input-username    ${username}
+
+输入密码
+    [Arguments]    ${password}
+    Input Password    css=.JS-input-password    ${password}
+
+点击登录
+    Click Element    css=.JS-login.form-btn.login-btn

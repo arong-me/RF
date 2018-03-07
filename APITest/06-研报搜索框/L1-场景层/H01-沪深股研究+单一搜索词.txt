@@ -1,0 +1,120 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    06-Report    Report_H01    沪深股研究
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报左选框+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+Resource          ../L2-接口层/研报搜索框前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01公司名称
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.公司搜索框中测试一个公司名称
+    [Tags]    ygu
+    #定义Suite变量
+    ${pre_resultfile}    Set Variable    ReportH01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    创建Session
+    研报左选框校验query    002073.SZ    ${check_field_list}
+    研报左选框校验query    600507.SH    ${check_field_list}
+    研报左选框校验query    002157.SZ    ${check_field_list}
+    研报左选框校验query    300024.SZ    ${check_field_list}
+    研报左选框校验query    300130.SZ    ${check_field_list}
+    研报左选框校验query    002222.SZ    ${check_field_list}
+    研报左选框校验query    002387.SZ    ${check_field_list}
+    研报左选框校验query    300219.SZ    ${check_field_list}
+    研报左选框校验query    000655.SZ    ${check_field_list}
+    研报左选框校验query    600367.SH    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+02研报分类
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告分类词
+    [Tags]    ygu
+    [Setup]    Report_Left_Test_Category_Setup
+    ${pre_resultfile}    Set Variable    ReportH01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    研报左选框校验query    晨会纪要    ${check_field_list}
+    研报左选框校验query    会议纪要    ${check_field_list}
+    研报左选框校验query    新股研究    ${check_field_list}
+    研报左选框校验query    晨会报告    ${check_field_list}
+    研报左选框校验query    策略深度    ${check_field_list}
+    研报左选框校验query    行业简报    ${check_field_list}
+    研报左选框校验query    公司研究    ${check_field_list}
+    研报左选框校验query    宏观深度    ${check_field_list}
+    研报左选框校验query    行业研究    ${check_field_list}
+    研报左选框校验query    行业定期    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+03研报行业
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告行业词
+    [Tags]    ygu
+    ${pre_resultfile}    Set Variable    ReportH01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    研报左选框校验query    其他采掘服务    ${check_field_list}
+    研报左选框校验query    通信传输设备    ${check_field_list}
+    研报左选框校验query    多业态零售    ${check_field_list}
+    研报左选框校验query    毛纺    ${check_field_list}
+    研报左选框校验query    其它通用机械    ${check_field_list}
+    研报左选框校验query    磨具磨料    ${check_field_list}
+    研报左选框校验query    日用化学产品    ${check_field_list}
+    研报左选框校验query    贸易    ${check_field_list}
+    研报左选框校验query    铜    ${check_field_list}
+    研报左选框校验query    火电设备    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+04关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个关键词
+    [Tags]    ygu
+    ${pre_resultfile}    Set Variable    ReportH01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    研报左选框校验query    艾派克    ${check_field_list}
+    研报左选框校验query    意向书    ${check_field_list}
+    研报左选框校验query    复牌    ${check_field_list}
+    研报左选框校验query    收购    ${check_field_list}
+    研报左选框校验query    披露公告    ${check_field_list}
+    研报左选框校验query    决议    ${check_field_list}
+    研报左选框校验query    业绩预增    ${check_field_list}
+    研报左选框校验query    识别    ${check_field_list}
+    研报左选框校验query    评估    ${check_field_list}
+    研报左选框校验query    物联网    ${check_field_list}
+    删除Sessions
+    [Teardown]

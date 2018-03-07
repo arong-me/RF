@@ -1,0 +1,17 @@
+*** Settings ***
+Library           AqlicaiLibrary
+
+*** Keywords ***
+搜图生成组合指标
+    [Arguments]    ${scenename}    ${filename}    ${combmax}
+    #在${scenename目录下创建文件夹}
+    ${path}    Set Variable    %{G_DATACENTER}${/}${scenename}${/}datasource
+    ${test_filename}    Set Variable    ${path}${/}${filename}
+    ${combmax}    Evaluate    int(${combmax})
+    generate_indicator    %{G_DATACENTER}${/}SingleQuery    ${test_filename}    ${combmax}
+    [Return]    ${path}
+
+读取指标
+    [Arguments]    ${filename}
+    ${query_list}    read_file    ${filename}    UTF-8
+    [Return]    ${query_list}

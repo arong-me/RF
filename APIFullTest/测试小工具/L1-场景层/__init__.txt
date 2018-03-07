@@ -1,0 +1,3 @@
+*** Settings ***
+Suite Setup       TestTools_Directory_Setup
+Resource          ../L2-接口层/测试小工具前后置操作.txt

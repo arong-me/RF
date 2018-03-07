@@ -1,0 +1,95 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Library           String
+Library           OperatingSystem
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/接口结果基础校验.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/通用.txt
+Resource          ../../资源配置/config.txt
+Resource          ../../通用/L2-接口层/接口校验通用.txt
+
+*** Keywords ***
+循环读文件获取指标进行校验
+    [Arguments]    ${check_field_list}    ${datasource_path}    ${file}
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    ${scene}    Set Variable    1
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    循环读指标校验query    ${querylist}    ${check_field_list}
+
+循环读指标校验query
+    [Arguments]    ${querylist}    ${check_field_list}
+    创建Session
+    : FOR    ${query}    IN    @{querylist}
+    \    公告图谱校验query    ${query}    ${check_field_list}
+    删除Sessions
+
+公告图谱校验query
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${passed}    ${responseobj}    公告图谱query语句post请求    ${multi_query}    ${check_field_list}
+    Run Keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    ...    ELSE    公告图谱校验query返回Response结果    ${responseobj}    ${multi_query}    ${check_field_list}
+
+公告图谱query语句post请求
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${post_data}    Create Dictionary    keyword=${multi_query}
+    #Post请求data格式
+    ${passed}    ${responseobj}    query语句请求    ${post_data}    /ajax/ai-atlas/search
+    [Return]    ${passed}    ${responseobj}
+
+公告图谱校验query返回Response结果
+    [Arguments]    ${responseobj}    ${query}    ${check_field_list}    #返回reponse对象|搜索词| 期望校验的字段列表
+    ${continue_flag}    ${data}    Response基础校验    ${responseobj}    ${query}
+    Run keyword If    ${continue_flag}==1    公告图谱校验最外部数据    ${data}    ${query}    ${check_field_list}
+
+公告图谱校验最外部数据
+    [Arguments]    ${data}    ${query}    ${check_field_list}
+    ${continue_flag}    ${data1}    校验非str类型字段存在且数据不为空    data    ${data}    ${query}
+    Run keyword If    ${continue_flag}==1    公告图谱校验内部的data数据    ${data1}    ${query}    ${check_field_list}
+
+公告图谱校验内部的data数据
+    [Arguments]    ${data}    ${query}    ${check_field_list}
+    ${continue_flag}    Run Keyword If    "event" in ${check_field_list} or "condition" in ${check_field_list}    校验字典内每个字段value不为空    ${data}    ${query}
+    ...    ELSE    校验公司相关检测项    ${data}    ${query}
+    Run Keyword If    ${continue_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${query}\n
+
+校验公司相关检测项
+    [Arguments]    ${data}    ${query}
+    ${keys}    Get Dictionary Keys    ${data}
+    ${continue_flag}    Set Variable    1
+    : FOR    ${key}    IN    @{keys}
+    \    ${continue_flag}    ${value}    校验非str类型字段存在且数据不为空    ${key}    ${data}    ${query}
+    \    ${continue_flag}    Run Keyword If    ${continue_flag}!=1    Set Variable    -1
+    \    ...    ELSE IF    "companybasicinfo" in "${key}"    校验companybasicinfo    ${value}    ${query}
+    \    ...    ELSE IF    "events" in "${key}"    校验events    ${value}    ${query}
+    \    ...    ELSE    校验holdecompany或sharesstruct    ${value}    ${query}
+    \    Exit For Loop If    ${continue_flag}!=1
+    [Return]    ${continue_flag}
+
+校验companybasicinfo
+    [Arguments]    ${companybasicinfo}    ${query}
+    ${keys}    Get Dictionary Keys    ${companybasicinfo}
+    ${continue_flag}    Set Variable    1
+    : FOR    ${key}    IN    @{keys}
+    \    ${continue_flag}    ${value}    校验str类型字段存在且数据不为空    ${key}    ${companybasicinfo}    ${query}
+    \    Exit For Loop If    ${continue_flag}!=1
+    [Return]    ${continue_flag}
+
+校验events
+    [Arguments]    ${events}    ${query}
+    ${continue_flag}    Set Variable    1
+    : FOR    ${event}    IN    @{events}
+    \    ${continue_flag}    校验字典内每个字段value不为空    ${event}    ${query}
+    \    Exit For Loop If    ${continue_flag}!=1
+    [Return]    ${continue_flag}
+
+校验holdecompany或sharesstruct
+    [Arguments]    ${data}    ${query}
+    ${continue_flag}    Set Variable    1
+    ${continue_flag}    ${value}    校验非str类型字段存在且数据不为空    data    ${data}    ${query}
+    ${continue_flag}    Run Keyword If    ${continue_flag}!=1    Set Variable    -1
+    ...    ELSE    校验字典内每个字段value不为空    ${value}    ${query}
+    [Return]    ${continue_flag}

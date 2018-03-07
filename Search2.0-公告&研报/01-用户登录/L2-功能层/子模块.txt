@@ -1,0 +1,28 @@
+*** Settings ***
+Resource          ../L2-功能层/启动与退出.txt
+Resource          ../L2-功能层/用户登录.txt
+Resource          ../../资源配置/config.txt
+Resource          ../../资源配置/RAA全局变量.txt
+Resource          ../L2-功能层/退出登录.txt
+Resource          ../L3-页面层/用户登录.txt
+Resource          ../L3-页面层/退出登录.txt
+Resource          ../用户数据.txt
+
+*** Keywords ***
+用户登录
+    进入启动页    ${search_url}    ${browser_name}
+    Set Browser Implicit Wait    ${implicit_wait_time}
+    页面最大化
+    输入用户名    ${username}
+    输入密码    ${password}
+    点击登录
+    sleep    ${page_show_time}
+    Page Should Contain    ${assert_login}
+
+退出登录
+    Unselect Frame
+    打开用户设置
+    sleep    1
+    点击退出登录
+    Page Should Contain    ${assert_logout}
+    关闭页面

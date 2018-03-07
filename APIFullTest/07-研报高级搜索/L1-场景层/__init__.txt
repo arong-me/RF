@@ -1,0 +1,13 @@
+*** Settings ***
+Documentation     【说明】
+...
+...               1、设置前置条件：创建一级所需测试目录ReportAdvancedSearch
+...
+...               2、设置后置条件：在整个Directory运行完后统一发送邮件
+Suite Setup       ReportAS_Directory_Setup
+Suite Teardown    ReportAS_Directory_Teardown    ${emaildata_path}
+Test Setup
+Test Teardown
+Force Tags        ReportAS
+Resource          ../L2-接口层/研报高级搜索前后置操作.txt
+Resource          ../../资源配置/全局变量.txt

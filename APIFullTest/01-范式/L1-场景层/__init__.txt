@@ -1,0 +1,10 @@
+*** Settings ***
+Documentation     【说明】
+...
+...               1、设置前置条件：创建一级所需测试目录Normal_Form
+...
+...               2、设置后置条件：在整个Directory运行完后统一发送邮件
+Suite Setup       Normal_Directory_Setup
+Suite Teardown    Normal_Directory_Teardown    ${emaildata_path}
+Force Tags        NormalForm
+Resource          ../L2-接口层/范式前后置操作.txt

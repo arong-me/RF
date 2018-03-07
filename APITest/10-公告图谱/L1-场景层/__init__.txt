@@ -1,0 +1,8 @@
+*** Settings ***
+Suite Setup       NoticeChart_Directory_Setup
+Suite Teardown
+Test Setup
+Test Teardown
+Force Tags        NoticeChart
+Resource          ../L2-接口层/公告图谱前后置操作.txt
+Resource          ../../资源配置/全局变量.txt

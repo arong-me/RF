@@ -1,0 +1,89 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    04-NoticeAdvancedSearch    NoticeAS_J01    基金公告
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/左选框+筛选框校验.txt
+Resource          ../L2-接口层/公告高级搜索前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01标题必含
+    ${pre_resultfile}    Set Variable    NoticeASJ01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    公告筛选框校验query    平安    ${check_field_list}
+    公告筛选框校验query    二级市场    ${check_field_list}
+    公告筛选框校验query    中远航运    ${check_field_list}
+    公告筛选框校验query    产业    ${check_field_list}
+    公告筛选框校验query    平安证券    ${check_field_list}
+    公告筛选框校验query    分红    ${check_field_list}
+    公告筛选框校验query    中行    ${check_field_list}
+    公告筛选框校验query    公告    ${check_field_list}
+    公告筛选框校验query    2017年    ${check_field_list}
+    公告筛选框校验query    城镇化    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    NoticeASJ01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    公告筛选框校验query    审计    ${check_field_list}
+    公告筛选框校验query    预告    ${check_field_list}
+    公告筛选框校验query    网信集团    ${check_field_list}
+    公告筛选框校验query    新城房产    ${check_field_list}
+    公告筛选框校验query    复牌公告    ${check_field_list}
+    公告筛选框校验query    公告    ${check_field_list}
+    公告筛选框校验query    平安证券    ${check_field_list}
+    公告筛选框校验query    恒信移动    ${check_field_list}
+    公告筛选框校验query    识别    ${check_field_list}
+    公告筛选框校验query    招商银行监事会    ${check_field_list}
+    删除Sessions
+
+03类型
+    [Setup]    NoticeAS_Left_Test_Category_Setup
+    ${pre_resultfile}    Set Variable    NoticeASJ01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    公告筛选框校验query    T005002002    ${check_field_list}
+    公告筛选框校验query    T005002005    ${check_field_list}
+    公告筛选框校验query    S005002    ${check_field_list}
+    公告筛选框校验query    S005001    ${check_field_list}
+    公告筛选框校验query    T005001001    ${check_field_list}
+    公告筛选框校验query    T005001003    ${check_field_list}
+    公告筛选框校验query    T005002008    ${check_field_list}
+    公告筛选框校验query    T005003003    ${check_field_list}
+    公告筛选框校验query    T005003006    ${check_field_list}
+    公告筛选框校验query    T005003004    ${check_field_list}
+    删除Sessions
+
+04时间
+    ${pre_resultfile}    Set Variable    NoticeASJ01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    公告筛选框校验query    last_month    ${check_field_list}
+    公告筛选框校验query    last_3month    ${check_field_list}
+    公告筛选框校验query    last_6month    ${check_field_list}
+    公告筛选框校验query    last_year    ${check_field_list}
+    公告筛选框校验query    not_limit    ${check_field_list}
+    删除Sessions

@@ -1,0 +1,22 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+公告一级行业筛选
+    [Arguments]    ${一级行业分类}
+    Click Element    css=#JS-filter-btn
+    Click Element    css=li[filter-txt=${一级行业分类}]
+    Click Element    css=#JS-confirm-filter
+
+公告二级行业筛选
+    [Arguments]    ${一级行业分类}    ${二级行业分类}
+    Click Element    css=#JS-filter-btn
+    Click Element    css=li[filter-txt=${一级行业分类}]
+    Click Element    css=li[filter-txt=${二级行业分类}]
+    Click Element    css=#JS-confirm-filter
+
+按时间筛选
+    [Arguments]    ${时间}
+    Click Element    css=#JS-filter-btn
+    Click Element    css=li[filter-txt=${时间}]
+    Click Element    css=#JS-confirm-filter

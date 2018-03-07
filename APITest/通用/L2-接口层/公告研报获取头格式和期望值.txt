@@ -1,0 +1,163 @@
+*** Settings ***
+Resource          通用.txt
+Resource          读取表结果.txt
+Resource          ../L3-DB层/获取指定名称对应的单个结果.txt
+
+*** Keywords ***
+获取行业post的头格式和期望list
+    [Arguments]    ${industry_list_str}
+    ${indicator_list}    Split String    ${industry_list_str}    ${SPACE}
+    ${industry_list_str}    Replace String    ${industry_list_str}    ${SPACE}    |
+    ${post_data}    Create Dictionary    industry_txt=${industry_list_str}
+    ${industry_id_list}    Create List
+    #获取行业名称对应的id
+    : FOR    ${industry}    IN    @{indicator_list}
+    \    ${insutry_id}    获取指定行业对应的id号    ${industry}
+    \    Run Keyword If    '${insutry_id}'!='${EMPTY}'    Append To List    ${industry_id_list}    ${insutry_id}
+    ${len}    Get Length    ${industry_id_list}
+    ${industry_id_list_str}    Run Keyword If    ${len}!=0    Evaluate    '|'.join(${industry_id_list})
+    Run Keyword If    ${len}!=0    Set To Dictionary    ${post_data}    industry_name=${industry_id_list_str}
+    ...    ELSE    log    "database not found insutry_id"
+    [Return]    ${post_data}    ${industry_id_list}    #post的data格式以及期望校验的industry_id列表
+
+获取时间post的头格式和期望list
+    [Arguments]    ${field}    ${time_str}
+    ${starttime}    ${endtime}    获取最近时间的起始日期    ${time_str}
+    ${post_data}    Create Dictionary    start_time=${starttime}    end_time=${endtime}
+    ${time_range_list}    Create List    ${starttime}    ${endtime}
+    Run Keyword If    'not' not in '${time_str}'    Set To Dictionary    ${post_data}    dateRange=${time_str}
+    ...    ELSE    log    not limit datetime
+    [Return]    ${post_data}    ${time_range_list}    #post的data格式以及期望校验的起始时间列表
+
+获取单个搜索词post的头格式和期望list
+    [Arguments]    ${field}    ${indicatorlist_list_str}
+    ${post_data}    Create Dictionary    ${field}=${indicatorlist_list_str}
+    ${expect_list}    Split String    ${indicatorlist_list_str}    ${SPACE}
+    [Return]    ${post_data}    ${expect_list}
+
+获取页数post的头格式和期望list
+    [Arguments]    ${field}    ${page_str}
+    ${startpage}    ${endpage}    获取页数的起始页数    ${page_str}
+    ${post_data}    Run Keyword If    '${startpage}'=='${EMPTY}' and '${endpage}'=='${EMPTY}'    Create Dictionary    ${EMPTY}
+    ...    ELSE    Create Dictionary    min_file_pages=${startpage}    max_file_pages=${endpage}
+    ${startpage}    Run Keyword If    '${startpage}'=='${EMPTY}'    Set Variable    1
+    ...    ELSE    Set Variable    ${startpage}
+    ${endpage}    Run Keyword If    '${endpage}'=='${EMPTY}'    Set Variable    999999999999999999999999999
+    ...    ELSE    Set Variable    ${endpage}
+    ${page_range_list}    Create List    ${startpage}    ${endpage}
+    [Return]    ${post_data}    ${page_range_list}    #post的data格式以及期望校验的起始页数列表
+
+获取页数的起始页数
+    [Arguments]    ${page_str}
+    ${startpage}    ${endpage}    Run Keyword If    '${page_str}'=='10页以下'    Set Variable    1    9
+    ...    ELSE IF    '${page_str}'=='10-20页'    Set Variable    10    20
+    ...    ELSE IF    '${page_str}'=='20页以上'    Set Variable    21    ${EMPTY}
+    ...    ELSE    Set Variable    ${EMPTY}    ${EMPTY}
+    [Return]    ${startpage}    ${endpage}
+
+获取公告类型post的头格式和期望list
+    [Arguments]    ${field}    ${category_id_list_str}
+    ${category_id_list}    Split String    ${category_id_list_str}    ${SPACE}
+    ${category_id_list_str}    Replace String    ${category_id_list_str}    ${SPACE}    |
+    ${post_data}    Create Dictionary    categories=${category_id_list_str}
+    ${category_list}    Create List
+    #获取类型名称对应的id
+    : FOR    ${category_id}    IN    @{category_id_list}
+    \    ${db_category}    获取公告指定类型id的名称    ${category_id}
+    \    Run Keyword If    '${db_category}'!='${EMPTY}'    Append To List    ${category_list}    ${db_category}
+    ${len}    Get Length    ${category_list}
+    ${category_list_unicode}    Run Keyword If    ${len}!=0    Evaluate    '|'.join(${category_list})
+    ${category_list_str}    Evaluate    '${category_list_unicode}'.decode('utf-8')
+    Run Keyword If    ${len}!=0    Set To Dictionary    ${post_data}    category=${category_list_str}
+    ...    ELSE    log    "database not found category"
+    [Return]    ${post_data}    ${category_id_list}    #post的data格式以及期望校验的category_id列表
+
+获取研报类型post的头格式和期望list
+    [Arguments]    ${field}    ${category_id_list_str}
+    ${category_id_list}    Split String    ${category_id_list_str}    ${SPACE}
+    ${category_id_list_str}    Replace String    ${category_id_list_str}    ${SPACE}    |
+    ${post_data}    Create Dictionary    report_type=${category_id_list_str}
+    ${category_list}    Create List
+    ${exp_category_id_list}    Create List
+    ${list_null}    Create List
+    #获取类型名称对应的id
+    : FOR    ${category_id}    IN    @{category_id_list}
+    \    ${db_category}    获取研报指定类型id的名称    ${category_id}
+    \    Run Keyword If    '${db_category}'!='${EMPTY}'    Append To List    ${category_list}    ${db_category}
+    \    ${db_category_list}    Run Keyword If    "${category_id}"!="${EMPTY}"    获取研报指定类型期望展示的id列表    ${category_id}
+    \    ...    ELSE    Set Variable    ${list_null}
+    \    ${exp_category_id_list}    Combine Lists    ${exp_category_id_list}    ${db_category_list}
+    ${len}    Get Length    ${category_list}
+    ${category_list_unicode}    Run Keyword If    ${len}!=0    Evaluate    '|'.join(${category_list})
+    ${category_list_str}    Evaluate    '${category_list_unicode}'.decode('utf-8')
+    Run Keyword If    ${len}!=0    Set To Dictionary    ${post_data}    category=${category_list_str}
+    ...    ELSE    log    "database not found category"
+    [Return]    ${post_data}    ${exp_category_id_list}    #post的data格式以及期望校验的category_id列表
+
+获取评级post的头格式和期望list
+    [Arguments]    ${field}    ${indicator_list_str}
+    ${expect_list}    Split String    ${indicator_list_str}    ${SPACE}
+    ${indicator_list_str}    Replace String    ${indicator_list_str}    ${SPACE}    |
+    ${post_data}    Run Keyword If    '${indicator_list_str}'!='不限'    Create Dictionary    rating=${indicator_list_str}
+    ...    ELSE    Create Dictionary    rating=${EMPTY}
+    [Return]    ${post_data}    ${expect_list}
+
+获取所在机构post的头格式和期望list
+    [Arguments]    ${field}    ${indicator_list_str}
+    ${expect_list}    Split String    ${indicator_list_str}    ${SPACE}
+    ${indicator_list_str}    Replace String    ${indicator_list_str}    ${SPACE}    |
+    ${post_data}    Create Dictionary    source=${indicator_list_str}
+    [Return]    ${post_data}    ${expect_list}
+
+获取结果中类型需要增加的说明
+    [Arguments]    ${dict}
+    ${query_add}    Get From Dictionary    ${dict}    category
+    [Return]    ${query_add}
+
+获取结果中时间需要增加的说明
+    [Arguments]    ${expect_list}
+    ${query_add}    Evaluate    '~~'.join(${expect_list})
+    [Return]    ${query_add}
+
+获取公告左选框类型post和期望值
+    [Arguments]    ${first_category}
+    log    ${first_category}
+    ${category_id_list}    获取公告指定分类的id列表    ${first_category}
+    ${category_id}    Evaluate    '|'.join(${category_id_list})
+    [Return]    ${category_id}    ${category_id_list}
+
+获取研报左选框类型post和期望值
+    [Arguments]    ${first_category}
+    log    ${first_category}
+    ${category_id_list}    获取研报指定分类的id列表    ${first_category}
+    ${category_id}    Run Keyword IF    "${first_category}"!="基金研究"    Evaluate    '|'.join(${category_id_list})
+    ...    ELSE    Set Variable    S004005
+    ${exp_category_id_list}    获取研报指定类型期望展示的id列表    ${category_id}
+    [Return]    ${category_id}    ${exp_category_id_list}
+
+获取公司post的头格式和期望的list
+    [Arguments]    ${stockcode}    #股票代码
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 通过数据库sec_basic_info中的used_name字段获取公司的旧名加上查询的公司名作为期望值
+    #获取stockcode对应的公司名
+    ${stockname}    获取stockcode对应的stockname    ${stockcode}
+    #将股票名称统一转换成大写
+    ${stockname_upper}    Convert To Uppercase    ${stockname}
+    ${stockname_list}    Create list    ${stockname_upper}
+    ${stockcode_list}    Create list    ${stockcode}
+    #设置post格式
+    ${post_data}    Create Dictionary    stockname=${stockname}    stock_filter=${stockcode}
+    #校验公司名时，需要增加过去的名称
+    ${usedname_list}    Run Keyword If    ".SZ" in "${stockcode}" or ".SH" in "${stockcode}"    获取stockcode对应的usedname    ${stockcode}
+    ...    ELSE    Create List
+    ${stockname_list}    Run Keyword If    ".SZ" in "${stockcode}" or ".SH" in "${stockcode}"    Combine lists    ${stockname_list}    ${usedname_list}
+    ...    ELSE    Set Variable    ${stockname_list}
+    [Return]    ${stockname}    ${stockname_list}    ${stockcode_list}    #返回stockcode对应的sotckname|stocknamel列表|stockcode列表
+
+获取公告搜索框内容post的头格式和期望的字典
+    [Arguments]    ${field}    ${indicator_list_str}
+    ${query_list}    Split String    ${indicator_list_str}    ${SPACE}
+    #post_data
+    ${post_data}    Create Dictionary    keyword_filter=${keyword_filter}

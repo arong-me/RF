@@ -1,0 +1,105 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Library           String
+Library           OperatingSystem
+Resource          ../../通用/L2-接口层/通用.txt
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/读取表结果.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../../通用/L2-接口层/接口结果校验.txt
+Resource          ../../资源配置/全局变量.txt
+
+*** Keywords ***
+创建范式1文件夹
+    创建测试所需文件夹    normal_form_01
+
+范式1校验query
+    [Arguments]    ${stock_name}    ${table_name}
+    @{stock_name_list}    Split String    ${stock_name}    \    #
+    Comment    ${table_name}    Set Variable    利润表
+    @{table_name_list}    读取特殊表期望结果    ${table_name}    #    自写库获取
+    Comment    @{table_name_list}    Create list    利润表    资产负债表    现金流量表
+    ${stock_name_nospace}    去除多余的空格    ${stock_name}
+    #将期望的校验结果存入字典中
+    ${exp_indicators_dict}    Create Dictionary    stock_name=@{stock_name_list}    table=@{table_name_list}
+    ${query}    Set Variable    ${stock_name_nospace}${table_name}
+    log    ${query}
+    ${passed}    ${responseobj}    query语句请求    ${query}    ${exp_indicators_dict}
+    Run keyword If    '${passed}'=='PASS' and '${responseobj.status_code}'=='200'    校验Response结果code值为0    ${responseobj}    ${query}    ${exp_indicators_dict}    ELSE
+    ...    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+
+校验Response结果code值为0
+    [Arguments]    ${responseobj}    ${query}    ${expect_dict}    #response对象|query|期望校验字段的字典数据
+    ${responsedata}    To Json    ${responseobj.content}
+    ${ifmatch}    校验字典str类型value完全匹配    code    0    ${responsedata}
+    Run keyword If    ${ifmatch}==True    校验最外部data字段是否存在    ${responsedata}    ${query}    ${expect_dict}    ELSE
+    ...    append_to_file    ${results_path}${/}${pre_resultfile}code_notzero.txt    ${query}\n
+
+校验最外部data字段是否存在
+    [Arguments]    ${responsedata}    ${query}    ${expect_dict}
+    ${data}    获取字典value    ${responsedata}    data
+    ${data_str}    Convert To String    ${data}
+    Comment    log    ${platform}
+    Comment    Should Be Equal    1    2
+    ${condition}    Run keyword If    '${platform}'=='Windows'    set variable    'None'=='${data_str}'    ELSE    set variable
+    ...    'None'== str(${data})
+    ${equal}    Evaluate    ${condition}
+    Run keyword If    ${equal}==True    append_to_file    ${results_path}${/}${pre_resultfile}data_notexist.txt    ${query}\n    ELSE    校验table字段是否存在
+    ...    ${data}    ${query}    ${expect_dict}
+
+校验table字段是否存在
+    [Arguments]    ${data}    ${query}    ${expect_dict}
+    ${table}    获取字典value    ${data}    table
+    ${table_str}    Convert To String    ${table}
+    ${condition}    Run keyword If    '${platform}'=='Windows'    set variable    'None'=='${table_str}'    ELSE    set variable
+    ...    'None' == str(${table})
+    ${equal}    Evaluate    ${condition}
+    Run keyword If    ${equal}==True    append_to_file    ${results_path}${/}${pre_resultfile}table_notexist.txt    ${query}\n    ELSE    检验draw_Type字段
+    ...    ${table}    ${query}    ${expect_dict}
+
+检验draw_Type字段
+    [Arguments]    ${table}    ${query}    ${expect_dict}
+    ${ifmatch}    校验字典str类型value完全匹配    draw_type    table    ${table}
+    Run keyword If    ${ifmatch}==True    范式1校验table下的data数据    ${table}    ${query}    ${expect_dict}    ELSE
+    ...    append_to_file    ${results_path}${/}${pre_resultfile}drawtype_fail.txt    ${query}\n
+
+范式1校验table下的data数据
+    [Arguments]    ${table}    ${query}    ${expect_dict}
+    log    ${table}
+    @{data1}    获取字典value    ${table}    data
+    Comment    Run keyword If    ${data1}==${null}    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${query}\n
+    Comment    ...    ELSE    范式1校验table下data中的数据    ${query}    ${expect_dict}    @{data1}
+    ${success_flag}    校验内部的data下的stock_name    1    ${query}    ${expect_dict}    @{data1}
+    log    ${success_flag}
+    ${success_flag}    校验内部的data下的items下的table    ${success_flag}    ${query}    ${expect_dict}    @{data1}
+    log    ${success_flag}
+    Run keyword If    ${success_flag}==1    append_to_file    ${results_path}${/}${pre_resultfile}success.txt    ${query}\n
+
+循环读指标校验query
+    [Arguments]    ${querylist}    # 所有指标列表
+    : FOR    ${query}    IN    @{querylist}
+    \    @{indicatorlist}    Split String    ${query}    ,
+    \    ${stockname}    Set Variable    @{indicatorlist}[0]
+    \    ${specail}    Set Variable    @{indicatorlist}[1]
+    \    范式1校验query    ${stockname}    ${specail}
+
+循环读文件获取指标进行校验
+    [Arguments]    ${datasource_path}    ${file}    ${pre_resultfile}
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    创建Session
+    ${scene}    Set Variable    1
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    ${results_path}    Replace String    ${datasource_path}    datasource    testresults
+    \    Comment    ${pre_resultfile}    Run keyword If    ${if_divide_scene}==True    Set Variable    ${pre_resultfile}m${scene}_
+    \    Comment    ...    ELSE    Set Variable    ${pre_resultfile}
+    \    Comment    ${scene}    Evaluate    ${scene}+1
+    \    Set Global Variable    ${results_path}
+    \    Set Global Variable    ${pre_resultfile}
+    \    清理文件夹下的文件    ${results_path}    ${pre_resultfile}
+    \    循环读指标校验query    ${querylist}
+
+清理范式1环境
+    Delete All Sessions

@@ -1,0 +1,108 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    04-NoticeAdvancedSearch    NoticeAS_X01    股转系统公告
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/左选框+筛选框校验.txt
+Resource          ../L2-接口层/公告高级搜索前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01标题必含
+    ${pre_resultfile}    Set Variable    NoticeASX01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    公告筛选框校验query    区块链    ${check_field_list}
+    公告筛选框校验query    复牌公告    ${check_field_list}
+    公告筛选框校验query    意向书    ${check_field_list}
+    公告筛选框校验query    平安    ${check_field_list}
+    公告筛选框校验query    高精锻压    ${check_field_list}
+    公告筛选框校验query    二级市场    ${check_field_list}
+    公告筛选框校验query    重组进展公告    ${check_field_list}
+    公告筛选框校验query    产业    ${check_field_list}
+    公告筛选框校验query    平安证券    ${check_field_list}
+    公告筛选框校验query    分红    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    NoticeASX01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    公告筛选框校验query    大数据    ${check_field_list}
+    公告筛选框校验query    雄安新区    ${check_field_list}
+    公告筛选框校验query    报告    ${check_field_list}
+    公告筛选框校验query    板块    ${check_field_list}
+    公告筛选框校验query    复牌    ${check_field_list}
+    公告筛选框校验query    股份变动    ${check_field_list}
+    公告筛选框校验query    教育行业    ${check_field_list}
+    公告筛选框校验query    毛利率    ${check_field_list}
+    公告筛选框校验query    辞职    ${check_field_list}
+    公告筛选框校验query    募集资金    ${check_field_list}
+    删除Sessions
+
+03行业
+    ${pre_resultfile}    Set Variable    NoticeASX01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    公告筛选框校验query    交通运输    ${check_field_list}
+    公告筛选框校验query    纺织制造    ${check_field_list}
+    公告筛选框校验query    玻璃制造    ${check_field_list}
+    公告筛选框校验query    旅游综合    ${check_field_list}
+    公告筛选框校验query    电子    ${check_field_list}
+    公告筛选框校验query    采掘    ${check_field_list}
+    公告筛选框校验query    其他交运设备    ${check_field_list}
+    公告筛选框校验query    高低压设备    ${check_field_list}
+    公告筛选框校验query    电气设备    ${check_field_list}
+    公告筛选框校验query    化工    ${check_field_list}
+    删除Sessions
+
+04类型
+    [Setup]    NoticeAS_Left_Test_Category_Setup
+    ${pre_resultfile}    Set Variable    NoticeASX01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    公告筛选框校验query    S013010    ${check_field_list}
+    公告筛选框校验query    T013008008    ${check_field_list}
+    公告筛选框校验query    T013008009    ${check_field_list}
+    公告筛选框校验query    T013002001    ${check_field_list}
+    公告筛选框校验query    S013003    ${check_field_list}
+    公告筛选框校验query    S013004    ${check_field_list}
+    公告筛选框校验query    S013007    ${check_field_list}
+    公告筛选框校验query    T013001001    ${check_field_list}
+    公告筛选框校验query    T013008007    ${check_field_list}
+    公告筛选框校验query    T013006001    ${check_field_list}
+    删除Sessions
+
+05时间
+    ${pre_resultfile}    Set Variable    NoticeASX01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    公告筛选框校验query    last_month    ${check_field_list}
+    公告筛选框校验query    last_6month    ${check_field_list}
+    公告筛选框校验query    not_limit    ${check_field_list}
+    公告筛选框校验query    last_year    ${check_field_list}
+    公告筛选框校验query    last_3month    ${check_field_list}
+    删除Sessions

@@ -1,0 +1,16 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          进入公告全部分类.txt
+Resource          ../../资源配置/RAA全局变量.txt
+
+*** Keywords ***
+进入公告全部分类
+    Unselect Frame
+    点击资讯中心频道
+    点击公告导航
+    sleep    ${page_show_time}
+    点击公告全部分类
+
+清空搜索框和已筛选条件
+    清空筛选条件
+    清空搜索框

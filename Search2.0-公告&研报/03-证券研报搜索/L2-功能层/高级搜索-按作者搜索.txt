@@ -1,0 +1,10 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+输入作者
+    [Arguments]    ${作者名称}
+    Input Text    css=input[name="author"]    ${作者名称}
+    sleep    1
+    Click Element    css=#JS-advanceSearch>div:nth-of-type(7)>button
+    sleep    1

@@ -1,0 +1,87 @@
+*** Settings ***
+Library           OperatingSystem
+Resource          通用.txt
+
+*** Keywords ***
+文件是否存在
+    [Arguments]    ${filename}    #文件名
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 判断文件是否存在
+    [Tags]    ygu
+    ${existFile}    Evaluate    os.path.exists(r'${filename}')    os
+    log    ${existFile}
+    [Return]    ${existFile}    #返回存在结果True或者False
+
+创建文件夹
+    [Arguments]    ${path}    ${name}    #创建文件夹的路径|创建文件名
+    [Tags]    ygu
+    ${directory}    Evaluate    os.path.join(r'${path}','${name}')    os
+    log    ${directory}
+    ${existFile}    文件是否存在    ${directory}
+    Run Keyword Unless    ${existFile}    create_directory    ${directory}
+
+判断文件是否包含某个字符串
+    [Arguments]    ${filename}    ${pattern}
+    ${existFile}    文件是否存在    ${filename}
+    ${ret}    Run Keyword If    ${existFile}    grep file    ${filename}    ${pattern}
+    ...    ELSE    Set Variable    ${EMPTY}
+    ${is_null}    判断对象为空    ${ret}
+    ${exit}    Run Keyword If    ${is_null}    Set Variable    ${False}
+    ...    ELSE    Set Variable    ${True}
+    [Return]    ${exit}
+
+创建一级模块所需文件夹
+    [Arguments]    ${name}    #创建文件名
+    [Tags]    ygu
+    创建文件夹    %{G_DATASOURCE}    ${name}    #数据源下创建文件夹
+    创建文件夹    %{G_DATARESULTS}    ${name}    #测试结果下创建文件夹
+
+创建二级模块所需文件夹
+    [Arguments]    ${first_name}    ${second_name}
+    [Tags]    ygu
+    创建文件夹    %{G_DATASOURCE}${/}${first_name}    ${second_name}    #数据源下创建文件夹
+    创建文件夹    %{G_DATARESULTS}${/}${first_name}    ${second_name}    #测试结果下创建文件夹
+
+删除文件列表中的文件
+    [Arguments]    ${dir}    @{filelist}    #删除文件的路径|需要删除的文件名列表
+    [Tags]    ygu
+    : FOR    ${filename}    IN    @{filelist}
+    \    Remove file    ${dir}${/}${filename}
+
+清理文件夹下指定的文件
+    [Arguments]    ${dir}    ${filename}    #删除文件的路径|需要删除的文件名前缀
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 由于测试生成结果使用append to file来添加file文件中的，相当于python语法中的mode模式为a，不会覆盖上次测试的结果，因此此关键字用于清理上次场景中生成相关所有文件
+    [Tags]    ygu
+    ${filelist}    List Files In Directory    ${dir}    ${filename}*.txt
+    ${length}    Get Length    ${filelist}
+    Run Keyword If    ${length}!=0    删除文件列表中的文件    ${dir}    @{filelist}
+
+复制文件夹的所有内容
+    [Arguments]    ${source_dir}    ${dest_dir}
+    Comment    ${dest_dir}    Set Variable    ${dest_dir}${/}Robot_Report
+    Comment    ${passed}    Run Keyword And Return Status    Evaluate    shutil.copytree('${source_dir}','${dest_dir}')    shutil
+    Remove Directory    ${dest_dir}    recursive=True
+    ${passed}    Run Keyword And Return Status    Copy Directory    ${source_dir}    ${dest_dir}
+    Run Keyword If    ${passed}==True    log    复制log成功
+    ...    ELSE    log    复制log文件失败
+
+清空文件夹
+    [Arguments]    ${path}
+    Empty Directory    ${path}
+
+将列表内容写入txt文件中
+    [Arguments]    ${Tuple}    ${filename}    #${if_deleteblank}如果需要去空操作则增加这个变量
+    [Tags]    ygu
+    #先去重
+    ${length}    Get Length    ${Tuple}
+    : FOR    ${tu}    IN    @{Tuple}
+    \    Comment    ${str}    Run Keyword If    ${if_deleteblank}    Evaluate    '${Tuple[${i}][0]}'.replace(' ','')
+    \    ...    ELSE    Set Variable    ${Tuple[${i}][0]}
+    \    ${Decode}    Evaluate    "${tu[0]}".decode('utf-8')
+    \    ${Decode}    Strip String    ${Decode}    mode=both    characters=${SPACE}
+    \    Append To File    ${filename}    ${Decode}\n

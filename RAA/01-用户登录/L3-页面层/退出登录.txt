@@ -1,0 +1,2 @@
+*** Variables ***
+${assert_logout}    邮箱登录

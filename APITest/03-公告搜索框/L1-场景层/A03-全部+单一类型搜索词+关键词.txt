@@ -1,0 +1,103 @@
+*** Settings ***
+Documentation     全量运行
+Suite Setup       Suite_Setup    03-Notice    Notice_A03
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01公司名称+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.公司搜索框中测试1个公司名称+搜索框中搜索1-2个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA03_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    300677.SZ,所属行业    ${check_field_list}
+    ALL公告校验query    871241.OC,董事会    ${check_field_list}
+    ALL公告校验query    832422.OC,上海证券交易所    ${check_field_list}
+    ALL公告校验query    837377.OC,股份变动    ${check_field_list}
+    ALL公告校验query    836522.OC,决议    ${check_field_list}
+    ALL公告校验query    002493.SZ,一带一路 所属行业    ${check_field_list}
+    ALL公告校验query    002493.SZ,一带一路 合作    ${check_field_list}
+    ALL公告校验query    002493.SZ,一带一路 金融行业    ${check_field_list}
+    ALL公告校验query    002493.SZ,一带一路 物联网    ${check_field_list}
+    ALL公告校验query    002493.SZ,一带一路 招商银行监事会    ${check_field_list}
+    删除Sessions
+
+02公司名称+公司名称
+    [Documentation]    【场景说明】
+    ...    1、两个公司名称场景为左边输入框中传入一个公司名称，右边输入框传入一个公司名称。
+    ...    2、校验的时候右边输入的公司名称会作为关键字来校验
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA03_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    300437.SZ,梦网集团    ${check_field_list}
+    ALL公告校验query    835446.OC,创源文化    ${check_field_list}
+    ALL公告校验query    835446.OC,祥和实业    ${check_field_list}
+    ALL公告校验query    835446.OC,国芳集团    ${check_field_list}
+    删除Sessions
+
+03公告分类+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索1个公告分类+1-2个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA03_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    年度报告,中海发展    ${check_field_list}
+    ALL公告校验query    年度报告,国航    ${check_field_list}
+    ALL公告校验query    年度报告,大数据    ${check_field_list}
+    ALL公告校验query    年度报告,物联网    ${check_field_list}
+    ALL公告校验query    年度报告,新城房产    ${check_field_list}
+    ALL公告校验query    配股获准,可行性研究 招商银行监事会    ${check_field_list}
+    ALL公告校验query    配股获准,可行性研究 恒大地产    ${check_field_list}
+    ALL公告校验query    配股获准,可行性研究 财务资助    ${check_field_list}
+    ALL公告校验query    配股获准,可行性研究 单位    ${check_field_list}
+    ALL公告校验query    配股获准,可行性研究 关于使用自有资金收购内蒙古    ${check_field_list}
+    删除Sessions
+
+04公告行业+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索1个公告行业+1-2个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA03_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    其他化学制品,金融行业    ${check_field_list}
+    ALL公告校验query    其他化学制品,复牌    ${check_field_list}
+    ALL公告校验query    其他化学制品,大数据    ${check_field_list}
+    ALL公告校验query    其他化学制品,识别    ${check_field_list}
+    ALL公告校验query    其他化学制品,毛利率    ${check_field_list}
+    ALL公告校验query    化学原料,大数据 评估    ${check_field_list}
+    ALL公告校验query    化学原料,大数据 雄安新区    ${check_field_list}
+    ALL公告校验query    化学原料,大数据 中远航运    ${check_field_list}
+    ALL公告校验query    化学原料,大数据 十大股东    ${check_field_list}
+    ALL公告校验query    化学原料,大数据 单位    ${check_field_list}
+    删除Sessions

@@ -1,0 +1,106 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    04-NoticeAdvancedSearch    NoticeAS_A01
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+
+*** Test Cases ***
+01标题必含
+    ${pre_resultfile}    Set Variable    NoticeASA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    公告ALL筛选框校验query    并购重组    ${check_field_list}
+    公告ALL筛选框校验query    高精锻压    ${check_field_list}
+    公告ALL筛选框校验query    恒信移动    ${check_field_list}
+    公告ALL筛选框校验query    复牌公告    ${check_field_list}
+    公告ALL筛选框校验query    修订    ${check_field_list}
+    公告ALL筛选框校验query    公告书    ${check_field_list}
+    公告ALL筛选框校验query    回购交易    ${check_field_list}
+    公告ALL筛选框校验query    区块链    ${check_field_list}
+    公告ALL筛选框校验query    马云    ${check_field_list}
+    公告ALL筛选框校验query    金融行业    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    NoticeASA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    公告ALL筛选框校验query    雄安新区    ${check_field_list}
+    公告ALL筛选框校验query    人工智能    ${check_field_list}
+    公告ALL筛选框校验query    公告    ${check_field_list}
+    公告ALL筛选框校验query    收购    ${check_field_list}
+    公告ALL筛选框校验query    披露公告    ${check_field_list}
+    公告ALL筛选框校验query    万达院线    ${check_field_list}
+    公告ALL筛选框校验query    回购交易    ${check_field_list}
+    公告ALL筛选框校验query    猪肉    ${check_field_list}
+    公告ALL筛选框校验query    所属行业    ${check_field_list}
+    公告ALL筛选框校验query    财务资助    ${check_field_list}
+    删除Sessions
+
+03行业
+    [Documentation]    新修改，已删除行业高级搜索框
+    ${pre_resultfile}    Set Variable    NoticeASA01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    公告ALL筛选框校验query    纺织服装    ${check_field_list}
+    公告ALL筛选框校验query    运输设备    ${check_field_list}
+    公告ALL筛选框校验query    磷化工及磷酸盐    ${check_field_list}
+    公告ALL筛选框校验query    洗衣机    ${check_field_list}
+    公告ALL筛选框校验query    其他专业工程    ${check_field_list}
+    公告ALL筛选框校验query    终端设备    ${check_field_list}
+    公告ALL筛选框校验query    航空运输    ${check_field_list}
+    公告ALL筛选框校验query    日用化学产品    ${check_field_list}
+    公告ALL筛选框校验query    光学光电子    ${check_field_list}
+    公告ALL筛选框校验query    果蔬加工    ${check_field_list}
+    删除Sessions
+
+04来源机构
+    ${pre_resultfile}    Set Variable    NoticeASA01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    公告ALL筛选框校验query    T004005001    ${check_field_list}
+    公告ALL筛选框校验query    T009003001    ${check_field_list}
+    公告ALL筛选框校验query    S005002    ${check_field_list}
+    公告ALL筛选框校验query    T004002015    ${check_field_list}
+    公告ALL筛选框校验query    T008004002    ${check_field_list}
+    公告ALL筛选框校验query    T004008008    ${check_field_list}
+    公告ALL筛选框校验query    T004002002    ${check_field_list}
+    公告ALL筛选框校验query    T015003002    ${check_field_list}
+    公告ALL筛选框校验query    T008003004    ${check_field_list}
+    公告ALL筛选框校验query    T009005002    ${check_field_list}
+    删除Sessions
+
+05时间
+    ${pre_resultfile}    Set Variable    NoticeASA01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    公告ALL筛选框校验query    last_month    ${check_field_list}
+    公告ALL筛选框校验query    last_3month    ${check_field_list}
+    公告ALL筛选框校验query    last_6month    ${check_field_list}
+    公告ALL筛选框校验query    last_year    ${check_field_list}
+    公告ALL筛选框校验query    not_limit    ${check_field_list}
+    删除Sessions

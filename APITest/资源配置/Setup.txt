@@ -1,0 +1,13 @@
+*** Settings ***
+Library           OperatingSystem
+
+*** Keywords ***
+Setup_Testbed_Variable
+    #Path Info
+    Set Environment Variable    G_SQAROOT    ${EXECDIR}
+    Comment    Set Environment Variable    G_LOG    %{G_SQAROOT}\\logs
+    Set Environment Variable    G_DATACENTER    %{G_SQAROOT}${/}APITest${/}DataSource
+    Evaluate    reload(sys)    sys
+    Evaluate    sys.setdefaultencoding('UTF-8')    sys
+    ${platform}    Evaluate    platform.system()    platform
+    Set Global Variable    ${platform}

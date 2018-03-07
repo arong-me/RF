@@ -1,0 +1,7 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+点击公告频道
+    Click Element    css=.tabpanel>a:nth-child(6)
+    sleep    1

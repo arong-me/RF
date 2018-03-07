@@ -1,0 +1,16 @@
+*** Settings ***
+Documentation     正式测试库配置信息
+
+*** Variables ***
+${url}            https://www.analyst.ai    #域名(线上：http://www-dev.analyst.ai)(正式：https://www.analyst.ai)
+${username}       test3@abcft.com    #用户名
+${pwd}            Ae53A0jePiPVzX4qBtAfku/0vpw2Ng7YJ5HSPCrkHx+fWcT5OwFw6IaoBHI351hQey/4aumiaPrSyx2tiITXKA==    #密码
+${apiurl_draw}    /ajax/ai-draw-chart/search    #智绘图表api地址
+${apiurl_stock}    /ajax/ai-stocks/search    #条件择股
+${apiurl_notice}    /ajax/notice/reading    # 公告api
+${apiurl_report}    /ajax/reportv2/search2    #研报api
+${server_username}    testeam.abcft    #公告邮箱用户名
+${server_pwd}     Test@123    #公共邮箱密码
+${msg_from}       testeam@abcft.com    #公告邮箱
+${msg_to}         ABC-Wuhan-Test-Team@niub.la;ABC-Wuhan-ST-Team@abcft.com;jiachen@abcft.com;zhyu@abcft.com;xqgong@abcft.com    #发送邮箱使用分号相隔ygu@abcft.com(ABC-Wuhan-Test-Team@niub.la)
+${apiurl_nav}     /ajax/ai-search-table/search    # 数据表api

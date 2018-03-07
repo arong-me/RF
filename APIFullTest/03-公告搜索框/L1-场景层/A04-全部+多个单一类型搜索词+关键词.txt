@@ -1,0 +1,53 @@
+*** Settings ***
+Suite Setup       Suite_Setup    Notice    Notice_A04
+Force Tags        BVT_Full
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+
+*** Test Cases ***
+01两个公告分类+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索两个公告分类+1-2个关键词
+    [Tags]    ygu
+    #生成单公告分类
+    生成所有公告类型
+    #生成需要测试的两个公告分类+关键词
+    ${pre}    Set Variable    NoticeA04_s1_
+    #需要校验的字段list
+    ${check_field_list}    Create List    category    keyword
+    #校验指标
+    : FOR    ${i}    IN RANGE    1    3
+    \    ${filename}    Evaluate    '${pre}NoiceCategory_x2-NoticeKeyword_x{0}'.format(str(${i}))
+    \    log    ${filename}
+    \    搜图生成组合指标    ${datasource_path}    ${filename}.txt    ${CombMax_N}
+    \    ${pre_resultfile}    set variable    ${pre}m${i}_
+    \    Set Suite Variable    ${pre_resultfile}
+    \    #校验指标
+    \    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${filename}
+
+02两个公告行业+多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中搜索两个公告行业+1-2个关键词
+    [Tags]    ygu
+    #生成单公告行业
+    生成所有公告行业
+    #生成需要测试的两个公告行业+多个关键词
+    ${pre}    Set Variable    NoticeA04_s2_
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry    keyword
+    #校验指标
+    : FOR    ${i}    IN RANGE    1    3
+    \    ${filename}    Evaluate    '${pre}NoticeIndustry_x2-NoticeKeyword_x{0}'.format(str(${i}))
+    \    log    ${filename}
+    \    搜图生成组合指标    ${datasource_path}    ${filename}.txt    ${CombMax_N}
+    \    ${pre_resultfile}    set variable    ${pre}m${i}_
+    \    Set Suite Variable    ${pre_resultfile}
+    \    #校验指标
+    \    循环读文件获取指标进行校验    ${check_field_list}    ${datasource_path}    ${filename}

@@ -1,0 +1,95 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    03-Notice    Notice_J01    基金公告
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/左选框+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+Resource          ../L2-接口层/公告前后置操作.txt
+Resource          ../../资源配置/Setup.txt
+
+*** Test Cases ***
+01公司名称
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.公司搜索框中测试一个公司名称
+    [Tags]    ygu
+    #定义Suite变量
+    ${pre_resultfile}    Set Variable    NoticeJ01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    创建Session
+    公告2校验query    001193.OF    ${check_field_list}
+    公告2校验query    001815.OF    ${check_field_list}
+    公告2校验query    002802.OF    ${check_field_list}
+    公告2校验query    660102.OF    ${check_field_list}
+    公告2校验query    001810.OF    ${check_field_list}
+    公告2校验query    002270.OF    ${check_field_list}
+    公告2校验query    003550.OF    ${check_field_list}
+    公告2校验query    000578.OF    ${check_field_list}
+    公告2校验query    000550.OF    ${check_field_list}
+    公告2校验query    240006.OF    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+02公告分类
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告分类词
+    [Tags]    ygu
+    [Setup]    Notice_Left_Test_Category_Setup
+    ${pre_resultfile}    Set Variable    NoticeJ01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    公告2校验query    其他基金发行事项    ${check_field_list}
+    公告2校验query    申购赎回    ${check_field_list}
+    公告2校验query    费率变更    ${check_field_list}
+    公告2校验query    基金其他事项    ${check_field_list}
+    公告2校验query    基金资产净值    ${check_field_list}
+    公告2校验query    基金高管变更    ${check_field_list}
+    公告2校验query    基金年报    ${check_field_list}
+    公告2校验query    基金发行结果    ${check_field_list}
+    公告2校验query    基金收益分配    ${check_field_list}
+    公告2校验query    招募说明书    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+03关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个关键词
+    [Tags]    ygu
+    ${pre_resultfile}    Set Variable    NoticeJ01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    公告2校验query    合作    ${check_field_list}
+    公告2校验query    板块    ${check_field_list}
+    公告2校验query    收购    ${check_field_list}
+    公告2校验query    分红    ${check_field_list}
+    公告2校验query    举牌    ${check_field_list}
+    公告2校验query    关于使用自有资金收购内蒙古    ${check_field_list}
+    公告2校验query    马云    ${check_field_list}
+    公告2校验query    股票交易异常波动公告    ${check_field_list}
+    公告2校验query    可行性研究    ${check_field_list}
+    公告2校验query    变更    ${check_field_list}
+    删除Sessions
+    [Teardown]

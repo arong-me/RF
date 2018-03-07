@@ -1,0 +1,33 @@
+*** Settings ***
+Library           RequestsLibrary
+Library           Collections
+Resource          ../L3-DB层/获取指定名称对应的单个结果.txt
+
+*** Keywords ***
+获取industry_map期望值
+    [Arguments]    ${industry}
+    ${dict}    Create Dictionary    content-type=application/x-www-form-urlencoded
+    Create Session    api    http://121.40.180.234:8983    ${dict}
+    ${data}    Create Dictionary    indent=on    q=type:notice_industry AND name:${industry}    wt=json
+    ${payload}    Evaluate    urllib.urlencode(${data})    urllib
+    ${passed}    ${addr}    run_keyword_and_ignore_error    Get Request    api    /solr/core_category/select    params=${payload}
+    log    ${addr.content}
+    #解析返回response值
+    ${industry_id}    Run keyword If    '${passed}'=='PASS'    解析solr接口返回response值    ${addr.content}
+    ...    ELSE    set variable    ${EMPTY}
+    Delete All Sessions
+    #如果${industry_id}返回为空，则是第三级行业，从数据库中取
+    ${industry_id}    Run Keyword If    '${industry_id}'=='${EMPTY}'    获取三级行业名称对应id    ${industry}
+    ...    ELSE    set variable    ${industry_id}
+    [Return]    ${industry_id}
+
+解析solr接口返回response值
+    [Arguments]    ${responsedata}
+    ${response_jsondata}    Run Keyword And Continue On Failure    To Json    ${responsedata}
+    ${response}    Run Keyword And Continue On Failure    Get From Dictionary    ${response_jsondata}    response
+    ${docs}    Run Keyword And Continue On Failure    Get From Dictionary    ${response}    docs
+    ${passed}    ${cat_id}    Run Keyword And Ignore Error    Get From Dictionary    ${docs[0]}    cat_id
+    #如果${passed}返回失败，则是第三级行业，从数据库中取
+    ${cat_id}    Run Keyword If    '${passed}'!='PASS'    set variable    ${EMPTY}
+    ...    ELSE    set variable    ${cat_id}
+    [Return]    ${cat_id}

@@ -1,0 +1,102 @@
+*** Settings ***
+Library           String
+Library           OperatingSystem
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/读取表结果.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../../通用/L2-接口层/接口结果基础校验.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/通用.txt
+Resource          ../../资源配置/config.txt
+Resource          ../../通用/L2-接口层/搜图表结果校验.txt
+Resource          ../../通用/L2-接口层/接口校验通用.txt
+
+*** Keywords ***
+多主体和指标组合生成条件
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 生成多主体+指标组合生成条件的x,y,z值
+    [Tags]    ygu
+    : FOR    ${x}    IN RANGE    1    6
+    \    ForY    ${x}
+
+ForY
+    [Arguments]    ${x}
+    : FOR    ${y}    IN RANGE    0    5
+    \    ForZ    ${x}    ${y}
+
+ForZ
+    [Arguments]    ${x}    ${y}
+    : FOR    ${z}    IN RANGE    0    5
+    \    ${sum}    Evaluate    ${y}+${z}
+    \    Run keyword Unless    ${x}==1 & ${sum}<=1    条件判断    ${x}    ${y}    ${z}
+
+条件判断
+    [Arguments]    ${x}    ${y}    ${z}
+    ${result}    Evaluate    ${x}*(${y}+${z})
+    Run keyword If    ${y}==0 & ${z}==0    log    ${x} ${y} ${z}
+    ...    ELSE IF    ${result}<=4    log    ${x} ${y} ${z}
+    ...    ELSE    No Operation
+
+循环读文件获取指标进行校验
+    [Arguments]    ${check_field_list}    ${datasource_path}    ${file}
+    #读取文件夹所有包含${file}的文件
+    ${filelist}    List Files In Directory    ${datasource_path}    ${file}*.txt
+    创建Session
+    ${scene}    Set Variable    1
+    : FOR    ${filename}    IN    @{filelist}
+    \    #读取指标
+    \    ${querylist}    读取指标    ${datasource_path}${/}${filename}
+    \    循环读指标校验query    ${querylist}    ${check_field_list}
+
+循环读指标校验query
+    [Arguments]    ${querylist}    ${check_field_list}
+    : FOR    ${query}    IN    @{querylist}
+    \    图表自动化1校验query    ${query}    ${check_field_list}
+
+图表自动化1校验query
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${passed}    ${responseobj}    ${query}    ${exp_indicators_dict}    图表自动化1query语句post请求    ${multi_query}    ${check_field_list}
+    Run Keyword If    '${passed}'!='PASS'    append_to_file    ${results_path}${/}${pre_resultfile}error.txt    ${query}\n
+    ...    ELSE    图表自动化1校验query返回Response结果    ${responseobj}    ${query}    ${exp_indicators_dict}
+
+图表自动化1query语句post请求
+    [Arguments]    ${multi_query}    ${check_field_list}
+    ${exp_indicators_dict}    Create Dictionary
+    ${data}    Create Dictionary
+    ${query}    Set Variable    ${EMPTY}
+    #将期望的校验结果存入字典中
+    ${indicatorlist}    Split String    ${multi_query}    ,
+    ${LEN}    Get Length    ${indicatorlist}
+    : FOR    ${i}    IN RANGE    ${LEN}
+    \    ${query_list}    Split String    ${indicatorlist[${i}]}    ${SPACE}
+    \    Set To Dictionary    ${exp_indicators_dict}    ${check_field_list[${i}]}=${query_list}
+    \    ${query}    Run Keyword If    '${query}'=='${EMPTY}'    Set Variable    ${indicatorlist[${i}]}
+    \    ...    ELSE    Set Variable    ${query} ${indicatorlist[${i}]}
+    #Post请求data格式
+    Set To Dictionary    ${data}    keyword=${query}
+    ${passed}    ${responseobj}    query语句请求    ${data}    ${apiurl_notice}
+    [Return]    ${passed}    ${responseobj}    ${query}    ${exp_indicators_dict}
+
+图表自动化1校验query返回Response结果
+    [Arguments]    ${responseobj}    ${query}    ${exp_indicators_dict}    #返回reponse对象|搜索词| 期望比对结果字典
+    ${continue_flag}    ${data}    Response基础校验    ${responseobj}    ${query}
+    Run keyword If    ${continue_flag}==1    图表自动化1校验外部data数据    ${data}    ${query}    ${exp_indicators_dict}
+
+图表自动化1校验外部data数据
+    [Arguments]    ${data}    ${query}    ${exp_indicators_dict}
+    ${keys}    Get Dictionary Keys    ${exp_indicators_dict}
+    log    ${keys}
+    #校验items数据是否为空
+    ${continue_flag_items}    ${items}    获取items数据    ${data}    ${query}
+    #校验chart字段数据存在且不为空
+    ${continue_flag}    ${chartdata}    Run Keyword If    ${continue_flag}==1    校验非str类型字段存在且数据不为空    chart    ${data}
+    ...    ${query}
+    ...    ELSE    set variable    -1    ${None}
+    Run keyword If    ${continue_flag}==1    图表自动化1校验外部chart数据    ${data}    ${query}    ${exp_indicators_dict}
+    #校验table字段数据存在且不为空
+
+图表自动化1校验外部chart数据
+    #校验keyword和title一致
+    #校验chart内的items

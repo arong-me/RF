@@ -1,0 +1,29 @@
+*** Settings ***
+Library           AqlicaiLibrary
+
+*** Keywords ***
+搜图生成组合指标
+    [Arguments]    ${datasource_path}    ${filename}    ${combmax}    #测试数据路径|定义的生成文件名格式|生成组合数（注意后缀为G表示该场景可能需要跑全量测试，后缀为N表示只用跑局部测试）
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 生成组合指标
+    ...    2、需要注意combmax的定义
+    ...
+    ...    【前置条件】
+    ...    创建测试所需文件夹
+    [Tags]    ygu
+    #在${scenename目录下创建文件夹}
+    ${test_filename}    Set Variable    ${datasource_path}${/}${filename}
+    Comment    ${combmax}    Evaluate    int(${combmax})
+    generate_indicator    %{G_DATACENTER}${/}SingleQuery    ${test_filename}    ${${combmax}}
+
+读取指标
+    [Arguments]    ${filename}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 读取文件的所有需要测试的query语句
+    [Tags]    ygu
+    ${query_list}    read_file    ${filename}    UTF-8
+    [Return]    ${query_list}

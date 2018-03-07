@@ -1,0 +1,19 @@
+*** Settings ***
+Library           AqlicaiLibrary
+Resource          ../../资源配置/config.txt
+Resource          ../../通用/L2-接口层/接口结果基础校验.txt
+
+*** Keywords ***
+登录post请求
+    [Arguments]    ${input_username}    ${input_pwd}    #输入用户名|输入密码
+    Create Session    api    ${url}
+    ${dict}    Create Dictionary    email=${input_username}    pwd=${input_pwd}
+    ${responseobj}    固定Cookie的Post请求    ${dict}    /ajax/account2/login
+    Delete All Sessions
+    Should Be Equal As Integers    ${responseobj.status_code}    200
+    ${responsedata}    To Json    ${responseobj.content}
+    ${code}    Get From Dictionary    ${responsedata}    code
+    Should Be Equal As Strings    ${code}    0
+    ${data}    Get From Dictionary    ${responsedata}    data
+    log    data:${data}
+    Should Be Equal     ${data}    ${None}

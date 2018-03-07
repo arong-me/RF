@@ -1,0 +1,24 @@
+*** Settings ***
+Library           String
+Resource          ../../资源配置/设置数据库.txt
+
+*** Keywords ***
+获取主体
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT sec_name FROM sec_basic_info WHERE sec_small_type IN('1004001001','1004001002') AND ipo_status IN('1002007','1002009','1002010')
+    断开数据库
+    Comment    ${name}    Evaluate    '${mainbody[0][0]}'.decode('utf-8')
+    Comment    log    ${mainbody[0][0]}
+    Comment    ${length}    Get Length    ${MainbodyTuple}
+    Comment    @{MainbodydList}    create list
+    Comment    :FOR    ${i}    IN RANGE    ${length}
+    Comment    \    ${MainbodyDecode}    Evaluate    '${MainbodyTuple[${i}][0]}'.decode('utf-8')
+    Comment    \    @{MainbodydList}    create list    @{MainbodydList}    ${MainbodyDecode}
+    Comment    log many    @{MainbodydList}
+    [Return]    ${MainbodyTuple}
+
+获取财务指标
+    连接线上测试数据库
+    ${FinanceTuple}    Run Keyword And Continue on Failure    Query    SELECT DISTINCT column_name_cn FROM sec_metadata_info WHERE category = '财务指标'
+    断开数据库
+    [Return]    ${FinanceTuple}

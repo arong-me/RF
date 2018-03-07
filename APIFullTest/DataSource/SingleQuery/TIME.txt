@@ -1,0 +1,8 @@
+today
+yestoday
+last_7day
+last_month
+last_3month
+last_6month
+last_year
+not_limit

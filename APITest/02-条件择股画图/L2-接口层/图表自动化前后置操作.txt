@@ -1,0 +1,23 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/文件处理.txt
+Resource          ../../通用/L2-接口层/结果统计.txt
+
+*** Keywords ***
+Chart_Directory_Setup
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1、创建一级模块所需文件夹chart_automation
+    创建一级模块所需文件夹    chart_automation
+    #清空TotalSource下的normal_form文件夹
+    清空文件夹    %{G_DATASOURCE}${/}chart_automation
+    #清空TotalRestult下的normal_form文件夹
+    清空文件夹    %{G_DATARESULTS}${/}chart_automation
+
+Chart_Directory_Teardown
+    [Arguments]    ${results_path}
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    整个范式Directory结束后统计结果发送邮件
+    统计结果发送邮件    验证搜索框范式    ${results_path}

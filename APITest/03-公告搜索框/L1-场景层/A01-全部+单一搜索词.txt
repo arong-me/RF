@@ -1,0 +1,122 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Suite_Setup    03-Notice    Notice_A01
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+Resource          ../../通用/L2-接口层/生成Excel表文件.txt
+
+*** Test Cases ***
+01公司名称
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.公司搜索框中测试一个公司名称
+    [Tags]    ygu
+    #定义生成文件前缀
+    ${pre_resultfile}    Set Variable    NoticeA01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    stockname
+    #校验指标
+    创建Session
+    ALL公告校验query    002883.SZ    ${check_field_list}
+    ALL公告校验query    300081.SZ    ${check_field_list}
+    ALL公告校验query    600190.SH    ${check_field_list}
+    ALL公告校验query    603302.SH    ${check_field_list}
+    ALL公告校验query    000713.SZ    ${check_field_list}
+    ALL公告校验query    300597.SZ    ${check_field_list}
+    ALL公告校验query    600367.SH    ${check_field_list}
+    ALL公告校验query    002225.SZ    ${check_field_list}
+    ALL公告校验query    300192.SZ    ${check_field_list}
+    ALL公告校验query    603123.SH    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+02公告分类
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告分类词
+    [Tags]    ygu
+    [Setup]
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    ALL公告校验query    公司制度文件    ${check_field_list}
+    ALL公告校验query    恢复上市    ${check_field_list}
+    ALL公告校验query    终止上市    ${check_field_list}
+    ALL公告校验query    股息或分派    ${check_field_list}
+    ALL公告校验query    特别处理    ${check_field_list}
+    ALL公告校验query    新上市    ${check_field_list}
+    ALL公告校验query    监管者公告    ${check_field_list}
+    ALL公告校验query    其他增发公告    ${check_field_list}
+    ALL公告校验query    杂项    ${check_field_list}
+    ALL公告校验query    辽宁股权交易中心    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+03公告行业
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个公告行业词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    ALL公告校验query    专业连锁    ${check_field_list}
+    ALL公告校验query    家电零部件    ${check_field_list}
+    ALL公告校验query    装修装饰    ${check_field_list}
+    ALL公告校验query    燃机发电    ${check_field_list}
+    ALL公告校验query    医药商业    ${check_field_list}
+    ALL公告校验query    重型机械    ${check_field_list}
+    ALL公告校验query    家用轻工    ${check_field_list}
+    ALL公告校验query    半导体    ${check_field_list}
+    ALL公告校验query    一般零售    ${check_field_list}
+    ALL公告校验query    无机盐    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+04关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试一个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    变动    ${check_field_list}
+    ALL公告校验query    识别    ${check_field_list}
+    ALL公告校验query    高精锻压    ${check_field_list}
+    ALL公告校验query    复牌公告    ${check_field_list}
+    ALL公告校验query    股份变动    ${check_field_list}
+    ALL公告校验query    万达    ${check_field_list}
+    ALL公告校验query    互联网    ${check_field_list}
+    ALL公告校验query    中商集团    ${check_field_list}
+    ALL公告校验query    城市轨道交通    ${check_field_list}
+    ALL公告校验query    大唐国际    ${check_field_list}
+    删除Sessions
+    [Teardown]

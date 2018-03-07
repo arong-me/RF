@@ -1,0 +1,30 @@
+*** Settings ***
+Resource          ../../通用/L2-接口层/前置条件更新指标.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+筛选框校验.txt
+
+*** Test Cases ***
+更新公告类型
+    更新所有公告类型
+
+更新公告行业
+    更新所有公告行业
+
+调试
+    Comment    Run Keyword Unless    "dev" in "${url}"    设置登录头信息
+    Comment    创建Session
+    Comment    ${pre_resultfile}    Set Variable    NoticeAS01_s7_
+    Comment    set suite variable    ${pre_resultfile}
+    Comment    Comment    TestCase_Teardown    ${results_path}
+    Comment    ${check_field_list}    Create List    title_include
+    Comment    #校验指标
+    Comment    Comment    公告1校验query    成都银行    ${check_field_list}
+    Comment    Comment    公告1校验query    一季报    category
+    Comment    Comment    公告1校验query    三季报    category
+    Comment    Comment    公告ALL筛选框校验query    F004    ${check_field_list}
+    Comment    Comment    ${t}    set variable    610000
+    Comment    Comment    log    ${t[0:3]}
+    Comment    Comment    公告ALL筛选框校验query    today    ${check_field_list}
+    Comment    公告ALL筛选框校验query    二级市场    ${check_field_list}
+    Comment    log    1

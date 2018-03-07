@@ -1,0 +1,18 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          config.txt
+
+*** Keywords ***
+打开网页并登录
+    Open Browser    ${线上正式地址}    chrome    #打开浏览器
+    Maximize Browser Window
+    input text    xpath=/html/body/div[1]/div[2]/div[2]/label[1]/input    ${线上正式账户名}    #输入账号 test1@abcft.com
+    input text    xpath=/html/body/div[1]/div[2]/div[2]/label[2]/input    ${线上正式密码}    #输入密码1234qwer
+    Click Element    xpath=/html/body/div[1]/div[2]/div[2]/div    #登录
+
+线上正式环境登录
+    Open Browser    ${线上正式地址}    chrome    #打开浏览器
+    Maximize Browser Window
+    input text    xpath=/html/body/div[1]/div[2]/div[2]/label[1]/input    ${线上正式账户名}    #输入账号 test1@abcft.com
+    input text    xpath=/html/body/div[1]/div[2]/div[2]/label[2]/input    ${线上正式密码}    #输入密码1234qwer
+    Click Element    xpath=/html/body/div[1]/div[2]/div[2]/div    #登录

@@ -1,0 +1,93 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_02二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、抽样运行Suite
+Suite Setup       Suite_Setup    03-Notice    Notice_A02
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/全部+搜索词.txt
+
+*** Test Cases ***
+01两个公告分类
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试两个公告分类
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA02_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    category
+    #校验指标
+    创建Session
+    ALL公告校验query    交易异动 股权分置改革    ${check_field_list}
+    ALL公告校验query    特别处理 创业板公司资料    ${check_field_list}
+    ALL公告校验query    投资理财 其他债券公告    ${check_field_list}
+    ALL公告校验query    配股说明书 发售现有证券    ${check_field_list}
+    ALL公告校验query    交易异动 定期报告    ${check_field_list}
+    ALL公告校验query    投资理财 年度报告(US)    ${check_field_list}
+    ALL公告校验query    交易异动 基金收益分配    ${check_field_list}
+    ALL公告校验query    股东委托书 股本股权    ${check_field_list}
+    ALL公告校验query    投资理财 天津股权交易所    ${check_field_list}
+    ALL公告校验query    投资理财 杂项    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+02多个公告行业
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试2-5个公告行业词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA02_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    industry
+    #校验指标
+    创建Session
+    ALL公告校验query    高速公路 医疗服务    ${check_field_list}
+    ALL公告校验query    高速公路 稀土    ${check_field_list}
+    ALL公告校验query    纺织化学用品 生物制品 涂料油漆油墨制造    ${check_field_list}
+    ALL公告校验query    纺织化学用品 生物制品 其他服装    ${check_field_list}
+    ALL公告校验query    纺织化学用品 生物制品 水泥制造    ${check_field_list}
+    ALL公告校验query    软饮料 食品饮料 火电设备 国防军工    ${check_field_list}
+    ALL公告校验query    软饮料 食品饮料 火电设备 煤炭开采    ${check_field_list}
+    ALL公告校验query    通信传输设备 储能设备 合成革 电子零部件制造 港口    ${check_field_list}
+    ALL公告校验query    通信传输设备 储能设备 合成革 电子零部件制造 电源设备    ${check_field_list}
+    ALL公告校验query    通信传输设备 储能设备 合成革 电子零部件制造 通信配套服务    ${check_field_list}
+    删除Sessions
+    [Teardown]
+
+03多个关键词
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1.搜索框中测试2-5个关键词
+    [Tags]    ygu
+    #定义文件前缀名称Suite变量
+    ${pre_resultfile}    Set Variable    NoticeA02_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    keyword
+    #校验指标
+    创建Session
+    ALL公告校验query    新城房产 复牌    ${check_field_list}
+    ALL公告校验query    新城房产 猪肉    ${check_field_list}
+    ALL公告校验query    新城房产 金融行业    ${check_field_list}
+    ALL公告校验query    艾派克 高精锻压 募集资金    ${check_field_list}
+    ALL公告校验query    艾派克 高精锻压 十大股东持股情况    ${check_field_list}
+    ALL公告校验query    艾派克 高精锻压 2017年    ${check_field_list}
+    ALL公告校验query    光电子 披露公告 复牌 产业    ${check_field_list}
+    ALL公告校验query    光电子 披露公告 复牌 十大股东    ${check_field_list}
+    ALL公告校验query    光电子 披露公告 复牌 大唐国际    ${check_field_list}
+    ALL公告校验query    重组 物联网 金通证券 概念 茅台    ${check_field_list}
+    删除Sessions
+    [Teardown]

@@ -1,0 +1,129 @@
+*** Settings ***
+Documentation     【作者】ygu
+...
+...               【说明】
+...               1. 前置条件Suite Setup在DataSource/TotalSource和DataSource/TotalResuls文件下下创建notice一级文件夹和notice_01二级文件夹
+...               2、设置全局变量测试数据源路径${datasource_path}以及邮件发送文件路径${emaldata_path}
+...               3、全量运行Suite
+Suite Setup       Left_Suite_Setup    07-ReportAdvancedSearch    ReportAS_Z01    债券研究
+Suite Teardown
+Test Teardown
+Force Tags        BVT
+Resource          ../../资源配置/Setup.txt
+Resource          ../../资源配置/全局变量.txt
+Resource          ../../通用/L2-接口层/生成公告研报测试数据.txt
+Resource          ../L2-接口层/研报左选框+筛选框校验.txt
+
+*** Test Cases ***
+01标题必含
+    ${pre_resultfile}    Set Variable    ReportASZ01_s1_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_include
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    基金    ${check_field_list}
+    研报左选框+筛选框校验query    预告    ${check_field_list}
+    研报左选框+筛选框校验query    报表    ${check_field_list}
+    研报左选框+筛选框校验query    预案    ${check_field_list}
+    研报左选框+筛选框校验query    投资项目    ${check_field_list}
+    研报左选框+筛选框校验query    评估    ${check_field_list}
+    研报左选框+筛选框校验query    交易    ${check_field_list}
+    研报左选框+筛选框校验query    审计    ${check_field_list}
+    研报左选框+筛选框校验query    收购    ${check_field_list}
+    研报左选框+筛选框校验query    辞职    ${check_field_list}
+    删除Sessions
+
+02标题不含
+    ${pre_resultfile}    Set Variable    ReportASZ01_s2_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    title_not_include
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    2017年    ${check_field_list}
+    研报左选框+筛选框校验query    城镇化    ${check_field_list}
+    研报左选框+筛选框校验query    股份变动    ${check_field_list}
+    研报左选框+筛选框校验query    整改    ${check_field_list}
+    研报左选框+筛选框校验query    资产    ${check_field_list}
+    研报左选框+筛选框校验query    猪肉    ${check_field_list}
+    研报左选框+筛选框校验query    关于使用自有资金收购内蒙古    ${check_field_list}
+    研报左选框+筛选框校验query    人事变动    ${check_field_list}
+    研报左选框+筛选框校验query    回购交易    ${check_field_list}
+    删除Sessions
+
+03时间
+    ${pre_resultfile}    Set Variable    ReportASZ01_s3_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    time
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    last_month    ${check_field_list}
+    研报左选框+筛选框校验query    last_3month    ${check_field_list}
+    研报左选框+筛选框校验query    last_6month    ${check_field_list}
+    研报左选框+筛选框校验query    last_year    ${check_field_list}
+    研报左选框+筛选框校验query    not_limit    ${check_field_list}
+    删除Sessions
+
+04所在机构
+    ${pre_resultfile}    Set Variable    ReportASZ01_s4_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    source
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    江海证券    ${check_field_list}
+    研报左选框+筛选框校验query    华泰证券    ${check_field_list}
+    研报左选框+筛选框校验query    中山证券    ${check_field_list}
+    研报左选框+筛选框校验query    鸿海期货    ${check_field_list}
+    研报左选框+筛选框校验query    申万宏源    ${check_field_list}
+    研报左选框+筛选框校验query    民生证券    ${check_field_list}
+    研报左选框+筛选框校验query    东海证券    ${check_field_list}
+    研报左选框+筛选框校验query    华安证券    ${check_field_list}
+    研报左选框+筛选框校验query    申银万国    ${check_field_list}
+    研报左选框+筛选框校验query    联合证券    ${check_field_list}
+    删除Sessions
+
+05作者
+    ${pre_resultfile}    Set Variable    ReportASZ01_s5_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    author
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    张继强    ${check_field_list}
+    研报左选框+筛选框校验query    李晶    ${check_field_list}
+    研报左选框+筛选框校验query    孙建波    ${check_field_list}
+    研报左选框+筛选框校验query    李晗    ${check_field_list}
+    研报左选框+筛选框校验query    韦志超    ${check_field_list}
+    研报左选框+筛选框校验query    刘瑞    ${check_field_list}
+    研报左选框+筛选框校验query    赵博文    ${check_field_list}
+    研报左选框+筛选框校验query    李筱璇    ${check_field_list}
+    研报左选框+筛选框校验query    李慧勇    ${check_field_list}
+    研报左选框+筛选框校验query    邓虎    ${check_field_list}
+    删除Sessions
+
+06评级
+    Comment    ${pre_resultfile}    Set Variable    ReportASZ01_s6_
+    Comment    Set Suite Variable    ${pre_resultfile}
+    Comment    #需要校验的字段list
+    Comment    ${check_field_list}    Create List    rating
+    Comment    #校验指标
+    Comment    创建Session
+    Comment    研报左选框+筛选框校验query    不限    ${check_field_list}
+    Comment    研报左选框+筛选框校验query    买入    ${check_field_list}
+    Comment    删除Sessions
+
+07页数
+    #生成需要测试的关键词
+    ${pre_resultfile}    Set Variable    ReportASZ01_s7_
+    Set Suite Variable    ${pre_resultfile}
+    #需要校验的字段list
+    ${check_field_list}    Create List    page
+    #校验指标
+    创建Session
+    研报左选框+筛选框校验query    10页以下    ${check_field_list}
+    研报左选框+筛选框校验query    10-20页    ${check_field_list}
+    研报左选框+筛选框校验query    20页以上    ${check_field_list}
+    删除Sessions

@@ -1,0 +1,55 @@
+*** Settings ***
+Resource          ../L2-接口层/范式01.txt
+Library           String
+Resource          ../../通用/L2-接口层/生成单个指标.txt
+Resource          ../../通用/L3-DB层/获取单个query.txt
+Resource          ../../资源配置/Setup.txt
+Resource          ../../通用/L2-接口层/组合指标.txt
+Resource          ../../资源配置/全局变量.txt
+
+*** Test Cases ***
+01单主体+特殊表
+    [Documentation]    【作者】ygu
+    ...
+    ...    【说明】
+    ...    1. 文件名格式为两种（详见L1场景层解释）
+    ...    2. 搜图生成组合指标后面的第一个参数要和创建范式1文件夹中所带参数要一致
+    ...
+    ...    【前置条件】创建范式1文件夹
+    [Tags]    ygu
+    [Setup]    创建范式1文件夹
+    #生成单主体
+    生成主体
+    #生成组合指标
+    ${file}    Set Variable    n1_s1_stockname_x1-special
+    ${datasource_path}    搜图生成组合指标    normal_form_01    ${file}.txt    ${CombMax_G}
+    循环读文件获取指标进行校验    ${datasource_path}    ${file}    n1_s1_
+    [Teardown]    清理范式1环境
+
+02多主体+特殊表
+    [Tags]    ygu
+    [Setup]    创建范式1文件夹
+    #生成多主体
+    生成主体
+    #生成组合指标以及校验
+    : FOR    ${i}    IN RANGE    2    6
+    \    ${filename}    Evaluate    'n1_s2_stockname_x{0}-special'.format(str(${i}))
+    \    log    ${filename}
+    \    ${datasource_path}    搜图生成组合指标    normal_form_01    ${filename}.txt    ${CombMax_N}
+    \    ${divide_scene}    Evaluate    ${i}-1
+    \    循环读文件获取指标进行校验    ${datasource_path}    ${filename}    n1_s2_m${divide_scene}_
+    [Teardown]    清理范式1环境
+
+03最大边界值
+    [Setup]    创建范式1文件夹
+    [Timeout]
+    创建Session
+    ${results_path}    Set Variable    %{G_DATACENTER}${/}normal_form_01${/}testresults
+    Set Global Variable    ${results_path}
+    ${pre_resultfile}    Set Variable    n1_s3_
+    Set Global Variable    ${pre_resultfile}
+    清理文件夹下的文件    ${results_path}    ${pre_resultfile}
+    范式1校验query    万科A    高管
+    范式1校验query    中兴商业 上海电力 国发股份 五洲新春 绿茵生态 宝信软件 亿联网络 中体产业 大龙地产 天山股份 麦迪电气 景嘉微 中国铁建 好想你    主营构成表
+    范式1校验query    中兴商业 上海电力 国发股份 五洲新春 绿茵生态 宝信软件 亿联网络 中体产业 大龙地产 天山股份 麦迪电气 家家悦 中国铁建 好想你    偿债能力表
+    [Teardown]    Delete All Sessions

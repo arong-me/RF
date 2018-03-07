@@ -1,0 +1,22 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+点击+号
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/span    #点击+号
+
+取消勾选主题
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/span/div/ul/li[1]/label/input    #取消主题
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/span/div/ul/li[1]/label/input    #勾选主题
+
+取消勾选上市板块
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/span/div/ul/li[2]/label    #取消上市板块
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/span/div/ul/li[2]/label    #勾选上市板块
+
+收回+号
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[3]/div[1]/div[2]/div[3]/span/span    #收回+号

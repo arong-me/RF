@@ -1,0 +1,11 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+切换到图表
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[2]/span/span[1]    #切换图表
+
+切换到数据
+    sleep    3
+    Wait Until Keyword Succeeds    5min    1sec    Click Element    xpath=/html/body/div[3]/div[6]/div[2]/div[1]/div[2]/span/span[2]    #切换数据

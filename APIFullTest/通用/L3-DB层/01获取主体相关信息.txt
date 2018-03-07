@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          ../../资源配置/设置数据库.txt
+
+*** Keywords ***
+获取所有stockcode和usedname
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code,used_name FROM sec_basic_info WHERE used_name !='—' AND IFNULL(used_name,'')!='' AND STATUS<>'9' AND ipo_status !='1002006'
+    断开数据库
+    [Return]    ${MainbodyTuple}
+
+获取所有stockname和stockcode
+    连接正式数据库
+    ${MainbodyTuple}    Run Keyword And Continue on Failure    Query    SELECT abc_code,sec_name FROM sec_basic_info WHERE STATUS<>'9' AND ipo_status IN('1002007','1002009','1002010') AND IFNULL(abc_code,'')!=''
+    断开数据库
+    [Return]    ${MainbodyTuple}
